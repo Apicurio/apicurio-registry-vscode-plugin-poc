@@ -1,0 +1,129 @@
+{
+  "name": "apicurio-vscode-extension",
+  "displayName": "Apicurio Registry",
+  "description": "Browse and edit API specifications from Apicurio Registry",
+  "version": "0.1.0",
+  "publisher": "apicurio",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "categories": [
+    "Other",
+    "Formatters",
+    "Linters"
+  ],
+  "keywords": [
+    "openapi",
+    "asyncapi",
+    "api",
+    "schema",
+    "registry",
+    "apicurio"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "apicurioRegistry",
+          "name": "Apicurio Registry"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "apicurioRegistry.refresh",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "apicurioRegistry.connect",
+        "title": "Connect to Registry",
+        "icon": "$(plug)"
+      },
+      {
+        "command": "apicurioRegistry.disconnect",
+        "title": "Disconnect",
+        "icon": "$(debug-disconnect)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "apicurioRegistry.refresh",
+          "when": "view == apicurioRegistry",
+          "group": "navigation"
+        },
+        {
+          "command": "apicurioRegistry.connect",
+          "when": "view == apicurioRegistry",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Apicurio Registry",
+      "properties": {
+        "apicurioRegistry.connections": {
+          "type": "array",
+          "default": [],
+          "description": "Registry connection configurations",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Connection name"
+              },
+              "url": {
+                "type": "string",
+                "description": "Registry URL"
+              },
+              "authType": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "basic",
+                  "oidc"
+                ],
+                "default": "none",
+                "description": "Authentication type"
+              }
+            },
+            "required": [
+              "name",
+              "url"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "webpack --mode production",
+    "watch": "webpack --mode development --watch",
+    "test": "jest",
+    "lint": "eslint src --ext ts",
+    "pretest": "npm run compile && npm run lint"
+  },
+  "devDependencies": {
+    "@jest/globals": "^30.2.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "16.x",
+    "@types/vscode": "^1.70.0",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "ts-loader": "^9.4.0",
+    "typescript": "^5.0.0",
+    "webpack": "^5.70.0",
+    "webpack-cli": "^5.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+}

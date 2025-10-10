@@ -1,0 +1,205 @@
+import axios, { AxiosInstance } from 'axios';
+
+export interface RegistryConnection {
+    name: string;
+    url: string;
+    authType: 'none' | 'basic' | 'oidc';
+    credentials?: {
+        username?: string;
+        password?: string;
+        token?: string;
+        clientId?: string;
+    };
+}
+
+export interface SearchedGroup {
+    groupId?: string;
+    artifactCount?: number;
+    description?: string;
+    labels?: Record<string, string>;
+    modifiedOn?: Date;
+}
+
+export interface SearchedArtifact {
+    groupId?: string;
+    artifactId?: string;
+    artifactType?: string;
+    name?: string;
+    description?: string;
+    labels?: Record<string, string>;
+    state?: string;
+    modifiedOn?: Date;
+}
+
+export interface SearchedVersion {
+    groupId?: string;
+    artifactId?: string;
+    version?: string;
+    versionId?: number;
+    globalId?: number;
+    contentId?: number;
+    state?: string;
+    labels?: Record<string, string>;
+    createdOn?: Date;
+}
+
+export interface ArtifactContent {
+    content: string;
+    contentType: string;
+    artifactType?: string;
+}
+
+export class RegistryService {
+    private client: AxiosInstance | null = null;
+    private connection: RegistryConnection | null = null;
+
+    setConnection(connection: RegistryConnection): void {
+        this.connection = connection;
+        this.client = axios.create({
+            baseURL: `${connection.url}/apis/registry/v3`,
+            timeout: 30000,
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+
+        // Set up authentication
+        if (connection.authType === 'basic' && connection.credentials) {
+            const { username, password } = connection.credentials;
+            if (username && password) {
+                this.client.defaults.auth = { username, password };
+            }
+        } else if (connection.authType === 'oidc' && connection.credentials?.token) {
+            this.client.defaults.headers.common['Authorization'] = `Bearer ${connection.credentials.token}`;
+        }
+    }
+
+    disconnect(): void {
+        this.client = null;
+        this.connection = null;
+    }
+
+    private ensureConnected(): void {
+        if (!this.client || !this.connection) {
+            throw new Error('Not connected to registry. Please connect first.');
+        }
+    }
+
+    async searchGroups(filters: any[] = []): Promise<SearchedGroup[]> {
+        this.ensureConnected();
+
+        try {
+            const response = await this.client!.get('/groups', {
+                params: {
+                    limit: 100,
+                    offset: 0
+                }
+            });
+
+            return response.data.groups || [];
+        } catch (error) {
+            console.error('Error searching groups:', error);
+            throw new Error(`Failed to search groups: ${error}`);
+        }
+    }
+
+    async getArtifacts(groupId: string): Promise<SearchedArtifact[]> {
+        this.ensureConnected();
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const response = await this.client!.get(`/groups/${encodedGroupId}/artifacts`, {
+                params: {
+                    limit: 100,
+                    offset: 0
+                }
+            });
+
+            return response.data.artifacts || [];
+        } catch (error) {
+            console.error('Error getting artifacts:', error);
+            throw new Error(`Failed to get artifacts for group ${groupId}: ${error}`);
+        }
+    }
+
+    async getVersions(groupId: string, artifactId: string): Promise<SearchedVersion[]> {
+        this.ensureConnected();
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            const response = await this.client!.get(`/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/versions`, {
+                params: {
+                    limit: 50,
+                    offset: 0
+                }
+            });
+
+            return response.data.versions || [];
+        } catch (error) {
+            console.error('Error getting versions:', error);
+            throw new Error(`Failed to get versions for artifact ${groupId}/${artifactId}: ${error}`);
+        }
+    }
+
+    async getArtifactContent(groupId: string, artifactId: string, version: string): Promise<ArtifactContent> {
+        this.ensureConnected();
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            const encodedVersion = encodeURIComponent(version);
+
+            const response = await this.client!.get(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/versions/${encodedVersion}`,
+                {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                }
+            );
+
+            // Get the content type from response headers
+            const contentType = response.headers['content-type'] || 'application/json';
+
+            return {
+                content: typeof response.data === 'string' ? response.data : JSON.stringify(response.data, null, 2),
+                contentType: contentType
+            };
+        } catch (error) {
+            console.error('Error getting artifact content:', error);
+            throw new Error(`Failed to get content for ${groupId}/${artifactId}@${version}: ${error}`);
+        }
+    }
+
+    async updateArtifactContent(groupId: string, artifactId: string, version: string, content: ArtifactContent): Promise<void> {
+        this.ensureConnected();
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            const encodedVersion = encodeURIComponent(version);
+
+            await this.client!.put(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/versions/${encodedVersion}`,
+                content.content,
+                {
+                    headers: {
+                        'Content-Type': content.contentType
+                    }
+                }
+            );
+        } catch (error) {
+            console.error('Error updating artifact content:', error);
+            throw new Error(`Failed to update content for ${groupId}/${artifactId}@${version}: ${error}`);
+        }
+    }
+
+    isConnected(): boolean {
+        return this.client !== null && this.connection !== null;
+    }
+
+    getConnectionInfo(): RegistryConnection | null {
+        return this.connection;
+    }
+}

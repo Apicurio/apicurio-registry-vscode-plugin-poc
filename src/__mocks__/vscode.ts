@@ -109,3 +109,10 @@ export namespace commands {
         return { dispose: () => {} };
     }
 }
+
+export namespace env {
+    export const clipboard = {
+        writeText: (value: string): Thenable<void> => Promise.resolve(),
+        readText: (): Thenable<string> => Promise.resolve('')
+    };
+}

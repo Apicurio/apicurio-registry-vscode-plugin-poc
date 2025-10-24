@@ -46,6 +46,17 @@
         "command": "apicurioRegistry.disconnect",
         "title": "Disconnect",
         "icon": "$(debug-disconnect)"
+      },
+      {
+        "command": "apicurioRegistry.search",
+        "title": "Search Artifacts",
+        "icon": "$(search)"
+      },
+      {
+        "command": "apicurioRegistry.createArtifact",
+        "title": "Create Artifact",
+        "icon": "$(add)",
+        "category": "Apicurio Registry"
       }
     ],
     "menus": {
@@ -54,6 +65,16 @@
           "command": "apicurioRegistry.refresh",
           "when": "view == apicurioRegistry",
           "group": "navigation"
+        },
+        {
+          "command": "apicurioRegistry.search",
+          "when": "view == apicurioRegistry",
+          "group": "navigation"
+        },
+        {
+          "command": "apicurioRegistry.createArtifact",
+          "when": "view == apicurioRegistry",
+          "group": "navigation@2"
         },
         {
           "command": "apicurioRegistry.connect",
@@ -124,6 +145,10 @@
     "webpack-cli": "^5.0.0"
   },
   "dependencies": {
-    "axios": "^1.6.0"
+    "axios": "^1.6.0",
+    "mime-types": "^2.1.35"
+  },
+  "optionalDependencies": {
+    "@types/mime-types": "^2.1.1"
   }
 }

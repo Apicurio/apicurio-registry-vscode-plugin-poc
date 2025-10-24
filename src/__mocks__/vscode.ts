@@ -61,17 +61,37 @@ export class EventEmitter<T> {
     }
 }
 
+export enum ProgressLocation {
+    SourceControl = 1,
+    Window = 10,
+    Notification = 15
+}
+
 export namespace window {
-    export function showErrorMessage(message: string): Thenable<string | undefined> {
+    export function showErrorMessage(message: string, ...items: string[]): Thenable<string | undefined> {
         return Promise.resolve(undefined);
     }
 
-    export function showInformationMessage(message: string): Thenable<string | undefined> {
+    export function showInformationMessage(message: string, ...items: string[]): Thenable<string | undefined> {
         return Promise.resolve(undefined);
     }
 
     export function showInputBox(options?: any): Thenable<string | undefined> {
         return Promise.resolve(undefined);
+    }
+
+    export function showQuickPick(items: any[] | Thenable<any[]>, options?: any): Thenable<any | undefined> {
+        return Promise.resolve(undefined);
+    }
+
+    export function withProgress<R>(
+        options: { location: ProgressLocation; title?: string; cancellable?: boolean },
+        task: (progress: { report(value: { message?: string; increment?: number }): void }) => Thenable<R>
+    ): Thenable<R> {
+        const progress = {
+            report: (_value: { message?: string; increment?: number }) => {}
+        };
+        return task(progress);
     }
 }
 

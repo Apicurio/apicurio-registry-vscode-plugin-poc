@@ -49,10 +49,10 @@ ui/
 - **Collaboration**: Concurrent editing with conflict detection
 
 #### API Integration
-- **TypeScript SDK**: Located at `/typescript-sdk/`
+- **REST API v3**: Direct HTTP calls using Axios
 - **OpenAPI Specifications**: Available at `/app/src/main/resources-unfiltered/META-INF/resources/api-specifications/`
-- **Authentication Support**: OIDC integration
-- **REST API Endpoints**: Comprehensive CRUD operations
+- **Authentication Support**: OIDC and Basic Auth integration
+- **REST API Endpoints**: Comprehensive CRUD operations via `/apis/registry/v3`
 
 ### Existing Editor Architecture
 
@@ -83,7 +83,7 @@ VSCode Extension
 │   ├── Webview Editor (Apicurio Studio integration)
 │   └── Content Synchronization Engine
 └── API Integration Layer
-    ├── TypeScript SDK Integration
+    ├── RegistryService (Axios-based REST client)
     ├── Authentication Manager (OIDC/Basic Auth)
     └── Real-time Update Handler
 ```
@@ -118,11 +118,11 @@ interface RegistryEditorProvider extends vscode.CustomTextEditorProvider {
    - Set up development and testing environment
    - Configure extension manifest (`package.json`)
 
-2. **Registry SDK Integration**
-   - Import Apicurio Registry TypeScript SDK
+2. **Registry Service Integration**
+   - Implement RegistryService using Axios for direct REST API calls
    - Create connection configuration interface
-   - Implement authentication handling
-   - Create API client wrapper
+   - Implement authentication handling (Basic Auth & OIDC)
+   - Create API client methods for v3 endpoints
 
 3. **Basic Tree View**
    - Implement TreeDataProvider interface
@@ -131,9 +131,11 @@ interface RegistryEditorProvider extends vscode.CustomTextEditorProvider {
    - Configure view container in Activity Bar
 
 #### Deliverables:
-- Working VSCode extension skeleton
-- Registry connectivity established
-- Basic sidebar tree view showing registry groups
+- ✅ Working VSCode extension skeleton
+- ✅ Registry connectivity established via RegistryService
+- ✅ Basic sidebar tree view showing registry groups
+- ✅ Authentication support (Basic Auth & OIDC)
+- ✅ Direct REST API integration with Axios
 
 ### Phase 2: Core Tree Functionality
 **Duration**: 2-3 weeks
@@ -158,10 +160,14 @@ interface RegistryEditorProvider extends vscode.CustomTextEditorProvider {
    - Registry switching capabilities
 
 #### Deliverables:
-- Full-featured registry browser in sidebar
-- Multi-registry support
-- Search and filtering capabilities
-- Context menu actions
+- ✅ Full-featured registry browser in sidebar
+- ✅ Multi-registry support with connection management
+- ✅ Search and filtering capabilities
+- ✅ Context menu actions
+- ✅ Custom icons for all 9 artifact types
+- ✅ State indicators (ENABLED, DISABLED, DEPRECATED, DRAFT)
+- ✅ Rich tooltips with metadata
+- ✅ IconService for centralized icon management
 
 ### Phase 3: Editor Integration
 **Duration**: 3-4 weeks
@@ -218,6 +224,49 @@ interface RegistryEditorProvider extends vscode.CustomTextEditorProvider {
 - Enhanced developer tools
 - Collaboration features
 - Complete VSCode integration
+
+## Architectural Decisions
+
+### REST API Integration Strategy
+
+**Decision:** Use direct REST API calls via Axios instead of the TypeScript SDK
+
+**Rationale:**
+
+During Phase 1 implementation, we decided to use direct REST API calls with Axios rather than the TypeScript SDK located at `/typescript-sdk/`. This decision was based on:
+
+1. **Simplicity**: Direct HTTP calls provide more control and transparency
+2. **Bundle Size**: Avoiding SDK dependencies keeps the extension lightweight
+3. **Flexibility**: Easier to handle VSCode-specific requirements (progress reporting, cancellation)
+4. **Version Control**: Direct API calls make it easier to support multiple registry versions
+5. **Error Handling**: More granular control over error handling and user feedback
+
+**Implementation:**
+
+The `RegistryService` class (`src/services/registryService.ts`) provides:
+- Direct Axios-based HTTP client to `/apis/registry/v3`
+- Support for Basic Auth and OIDC authentication
+- Type-safe interfaces for all API responses
+- Comprehensive error handling with user-friendly messages
+- Connection management and state tracking
+
+**Key Methods:**
+```typescript
+- searchGroups(): Promise<SearchedGroup[]>
+- getArtifacts(groupId: string): Promise<SearchedArtifact[]>
+- getVersions(groupId: string, artifactId: string): Promise<SearchedVersion[]>
+- getArtifactContent(groupId, artifactId, version): Promise<ArtifactContent>
+- updateArtifactContent(groupId, artifactId, version, content): Promise<void>
+```
+
+**Trade-offs:**
+- ✅ **Pros**: Lighter bundle, more control, easier VSCode integration
+- ⚠️ **Cons**: Need to manually track API changes, no SDK type safety
+
+**Future Consideration:**
+If the TypeScript SDK adds VSCode-specific features or becomes significantly more maintained, we can reconsider this decision. The RegistryService abstraction makes this switch straightforward.
+
+---
 
 ## Technical Specifications
 
@@ -340,8 +389,8 @@ interface RegistryEditorProvider extends vscode.CustomTextEditorProvider {
 ### Integration Risks
 - **Low Risk**: Apicurio Studio iframe integration complexity
   - *Mitigation*: Use proven message passing patterns from existing codebase
-- **Low Risk**: TypeScript SDK compatibility
-  - *Mitigation*: SDK is actively maintained and well-documented
+- **Low Risk**: Direct REST API compatibility
+  - *Mitigation*: Using stable v3 API with comprehensive error handling
 
 ## Timeline and Milestones
 
@@ -363,12 +412,88 @@ The VSCode plugin for Apicurio Registry is technically feasible and will provide
 
 The phased approach ensures incremental delivery of value while managing technical complexity. The proposed architecture leverages existing components where possible while providing a native VSCode experience.
 
+## Implementation Status
+
+### ✅ Completed Phases
+
+#### Phase 1: Foundation Setup (Completed)
+- ✅ VSCode extension scaffold with TypeScript and Webpack
+- ✅ RegistryService with Axios for direct REST API v3 integration
+- ✅ Authentication support (Basic Auth & OIDC)
+- ✅ Basic TreeDataProvider implementation
+- ✅ Connection management interface
+- ✅ Extension manifest configuration
+
+#### Phase 2: Core Tree Functionality (Completed)
+- ✅ Full hierarchy navigation (Groups → Artifacts → Versions)
+- ✅ Custom icons for all 9 artifact types via IconService
+- ✅ State indicators (ENABLED, DISABLED, DEPRECATED, DRAFT)
+- ✅ Rich tooltips with markdown and metadata
+- ✅ Context menus and inline actions
+- ✅ Multi-registry connection support
+- ✅ Search and filtering capabilities
+- ✅ Comprehensive unit tests with Jest
+
+**Key Files Delivered:**
+- `src/extension.ts` - Extension entry point
+- `src/services/registryService.ts` - REST API client
+- `src/services/iconService.ts` - Icon management
+- `src/providers/registryTreeProvider.ts` - Tree view implementation
+- `src/models/registryModels.ts` - Type definitions
+- `test-icons.sh` - Testing utilities
+
+### 🚧 Current Phase
+
+**Phase 3: Editor Integration** (Next)
+- Custom Text Editor for OpenAPI/AsyncAPI
+- Webview-based visual editor
+- Apicurio Studio integration
+- Bidirectional content synchronization
+- Draft and conflict resolution
+
+### 📋 Upcoming Phases
+
+**Phase 4: Advanced Features**
+- File system integration (push/pull)
+- Code generation tools
+- Enhanced IntelliSense
+- Collaboration features
+- Testing and validation tools
+
+---
+
 ## Next Steps
 
-1. **Immediate**: Begin Phase 1 implementation with extension scaffold
-2. **Week 1**: Establish registry connectivity and basic tree view
-3. **Week 2**: Complete tree functionality and begin editor work
-4. **Month 1**: Deliver MVP with core browsing and editing capabilities
-5. **Month 2-3**: Iterate based on user feedback and add advanced features
+### Immediate Actions
+
+1. **Phase 3 Planning**: Create detailed PRD for editor integration
+2. **Research**: Study Apicurio Studio editor architecture for webview embedding
+3. **Prototype**: Build simple custom text editor proof-of-concept
+4. **Design**: Define content synchronization strategy
+
+### Week 1-2 (Phase 3 Start)
+1. Implement Custom Text Editor for OpenAPI/AsyncAPI
+2. Add syntax highlighting and basic validation
+3. Integrate with VSCode's JSON/YAML language support
+4. Create edit/save workflows
+
+### Week 3-4 (Phase 3 Continuation)
+1. Build webview-based visual editor
+2. Integrate Apicurio Studio via iframe
+3. Implement bidirectional sync
+4. Add draft system and conflict resolution
+
+---
+
+## Conclusion
+
+The VSCode plugin for Apicurio Registry has successfully completed Phases 1 and 2, establishing a solid foundation with registry connectivity, authentication, and a full-featured tree view browser. The implementation uses direct REST API calls via Axios for maximum flexibility and control.
+
+**Current Status:**
+- ✅ **Phase 1 & 2 Complete**: Core browsing functionality delivered
+- 🚧 **Phase 3 Next**: Editor integration to enable inline editing
+- 📋 **Phase 4 Planned**: Advanced developer tools and collaboration
+
+The phased approach has proven effective, delivering incremental value while managing complexity. The architecture is clean, testable, and ready for the next phase of editor integration.
 
 This plan provides a clear roadmap for delivering a comprehensive VSCode extension that brings Apicurio Registry capabilities directly into the developer's IDE workflow.

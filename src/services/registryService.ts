@@ -1,4 +1,9 @@
 import axios, { AxiosInstance } from 'axios';
+import {
+    CreateArtifactRequest,
+    CreateArtifactResponse,
+    GroupMetaData
+} from '../models/registryModels';
 
 export interface RegistryConnection {
     name: string;
@@ -192,6 +197,131 @@ export class RegistryService {
         } catch (error) {
             console.error('Error updating artifact content:', error);
             throw new Error(`Failed to update content for ${groupId}/${artifactId}@${version}: ${error}`);
+        }
+    }
+
+    async searchArtifacts(searchParams: Record<string, string>): Promise<SearchedArtifact[]> {
+        this.ensureConnected();
+
+        try {
+            // Build query parameters for search
+            const params: Record<string, any> = {
+                limit: 100,
+                offset: 0
+            };
+
+            // Add search parameters
+            Object.keys(searchParams).forEach(key => {
+                if (searchParams[key]) {
+                    params[key] = searchParams[key];
+                }
+            });
+
+            const response = await this.client!.get('/search/artifacts', {
+                params
+            });
+
+            return response.data.artifacts || [];
+        } catch (error) {
+            console.error('Error searching artifacts:', error);
+            throw new Error(`Failed to search artifacts: ${error}`);
+        }
+    }
+
+    async getGroups(): Promise<GroupMetaData[]> {
+        this.ensureConnected();
+
+        try {
+            const response = await this.client!.get('/groups', {
+                params: {
+                    limit: 1000,
+                    offset: 0
+                }
+            });
+
+            return response.data.groups || [];
+        } catch (error) {
+            console.error('Error fetching groups:', error);
+            throw new Error(`Failed to fetch groups: ${error}`);
+        }
+    }
+
+    async createArtifact(
+        groupId: string,
+        data: CreateArtifactRequest
+    ): Promise<CreateArtifactResponse> {
+        this.ensureConnected();
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+
+            // Extract query parameters from data
+            const queryParams: Record<string, any> = {};
+            if (data.ifExists) {
+                queryParams.ifExists = data.ifExists;
+            }
+            if (data.canonical !== undefined) {
+                queryParams.canonical = data.canonical;
+            }
+            if (data.dryRun !== undefined) {
+                queryParams.dryRun = data.dryRun;
+            }
+
+            // Build request body (without query params)
+            const requestBody: any = {};
+            if (data.artifactId) {
+                requestBody.artifactId = data.artifactId;
+            }
+            if (data.artifactType) {
+                requestBody.artifactType = data.artifactType;
+            }
+            if (data.name) {
+                requestBody.name = data.name;
+            }
+            if (data.description) {
+                requestBody.description = data.description;
+            }
+            if (data.labels) {
+                requestBody.labels = data.labels;
+            }
+            if (data.firstVersion) {
+                requestBody.firstVersion = data.firstVersion;
+            }
+
+            const response = await this.client!.post(
+                `/groups/${encodedGroupId}/artifacts`,
+                requestBody,
+                {
+                    params: queryParams
+                }
+            );
+
+            return response.data;
+        } catch (error: any) {
+            console.error('Error creating artifact:', error);
+
+            // Provide more specific error messages
+            if (error.response) {
+                const status = error.response.status;
+                const message = error.response.data?.message || error.response.data?.detail || error.message;
+
+                switch (status) {
+                    case 409:
+                        throw new Error(`Artifact already exists: ${message}`);
+                    case 400:
+                        throw new Error(`Invalid request: ${message}`);
+                    case 401:
+                        throw new Error('Authentication required');
+                    case 403:
+                        throw new Error('Permission denied');
+                    case 404:
+                        throw new Error(`Group not found: ${groupId}`);
+                    default:
+                        throw new Error(`Failed to create artifact: ${message}`);
+                }
+            }
+
+            throw new Error(`Failed to create artifact: ${error.message || error}`);
         }
     }
 

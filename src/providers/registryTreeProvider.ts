@@ -10,6 +10,9 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
     private connection: any = null;
     private isConnected: boolean = false;
 
+    // Search filter state
+    private searchFilter: { criterion: string; value: string } | null = null;
+
     constructor(private registryService: RegistryService) {}
 
     async connect(connection: any): Promise<void> {
@@ -28,6 +31,40 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
 
     refresh(): void {
         this._onDidChangeTreeData.fire();
+    }
+
+    /**
+     * Apply a search filter to the tree view.
+     * This will show only artifacts matching the search criteria.
+     */
+    applySearchFilter(criterion: string, value: string): void {
+        this.searchFilter = { criterion, value };
+        this.refresh();
+    }
+
+    /**
+     * Clear the current search filter and show all items.
+     */
+    clearSearchFilter(): void {
+        this.searchFilter = null;
+        this.refresh();
+    }
+
+    /**
+     * Check if a search filter is currently active.
+     */
+    hasActiveFilter(): boolean {
+        return this.searchFilter !== null;
+    }
+
+    /**
+     * Get the current search filter description for display.
+     */
+    getFilterDescription(): string | null {
+        if (!this.searchFilter) {
+            return null;
+        }
+        return `Filtered by ${this.searchFilter.criterion}: "${this.searchFilter.value}"`;
     }
 
     getTreeItem(element: RegistryItem): vscode.TreeItem {
@@ -152,8 +189,14 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
 
         try {
             if (!element) {
-                // Root level: return groups
-                return await this.getGroups();
+                // Root level: check if search filter is active
+                if (this.searchFilter) {
+                    // Show filtered results at root level
+                    return await this.getFilteredArtifacts();
+                } else {
+                    // Normal view: return groups
+                    return await this.getGroups();
+                }
             } else if (element.type === RegistryItemType.Group) {
                 // Group level: return artifacts
                 return await this.getArtifacts(element.id!);
@@ -221,6 +264,47 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
             },
             artifactId,
             groupId
+        ));
+    }
+
+    /**
+     * Get artifacts filtered by search criteria.
+     * Shows artifacts at root level with group prefix.
+     */
+    private async getFilteredArtifacts(): Promise<RegistryItem[]> {
+        if (!this.searchFilter) {
+            return [];
+        }
+
+        // Build search params
+        const searchParams: Record<string, string> = {};
+        searchParams[this.searchFilter.criterion] = this.searchFilter.value;
+
+        const artifacts = await this.registryService.searchArtifacts(searchParams);
+
+        if (artifacts.length === 0) {
+            return [
+                new RegistryItem(
+                    'No matching artifacts',
+                    RegistryItemType.Connection,
+                    undefined,
+                    { description: `No artifacts found matching ${this.searchFilter.criterion}: "${this.searchFilter.value}"` }
+                )
+            ];
+        }
+
+        // Map artifacts to tree items with group prefix
+        return artifacts.map(artifact => new RegistryItem(
+            `${artifact.groupId}/${artifact.artifactId}`,
+            RegistryItemType.Artifact,
+            artifact.artifactId,
+            {
+                artifactType: artifact.artifactType,
+                state: artifact.state,
+                description: artifact.description,
+                modifiedOn: artifact.modifiedOn
+            },
+            artifact.groupId
         ));
     }
 }

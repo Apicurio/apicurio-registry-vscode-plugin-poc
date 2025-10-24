@@ -1,0 +1,78 @@
+{
+  "type": "record",
+  "name": "User",
+  "namespace": "com.example.user",
+  "doc": "Sample Avro schema for user data",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string",
+      "doc": "Unique user identifier"
+    },
+    {
+      "name": "username",
+      "type": "string",
+      "doc": "Username"
+    },
+    {
+      "name": "email",
+      "type": "string",
+      "doc": "Email address"
+    },
+    {
+      "name": "firstName",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "First name"
+    },
+    {
+      "name": "lastName",
+      "type": ["null", "string"],
+      "default": null,
+      "doc": "Last name"
+    },
+    {
+      "name": "age",
+      "type": ["null", "int"],
+      "default": null,
+      "doc": "Age in years"
+    },
+    {
+      "name": "role",
+      "type": {
+        "type": "enum",
+        "name": "UserRole",
+        "symbols": ["ADMIN", "USER", "GUEST"]
+      },
+      "default": "USER",
+      "doc": "User role"
+    },
+    {
+      "name": "createdAt",
+      "type": "long",
+      "logicalType": "timestamp-millis",
+      "doc": "Account creation timestamp"
+    },
+    {
+      "name": "updatedAt",
+      "type": "long",
+      "logicalType": "timestamp-millis",
+      "doc": "Last update timestamp"
+    },
+    {
+      "name": "isActive",
+      "type": "boolean",
+      "default": true,
+      "doc": "Whether the user account is active"
+    },
+    {
+      "name": "metadata",
+      "type": {
+        "type": "map",
+        "values": "string"
+      },
+      "default": {},
+      "doc": "Additional user metadata"
+    }
+  ]
+}

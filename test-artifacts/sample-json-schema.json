@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/user.json",
+  "title": "User",
+  "description": "Sample JSON Schema for user data",
+  "type": "object",
+  "required": ["id", "username", "email"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique user identifier"
+    },
+    "username": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 50,
+      "pattern": "^[a-zA-Z0-9_-]+$",
+      "description": "Username"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "Email address"
+    },
+    "firstName": {
+      "type": "string",
+      "description": "First name"
+    },
+    "lastName": {
+      "type": "string",
+      "description": "Last name"
+    },
+    "age": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 150,
+      "description": "Age in years"
+    },
+    "role": {
+      "type": "string",
+      "enum": ["admin", "user", "guest"],
+      "default": "user",
+      "description": "User role"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the user account is active"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Account creation timestamp"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last update timestamp"
+    },
+    "address": {
+      "type": "object",
+      "properties": {
+        "street": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "zipCode": {
+          "type": "string",
+          "pattern": "^[0-9]{5}(-[0-9]{4})?$"
+        },
+        "country": {
+          "type": "string"
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "description": "User tags"
+    }
+  }
+}

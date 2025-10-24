@@ -1,14 +1,17 @@
 import * as vscode from 'vscode';
 import { RegistryTreeDataProvider } from './providers/registryTreeProvider';
 import { RegistryService } from './services/registryService';
+import { searchArtifactsCommand } from './commands/searchCommand';
+import { createArtifactCommand } from './commands/createArtifactCommand';
 
 let registryTreeProvider: RegistryTreeDataProvider;
+let registryService: RegistryService;
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('Apicurio Registry extension is now active!');
 
     // Initialize services
-    const registryService = new RegistryService();
+    registryService = new RegistryService();
 
     // Initialize tree data provider
     registryTreeProvider = new RegistryTreeDataProvider(registryService);
@@ -32,12 +35,22 @@ export function activate(context: vscode.ExtensionContext) {
         registryTreeProvider.disconnect();
     });
 
+    const searchCommand = vscode.commands.registerCommand('apicurioRegistry.search', async () => {
+        await searchArtifactsCommand(registryService, registryTreeProvider);
+    });
+
+    const createArtifact = vscode.commands.registerCommand('apicurioRegistry.createArtifact', async () => {
+        await createArtifactCommand(registryService, registryTreeProvider);
+    });
+
     // Add to context subscriptions
     context.subscriptions.push(
         treeView,
         refreshCommand,
         connectCommand,
-        disconnectCommand
+        disconnectCommand,
+        searchCommand,
+        createArtifact
     );
 
     // Set context to enable tree view

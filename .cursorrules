@@ -1,0 +1,1487 @@
+# Apicurio VSCode Plugin - Cursor Rules
+
+## Documentation Management - CRITICAL RULE
+
+**ALWAYS maintain documentation as single source of truth.**
+
+### When ANY of these activities occur:
+
+1. **Completing a task**
+2. **Starting a new task**
+3. **Making architectural decisions**
+4. **Analyzing requirements**
+5. **Creating implementation plans**
+6. **Discovering issues or blockers**
+7. **Changing priorities**
+8. **Weekly reviews**
+
+### MUST cooperate with user to update:
+
+#### 1. TODO.md (Daily Quick Reference)
+**Location:** `docs/TODO.md`
+
+**Update sections:**
+- "What to Work on TODAY" - Current task
+- "Overall Project Status" - Progress bars
+- "Current Sprint" table - Task status
+- "Recently Completed" - Move finished tasks
+- "Progress Breakdown" - Update percentages
+- "Recent Activity Log" - Add entry with date
+- "Quick Stats" - Update numbers
+
+**When to update:**
+- ✅ **EVERY** task completion - Move to "Recently Completed"
+- ✅ **EVERY** task start - Update "What to Work on TODAY"
+- ✅ **Daily** - Update current focus
+- ✅ **Weekly** - Review and update all percentages
+
+#### 2. MASTER_PLAN.md (Strategic Overview)
+**Location:** `docs/MASTER_PLAN.md`
+
+**Update sections:**
+- "Current Status Summary" - Overall progress
+- "Sprint Planning" - Current sprint details
+- "Milestone Tracking" - Progress percentages
+- "Success Metrics" - Completion stats
+- "Risk Management" - New risks or mitigations
+- "Next Actions" - Immediate steps
+- "Communication Plan" notes
+
+**When to update:**
+- ✅ **Sprint boundaries** - Start/end of sprint
+- ✅ **Milestone completion** - Update milestone status
+- ✅ **Strategic decisions** - Document rationale
+- ✅ **Weekly reviews** - Update progress and risks
+- ✅ **Phase transitions** - Major progress updates
+
+#### 3. Task Files (Detailed Specifications)
+**Location:** `docs/tasks/[status]/[priority]/XXX-name.md`
+
+**Actions:**
+- ✅ Move files between folders when status changes
+- ✅ Update task spec if requirements change
+- ✅ Add "Lessons Learned" when completing
+- ✅ Update "Issues Resolved" section
+- ✅ Keep implementation notes current
+
+**When to update:**
+- ✅ Task status changes (todo → in-progress → completed)
+- ✅ Discovering implementation details
+- ✅ Encountering blockers or issues
+- ✅ Learning lessons during implementation
+
+### Workflow for Documentation Updates
+
+#### At Start of Work Session:
+```
+1. Read TODO.md - "What to Work on TODAY"
+2. Ask user: "Should we update TODO.md to reflect current task?"
+3. If starting new task:
+   - Update TODO.md "Current Task" section
+   - Move task file to in-progress/ if needed
+   - Update progress bars
+```
+
+#### During Work:
+```
+1. Document decisions in task spec file
+2. Note any blockers or issues discovered
+3. Update implementation notes in real-time
+```
+
+#### At Task Completion:
+```
+1. STOP and ask user: "Task XXX complete. Let's update documentation together."
+2. Guide user through checklist:
+   □ Move task file: tasks/todo/ → tasks/completed/
+   □ Add "Lessons Learned" section to task file
+   □ Update TODO.md:
+     - Move to "Recently Completed" table
+     - Update progress percentages
+     - Update "What to Work on TODAY"
+     - Add entry to "Recent Activity Log"
+   □ Update MASTER_PLAN.md if milestone reached
+3. Confirm all updates before proceeding to next task
+```
+
+#### Weekly Review (Every Friday):
+```
+1. Remind user: "It's Friday - time for weekly documentation review"
+2. Review checklist:
+   □ TODO.md - Update all progress bars
+   □ TODO.md - Review Quick Stats
+   □ TODO.md - Update completion estimates
+   □ MASTER_PLAN.md - Update sprint section
+   □ MASTER_PLAN.md - Review milestones
+   □ MASTER_PLAN.md - Update risks
+   □ Plan next week's focus
+3. Generate weekly summary for user
+```
+
+#### Sprint Boundaries:
+```
+1. Sprint End:
+   □ Complete sprint retrospective
+   □ Update velocity in TODO.md
+   □ Move all sprint tasks to appropriate status
+   □ Update MASTER_PLAN.md sprint section
+   □ Document lessons learned
+
+2. Sprint Start:
+   □ Update TODO.md "Current Sprint" section
+   □ Set new sprint goals
+   □ Update MASTER_PLAN.md with sprint plan
+   □ Clear completed items from "Recently Completed"
+```
+
+### Proactive Documentation Prompts
+
+**Assistant MUST proactively ask:**
+
+- ✅ "I see we completed task XXX. Shall we update TODO.md now?"
+- ✅ "This decision affects the architecture. Should I document it in MASTER_PLAN.md?"
+- ✅ "We've discovered a blocker. Let me update the task spec and TODO.md."
+- ✅ "It's been a week since last review. Time to update progress percentages?"
+- ✅ "This sprint ends soon. Shall we prepare the sprint retrospective?"
+
+### Files to Keep in Sync
+
+**Primary Documentation (Always Current):**
+- `docs/TODO.md` - Daily quick reference
+- `docs/MASTER_PLAN.md` - Strategic overview
+- `docs/tasks/**/*.md` - Task specifications
+
+**Supporting Documentation (Update as Needed):**
+- `docs/UX_COMPARISON.md` - Reference (update if new insights)
+- `docs/VSCODE_PLUGIN_PLAN.md` - Original vision (update on major changes)
+- `docs/SEARCH_IMPLEMENTATION.md` - Implementation guides (static unless refactored)
+- `docs/CREATE_ARTIFACT_DEEP_ANALYSIS.md` - Specs (static unless changed)
+
+### Quality Checks
+
+**Before considering any task "complete":**
+- [ ] Task file moved to completed/
+- [ ] TODO.md updated with completion
+- [ ] Progress percentages recalculated
+- [ ] Activity log entry added
+- [ ] MASTER_PLAN.md updated if milestone reached
+- [ ] Lessons learned documented
+- [ ] User confirms all updates
+
+### Documentation Review Cadence
+
+**Daily:**
+- Update TODO.md current task
+- Update activity log
+- Update task files with progress
+
+**Weekly (Friday):**
+- Review all progress percentages
+- Update MASTER_PLAN.md metrics
+- Review and update risks
+- Plan next week
+
+**Sprint Boundaries:**
+- Sprint retrospective
+- Update velocity
+- Review milestones
+- Update strategic plan
+
+**Phase Transitions:**
+- Major MASTER_PLAN.md update
+- Document phase completion
+- Update overall timeline
+- Risk reassessment
+
+### Assistant Behavior Rules
+
+1. **NEVER skip documentation updates** - Always ask if not done
+2. **PROACTIVE reminders** - Don't wait for user to remember
+3. **VERIFY updates** - Confirm changes with user before moving on
+4. **CONSISTENCY** - Keep all docs in sync
+5. **COMPLETENESS** - All required sections updated
+6. **ACCURACY** - Percentages and stats are correct
+7. **TIMELINESS** - Update immediately, not later
+
+### Documentation Update Templates
+
+#### Task Completion Update:
+```markdown
+## Updating Documentation for Task XXX Completion
+
+**TODO.md Changes:**
+1. Move "XXX - Task Name" from Current Sprint → Recently Completed
+2. Update "What to Work on TODAY" to next task
+3. Update progress bars:
+   - Overall: XX% → YY%
+   - High Priority: XX% → YY%
+4. Add to Recent Activity Log:
+   ### YYYY-MM-DD
+   - ✅ Completed Task XXX: Task Name (Xh)
+   - 📝 Notes: [key learnings]
+
+**Task File Changes:**
+1. Move: tasks/todo/[priority]/XXX.md → tasks/completed/XXX.md
+2. Add sections:
+   - Lessons Learned
+   - Issues Resolved
+   - Future Enhancements
+
+**MASTER_PLAN.md Changes (if milestone reached):**
+1. Update Milestone Tracking table
+2. Update Sprint Planning section
+3. Update Success Metrics
+
+Shall I proceed with these updates?
+```
+
+#### Weekly Review Template:
+```markdown
+## Weekly Documentation Review - [Date]
+
+**Progress This Week:**
+- Completed: [list tasks]
+- In Progress: [current task]
+- Velocity: Xh (target: 8h/sprint)
+
+**TODO.md Updates Needed:**
+- [ ] Progress bars (current: XX%, new: YY%)
+- [ ] Quick Stats
+- [ ] Recent Activity Log
+
+**MASTER_PLAN.md Updates Needed:**
+- [ ] Sprint section
+- [ ] Milestone percentages
+- [ ] Risk updates
+
+**Questions:**
+1. Are we on track for milestone targets?
+2. Any blockers to document?
+3. Should we adjust next week's plan?
+
+Ready to update together?
+```
+
+---
+
+## Git Workflow Rules - CRITICAL
+
+### Branch Strategy - MANDATORY
+
+**ALWAYS use feature branches. NEVER commit directly to main.**
+
+#### Branch Naming Convention
+
+```
+task/XXX-short-description
+```
+
+**Examples:**
+- `task/003-context-menus`
+- `task/004-add-version`
+- `task/007-delete-operations`
+
+**For non-task work:**
+- `fix/bug-description` - Bug fixes
+- `docs/documentation-update` - Documentation only
+- `refactor/component-name` - Code refactoring
+- `test/feature-name` - Test additions
+
+#### Workflow for Every Task
+
+**1. Before Starting Any Task:**
+
+```bash
+# STOP - Check current branch
+git branch
+
+# If not on main, finish current work first
+# If on main, create feature branch:
+git checkout -b task/XXX-short-name
+
+# Verify you're on the new branch
+git branch
+```
+
+**Claude MUST ask before starting work:**
+> "Starting Task XXX. First, let's create a feature branch:
+> - Branch name: `task/XXX-short-description`
+> - Shall I provide the git commands?"
+
+**2. During Work:**
+
+```bash
+# Commit frequently with clear messages
+git add [files]
+git commit -m "feat(XXX): implement [feature]"
+
+# Push to remote regularly
+git push -u origin task/XXX-short-name
+```
+
+**Commit early, commit often:**
+- After each logical change
+- Before switching tasks
+- End of each work session
+- After fixing a bug
+
+**3. Before Task Completion:**
+
+```bash
+# MANDATORY: Run all tests
+npm run test           # Unit tests
+npm run lint          # Linting
+npm run compile       # TypeScript compilation
+
+# All must pass before proceeding
+```
+
+**Claude MUST enforce:**
+> "Before we can complete this task and merge to main, we need to verify:
+> 1. All tests passing
+> 2. No linting errors
+> 3. TypeScript compiles successfully
+>
+> Shall I help you run these checks?"
+
+**4. Task Completion - Merge Process:**
+
+**Pre-merge Checklist:**
+- [ ] All tests passing (`npm run test`)
+- [ ] No linting errors (`npm run lint`)
+- [ ] TypeScript compiles (`npm run compile`)
+- [ ] No console errors or warnings
+- [ ] Manual testing completed
+- [ ] Documentation updated (TODO.md, task file)
+- [ ] All changes committed
+- [ ] Branch pushed to remote
+
+**Merge Steps:**
+
+```bash
+# 1. Ensure all changes committed
+git status
+
+# 2. Update main branch
+git checkout main
+git pull origin main
+
+# 3. Merge feature branch
+git merge task/XXX-short-name
+
+# 4. Verify tests still pass after merge
+npm run test
+npm run compile
+
+# 5. Push to main
+git push origin main
+
+# 6. Delete feature branch (optional)
+git branch -d task/XXX-short-name
+git push origin --delete task/XXX-short-name
+```
+
+**Claude MUST guide through merge:**
+> "Task XXX complete and all tests passing! Let's merge to main:
+>
+> **Pre-merge verification:**
+> - ✅ Tests passing
+> - ✅ Linting clean
+> - ✅ Compiles successfully
+> - ✅ Documentation updated
+>
+> **Merge steps:**
+> 1. Switch to main and update: `git checkout main && git pull`
+> 2. Merge feature branch: `git merge task/XXX-short-name`
+> 3. Verify tests: `npm run test && npm run compile`
+> 4. Push to main: `git push origin main`
+> 5. Delete branch: `git branch -d task/XXX-short-name`
+>
+> Ready to proceed?"
+
+#### Test Failure Handling
+
+**If tests fail during task:**
+
+```bash
+# DO NOT merge to main
+# Stay on feature branch
+# Fix the issues
+
+# After fixing:
+git add [fixed files]
+git commit -m "fix(XXX): resolve test failures"
+npm run test  # Verify fixes
+
+# Only merge when all tests pass
+```
+
+**Claude MUST block merge if tests fail:**
+> "⚠️ TESTS FAILING - Cannot merge to main
+>
+> Failures:
+> - [Test name]: [Error]
+>
+> We need to:
+> 1. Fix the failing tests
+> 2. Commit the fixes
+> 3. Verify all tests pass
+> 4. Then merge to main
+>
+> Let's fix these issues first."
+
+#### Multiple Tasks in Progress
+
+**If switching between tasks:**
+
+```bash
+# Save current work
+git add .
+git commit -m "wip: partial implementation"
+git push
+
+# Switch to other task
+git checkout task/YYY-other-task
+
+# Or create new task branch
+git checkout main
+git checkout -b task/ZZZ-new-task
+```
+
+**Claude should warn:**
+> "⚠️ You have uncommitted changes on task/XXX.
+>
+> Options:
+> 1. Commit current work: `git add . && git commit -m "wip: [description]"`
+> 2. Stash changes: `git stash`
+> 3. Finish current task first
+>
+> What would you like to do?"
+
+#### Branch Status Tracking
+
+**Claude should track:**
+- Current branch name
+- Uncommitted changes
+- Unpushed commits
+- Test status
+
+**At start of each session:**
+> "Current branch: `task/003-context-menus`
+> Status:
+> - Uncommitted changes: 3 files
+> - Tests: Not run recently
+>
+> Shall we commit changes and run tests?"
+
+#### Git Best Practices
+
+**DO:**
+- ✅ Create branch before starting work
+- ✅ Commit frequently with clear messages
+- ✅ Push to remote regularly
+- ✅ Run tests before merging
+- ✅ Keep branches short-lived (1-2 days max)
+- ✅ Merge to main only when complete
+- ✅ Delete branches after merging
+
+**DON'T:**
+- ❌ Commit directly to main
+- ❌ Merge without running tests
+- ❌ Push broken code to main
+- ❌ Leave branches unmerged for weeks
+- ❌ Mix multiple tasks in one branch
+- ❌ Commit commented-out code
+- ❌ Skip linting checks
+
+#### Emergency Fixes
+
+**For critical bugs on main:**
+
+```bash
+# Create hotfix branch from main
+git checkout main
+git checkout -b fix/critical-bug-name
+
+# Fix, test, merge quickly
+# ... fixes ...
+npm run test && npm run compile
+
+# Merge back to main
+git checkout main
+git merge fix/critical-bug-name
+git push origin main
+```
+
+#### Git Hooks (Recommended)
+
+**Pre-commit hook** (optional):
+```bash
+#!/bin/bash
+# .git/hooks/pre-commit
+
+# Run linting
+npm run lint
+if [ $? -ne 0 ]; then
+    echo "❌ Linting failed. Fix errors before committing."
+    exit 1
+fi
+
+# Run quick checks
+npm run compile
+if [ $? -ne 0 ]; then
+    echo "❌ TypeScript compilation failed."
+    exit 1
+fi
+```
+
+**Pre-push hook** (recommended):
+```bash
+#!/bin/bash
+# .git/hooks/pre-push
+
+# Get the branch name
+branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+
+# Prevent pushing to main
+if [ "$branch" = "main" ]; then
+    echo "❌ Cannot push directly to main branch!"
+    echo "Use feature branches and merge after tests pass."
+    exit 1
+fi
+
+# Run tests before pushing
+npm run test
+if [ $? -ne 0 ]; then
+    echo "❌ Tests failed. Fix before pushing."
+    exit 1
+fi
+```
+
+#### Branch Naming Rules
+
+**Valid:**
+- `task/003-context-menus` ✅
+- `task/004-add-version` ✅
+- `fix/search-crash` ✅
+- `docs/update-readme` ✅
+- `refactor/icon-service` ✅
+
+**Invalid:**
+- `context-menus` ❌ (no prefix)
+- `task-003` ❌ (wrong format)
+- `my-changes` ❌ (not descriptive)
+- `test` ❌ (too generic)
+
+#### Merge Conflicts
+
+**If merge conflict occurs:**
+
+```bash
+# View conflicts
+git status
+
+# Resolve manually in editor
+# Look for <<<<<<< HEAD markers
+
+# After resolving:
+git add [resolved files]
+git commit -m "fix: resolve merge conflict"
+
+# Verify tests still pass
+npm run test
+```
+
+**Claude should help:**
+> "⚠️ Merge conflict detected in [files]
+>
+> Steps to resolve:
+> 1. Open conflicted files
+> 2. Look for <<<<<<< HEAD markers
+> 3. Choose correct version or merge both
+> 4. Remove conflict markers
+> 5. Test the changes
+> 6. Commit: `git add . && git commit`
+>
+> Need help resolving conflicts?"
+
+#### Integration with Documentation Updates
+
+**Workflow Integration:**
+
+```bash
+# 1. Start task - Create branch
+git checkout -b task/XXX-name
+
+# 2. Implement feature
+# ... coding ...
+
+# 3. Update documentation
+# - Update TODO.md
+# - Update task file
+# - Update MASTER_PLAN.md if needed
+
+# 4. Commit everything together
+git add .
+git commit -m "feat: complete task XXX - name
+
+- Implement feature
+- Add tests
+- Update documentation (TODO.md, task file)
+
+Closes #XXX"
+
+# 5. Run tests
+npm run test && npm run lint && npm run compile
+
+# 6. Merge to main (only if tests pass)
+git checkout main
+git merge task/XXX-name
+git push origin main
+```
+
+#### Branch Protection (Recommended)
+
+**On GitHub/GitLab:**
+- Protect main branch
+- Require pull request reviews (if team)
+- Require status checks (tests) to pass
+- Prevent force pushes to main
+
+#### Quick Reference
+
+**Start new task:**
+```bash
+git checkout main
+git pull
+git checkout -b task/XXX-name
+```
+
+**During work:**
+```bash
+git add .
+git commit -m "feat(XXX): description"
+git push
+```
+
+**Complete task:**
+```bash
+# Run tests
+npm run test && npm run lint && npm run compile
+
+# Merge if all pass
+git checkout main
+git pull
+git merge task/XXX-name
+git push origin main
+git branch -d task/XXX-name
+```
+
+**Claude Task Start Prompt Template:**
+> "Starting Task XXX - [Name]
+>
+> **Pre-flight checklist:**
+> - [ ] Current branch: main
+> - [ ] No uncommitted changes
+> - [ ] Up to date with remote
+>
+> **Git setup:**
+> ```bash
+> git checkout main
+> git pull origin main
+> git checkout -b task/XXX-short-name
+> ```
+>
+> **Ready to create branch?**"
+
+**Claude Task Complete Prompt Template:**
+> "Task XXX complete!
+>
+> **Pre-merge checklist:**
+> - [ ] All tests passing (`npm run test`)
+> - [ ] No lint errors (`npm run lint`)
+> - [ ] TypeScript compiles (`npm run compile`)
+> - [ ] Documentation updated
+> - [ ] All changes committed
+>
+> **Test results:**
+> - Unit tests: ✅ X/X passing
+> - Linting: ✅ No errors
+> - Compilation: ✅ Success
+>
+> **Merge to main:**
+> ```bash
+> git checkout main
+> git pull origin main
+> git merge task/XXX-name
+> git push origin main
+> git branch -d task/XXX-name
+> ```
+>
+> **Ready to merge?**"
+
+---
+
+## Test-Driven Development (TDD) Rules - MANDATORY
+
+### TDD Workflow - ALWAYS Follow Red-Green-Refactor
+
+**CRITICAL: Write tests BEFORE implementation code.**
+
+#### The TDD Cycle
+
+```
+1. RED    → Write a failing test
+2. GREEN  → Write minimal code to pass
+3. REFACTOR → Improve code while keeping tests green
+```
+
+**Repeat for each feature/function.**
+
+### When to Apply TDD
+
+**ALWAYS for:**
+- ✅ New features (all tasks)
+- ✅ Business logic
+- ✅ API service methods
+- ✅ Data transformations
+- ✅ Utility functions
+- ✅ Command implementations
+
+**Optional (use judgment):**
+- UI components (can use manual testing)
+- One-liner functions
+- Simple getters/setters
+- Type definitions
+
+### TDD Workflow for Tasks
+
+#### Phase 1: RED - Write Failing Test
+
+**Before writing ANY implementation code:**
+
+```typescript
+// Example: test/commands/copyCommands.test.ts
+describe('copyGroupIdCommand', () => {
+    it('should copy group ID to clipboard', async () => {
+        // Arrange
+        const mockNode = {
+            type: RegistryItemType.Group,
+            groupId: 'test-group'
+        };
+
+        // Act
+        await copyGroupIdCommand(mockNode);
+
+        // Assert
+        expect(mockClipboard.writeText).toHaveBeenCalledWith('test-group');
+    });
+});
+```
+
+**Run test - it MUST fail:**
+```bash
+npm run test
+# Expected: FAIL (function doesn't exist yet)
+```
+
+**Claude MUST enforce:**
+> "Starting Task XXX. Following TDD approach:
+>
+> **Step 1: Write failing test**
+> - Test file: `test/commands/XXX.test.ts`
+> - Test cases: [list scenarios]
+> - Run: `npm run test` → Should FAIL ❌
+>
+> Let's write the test first. What scenarios should we cover?"
+
+#### Phase 2: GREEN - Minimal Implementation
+
+**Write just enough code to pass:**
+
+```typescript
+// src/commands/copyCommands.ts
+export async function copyGroupIdCommand(node: RegistryItem): Promise<void> {
+    await vscode.env.clipboard.writeText(node.groupId!);
+}
+```
+
+**Run test - it MUST pass:**
+```bash
+npm run test
+# Expected: PASS ✅
+```
+
+**Claude verifies:**
+> "Implementation complete. Let's verify:
+>
+> ```bash
+> npm run test
+> ```
+>
+> Result: ✅ All tests passing
+>
+> Ready for refactor phase?"
+
+#### Phase 3: REFACTOR - Improve Code
+
+**Improve code quality while keeping tests green:**
+
+```typescript
+// Refactored version
+export async function copyGroupIdCommand(node: RegistryItem): Promise<void> {
+    if (!node.groupId) {
+        vscode.window.showErrorMessage('No group ID available');
+        return;
+    }
+
+    await vscode.env.clipboard.writeText(node.groupId);
+    vscode.window.showInformationMessage(`Copied: ${node.groupId}`);
+}
+```
+
+**Add test for new behavior:**
+```typescript
+it('should show error when group ID is missing', async () => {
+    const mockNode = { type: RegistryItemType.Group };
+    await copyGroupIdCommand(mockNode);
+    expect(mockShowErrorMessage).toHaveBeenCalled();
+});
+```
+
+**Re-run tests:**
+```bash
+npm run test
+# Expected: PASS ✅ (all tests including new one)
+```
+
+### Test File Structure
+
+**Location:** `src/test/suite/` or `test/`
+
+**Naming:** `[feature].test.ts`
+
+**Structure:**
+```typescript
+import * as assert from 'assert';
+import * as vscode from 'vscode';
+import { describe, it, beforeEach, afterEach } from 'mocha';
+import * as sinon from 'sinon';
+
+describe('Feature Name', () => {
+    let sandbox: sinon.SinonSandbox;
+
+    beforeEach(() => {
+        sandbox = sinon.createSandbox();
+    });
+
+    afterEach(() => {
+        sandbox.restore();
+    });
+
+    describe('functionName', () => {
+        it('should do something when condition', async () => {
+            // Arrange
+            const input = 'test';
+            const expected = 'result';
+
+            // Act
+            const result = await functionName(input);
+
+            // Assert
+            assert.strictEqual(result, expected);
+        });
+
+        it('should handle error case', async () => {
+            // Arrange
+            const invalidInput = null;
+
+            // Act & Assert
+            await assert.rejects(
+                () => functionName(invalidInput),
+                /Expected error message/
+            );
+        });
+    });
+});
+```
+
+### Test Coverage Requirements
+
+**Minimum coverage per task:**
+- Happy path: ✅ REQUIRED
+- Error cases: ✅ REQUIRED
+- Edge cases: ✅ REQUIRED
+- Validation: ✅ REQUIRED
+
+**Coverage targets:**
+- New code: 80%+ coverage
+- Critical paths: 100% coverage
+- Utility functions: 100% coverage
+
+### Test Types to Write
+
+#### 1. Unit Tests (Primary)
+
+**Test individual functions in isolation:**
+```typescript
+describe('parseVersion', () => {
+    it('should parse valid semantic version', () => {
+        expect(parseVersion('1.2.3')).toEqual({ major: 1, minor: 2, patch: 3 });
+    });
+
+    it('should throw on invalid version', () => {
+        expect(() => parseVersion('invalid')).toThrow();
+    });
+});
+```
+
+#### 2. Integration Tests
+
+**Test component interactions:**
+```typescript
+describe('RegistryService integration', () => {
+    it('should fetch and parse artifacts', async () => {
+        const service = new RegistryService();
+        await service.connect(mockConfig);
+        const artifacts = await service.getArtifacts('group1');
+        expect(artifacts).toHaveLength(2);
+    });
+});
+```
+
+#### 3. Command Tests
+
+**Test VSCode command execution:**
+```typescript
+describe('createArtifactCommand', () => {
+    it('should create artifact and refresh tree', async () => {
+        const mockService = sinon.createStubInstance(RegistryService);
+        const mockTreeProvider = sinon.createStubInstance(RegistryTreeDataProvider);
+
+        await createArtifactCommand(mockService, mockTreeProvider);
+
+        expect(mockService.createArtifact).toHaveBeenCalled();
+        expect(mockTreeProvider.refresh).toHaveBeenCalled();
+    });
+});
+```
+
+### Mocking Strategy
+
+**Mock external dependencies:**
+
+```typescript
+// Mock VSCode API
+const mockShowInputBox = sandbox.stub(vscode.window, 'showInputBox');
+mockShowInputBox.resolves('user-input');
+
+// Mock service calls
+const mockService = {
+    createArtifact: sandbox.stub().resolves({ id: 'new-artifact' }),
+    getGroups: sandbox.stub().resolves([{ groupId: 'group1' }])
+};
+
+// Mock clipboard
+const mockClipboard = {
+    writeText: sandbox.stub().resolves()
+};
+sandbox.stub(vscode.env, 'clipboard').value(mockClipboard);
+```
+
+### TDD for Each Task Type
+
+#### For Commands (Task 003, 004, 007)
+
+**Test first:**
+```typescript
+// 1. Write test for command
+describe('contextMenuCommand', () => {
+    it('should execute action on tree node', async () => {
+        // Test command behavior
+    });
+});
+
+// 2. Run test (FAIL ❌)
+// 3. Implement command
+// 4. Run test (PASS ✅)
+// 5. Refactor
+```
+
+#### For Services (API calls)
+
+**Test first:**
+```typescript
+// 1. Write test for service method
+describe('RegistryService.createVersion', () => {
+    it('should POST to correct endpoint', async () => {
+        // Mock axios, test API call
+    });
+});
+
+// 2. Run test (FAIL ❌)
+// 3. Implement service method
+// 4. Run test (PASS ✅)
+// 5. Refactor
+```
+
+#### For UI Components
+
+**Test critical logic:**
+```typescript
+// 1. Write test for tree provider logic
+describe('RegistryTreeDataProvider.buildTree', () => {
+    it('should build hierarchy from groups', () => {
+        // Test tree structure
+    });
+});
+
+// 2. Manual testing for UI interactions
+```
+
+### Running Tests
+
+**Commands:**
+```bash
+# Run all tests
+npm run test
+
+# Run specific test file
+npm run test -- --grep "copyCommands"
+
+# Run tests in watch mode (during development)
+npm run test:watch
+
+# Run with coverage
+npm run test:coverage
+```
+
+**Claude should run tests:**
+- After writing each test (verify it fails)
+- After implementing feature (verify it passes)
+- After refactoring (verify still passes)
+- Before committing
+- Before merging
+
+### Test Organization
+
+**Group related tests:**
+```typescript
+describe('Copy Commands', () => {
+    describe('copyGroupIdCommand', () => {
+        it('should copy group ID');
+        it('should handle missing ID');
+    });
+
+    describe('copyArtifactIdCommand', () => {
+        it('should copy artifact ID');
+        it('should handle missing ID');
+    });
+
+    describe('copyFullReferenceCommand', () => {
+        it('should copy group:artifact format');
+    });
+});
+```
+
+### Test Documentation
+
+**Write descriptive test names:**
+
+**Good:**
+```typescript
+it('should show error message when artifact ID is missing')
+it('should create version with auto-incremented number when version not specified')
+it('should refresh tree view after successful artifact creation')
+```
+
+**Bad:**
+```typescript
+it('works')
+it('test 1')
+it('should work correctly')
+```
+
+### TDD Task Workflow Integration
+
+**Complete TDD + Git + Docs workflow:**
+
+```bash
+# 1. Create feature branch
+git checkout -b task/XXX-name
+
+# 2. RED: Write failing test
+# - Create test file
+# - Write test cases
+npm run test  # Should FAIL ❌
+
+# 3. Commit test
+git add test/
+git commit -m "test(XXX): add failing tests for feature"
+
+# 4. GREEN: Implement minimal code
+# - Write implementation
+npm run test  # Should PASS ✅
+
+# 5. Commit implementation
+git add src/
+git commit -m "feat(XXX): implement feature (tests passing)"
+
+# 6. REFACTOR: Improve code
+# - Refactor implementation
+# - Add more test cases
+npm run test  # Should still PASS ✅
+
+# 7. Commit refactoring
+git add .
+git commit -m "refactor(XXX): improve code quality"
+
+# 8. Update documentation
+# - Update TODO.md, task file
+
+# 9. Final commit
+git add docs/
+git commit -m "docs(XXX): update documentation"
+
+# 10. Merge to main (all tests passing)
+git checkout main
+git merge task/XXX-name
+git push origin main
+```
+
+### Claude's TDD Responsibilities
+
+**At task start:**
+> "Starting Task XXX following TDD approach:
+>
+> **Step 1: Write Tests First**
+> - Create test file: `test/commands/XXX.test.ts`
+> - Identify test scenarios:
+>   1. Happy path: [scenario]
+>   2. Error case: [scenario]
+>   3. Edge case: [scenario]
+>
+> Let's write failing tests first. What should we test?"
+
+**After writing tests:**
+> "Tests written. Let's verify they fail:
+>
+> ```bash
+> npm run test
+> ```
+>
+> Expected: ❌ FAIL (feature not implemented)
+> Actual: [show results]
+>
+> Great! Red phase complete. Ready to implement?"
+
+**After implementation:**
+> "Implementation complete. Let's verify tests pass:
+>
+> ```bash
+> npm run test
+> ```
+>
+> Expected: ✅ PASS
+> Actual: [show results]
+>
+> Green phase complete! Any refactoring needed?"
+
+**Before merge:**
+> "TDD cycle complete. Final verification:
+>
+> **Test Results:**
+> - All tests: ✅ Passing
+> - Coverage: X%
+> - No skipped tests
+>
+> **TDD checklist:**
+> - [x] RED: Tests written first
+> - [x] GREEN: Tests passing
+> - [x] REFACTOR: Code improved
+>
+> Ready to merge?"
+
+### TDD Best Practices
+
+**DO:**
+- ✅ Write test first, implementation second
+- ✅ Write simplest code to pass test
+- ✅ Refactor after tests pass
+- ✅ One test case per behavior
+- ✅ Keep tests independent
+- ✅ Use descriptive test names
+- ✅ Test edge cases and errors
+- ✅ Mock external dependencies
+
+**DON'T:**
+- ❌ Skip test writing
+- ❌ Write all code then test
+- ❌ Leave tests failing
+- ❌ Skip refactor phase
+- ❌ Test implementation details
+- ❌ Write dependent tests
+- ❌ Ignore test failures
+
+### Test-First Examples
+
+**Example 1: Copy Command**
+
+```typescript
+// 1. RED - Write failing test
+describe('copyGroupIdCommand', () => {
+    it('should copy group ID to clipboard', async () => {
+        const node = { groupId: 'test-group' };
+        await copyGroupIdCommand(node);
+        expect(vscode.env.clipboard.writeText).toHaveBeenCalledWith('test-group');
+    });
+});
+// Run: npm run test → FAIL ❌
+
+// 2. GREEN - Minimal implementation
+export async function copyGroupIdCommand(node: RegistryItem) {
+    await vscode.env.clipboard.writeText(node.groupId!);
+}
+// Run: npm run test → PASS ✅
+
+// 3. REFACTOR - Add error handling + test
+it('should handle missing group ID', async () => {
+    const node = {};
+    await copyGroupIdCommand(node);
+    expect(vscode.window.showErrorMessage).toHaveBeenCalled();
+});
+
+export async function copyGroupIdCommand(node: RegistryItem) {
+    if (!node.groupId) {
+        vscode.window.showErrorMessage('No group ID available');
+        return;
+    }
+    await vscode.env.clipboard.writeText(node.groupId);
+    vscode.window.showInformationMessage(`Copied: ${node.groupId}`);
+}
+// Run: npm run test → PASS ✅
+```
+
+**Example 2: Service Method**
+
+```typescript
+// 1. RED - Write failing test
+describe('RegistryService.deleteArtifact', () => {
+    it('should DELETE to correct endpoint', async () => {
+        const mockAxios = sinon.stub().resolves();
+        const service = new RegistryService();
+
+        await service.deleteArtifact('group1', 'artifact1');
+
+        expect(mockAxios.delete).toHaveBeenCalledWith(
+            '/groups/group1/artifacts/artifact1'
+        );
+    });
+});
+// Run: npm run test → FAIL ❌
+
+// 2. GREEN - Minimal implementation
+async deleteArtifact(groupId: string, artifactId: string) {
+    await this.client.delete(`/groups/${groupId}/artifacts/${artifactId}`);
+}
+// Run: npm run test → PASS ✅
+
+// 3. REFACTOR - Add encoding + error handling + tests
+it('should encode URL parameters', async () => {
+    await service.deleteArtifact('group/with/slash', 'artifact#1');
+    expect(mockAxios.delete).toHaveBeenCalledWith(
+        '/groups/group%2Fwith%2Fslash/artifacts/artifact%231'
+    );
+});
+
+async deleteArtifact(groupId: string, artifactId: string) {
+    this.ensureConnected();
+    const encodedGroup = encodeURIComponent(groupId);
+    const encodedArtifact = encodeURIComponent(artifactId);
+    await this.client.delete(`/groups/${encodedGroup}/artifacts/${encodedArtifact}`);
+}
+// Run: npm run test → PASS ✅
+```
+
+### Handling Test Failures
+
+**If test fails unexpectedly:**
+
+```bash
+# 1. Read error message carefully
+npm run test
+
+# 2. Debug test
+console.log(actualValue);
+console.log(expectedValue);
+
+# 3. Fix implementation or test
+# 4. Re-run
+npm run test
+
+# 5. Don't move forward until green
+```
+
+**Claude will help debug:**
+> "Test failing: [test name]
+>
+> **Error:**
+> ```
+> Expected: 'group1'
+> Actual: undefined
+> ```
+>
+> **Possible issues:**
+> 1. Property not set correctly
+> 2. Mock not configured
+> 3. Async/await issue
+>
+> Let's debug together."
+
+### TDD Metrics to Track
+
+**In task completion summary:**
+- Number of tests written
+- Test coverage percentage
+- Tests passing/failing
+- Time spent in each phase (red/green/refactor)
+
+**Example:**
+```markdown
+## Task 003 Completion Summary
+
+**TDD Metrics:**
+- Tests written: 12
+- Coverage: 85%
+- All tests: ✅ Passing
+- Red-Green-Refactor cycles: 4
+
+**Time breakdown:**
+- RED (write tests): 1h
+- GREEN (implement): 2h
+- REFACTOR (improve): 1h
+```
+
+### Integration with Task Files
+
+**Add to task completion:**
+
+```markdown
+## Testing Approach (TDD)
+
+**Tests Written:**
+1. `copyGroupIdCommand` - Happy path + error handling
+2. `copyArtifactIdCommand` - URL encoding + validation
+3. `copyFullReferenceCommand` - Format verification
+
+**Coverage:** 85%
+
+**TDD Cycle:**
+- RED: 30min (wrote 12 failing tests)
+- GREEN: 1.5h (implemented features)
+- REFACTOR: 1h (improved error handling, added user feedback)
+
+**Lessons Learned:**
+- Writing tests first clarified requirements
+- Edge cases discovered during RED phase
+- Refactoring was safe with test coverage
+```
+
+---
+
+## Code Implementation Rules
+
+### General Principles
+- Follow existing code patterns in the project
+- Maintain TypeScript strict mode compliance
+- Write clear, self-documenting code
+- Add comments for complex logic only
+- Prefer composition over inheritance
+
+### File Organization
+- One component per file
+- Group related functionality
+- Keep files under 500 lines
+- Use index.ts for public exports
+
+### TypeScript Standards
+- Always define interfaces for data structures
+- Use type inference where obvious
+- Avoid 'any' type
+- Prefer readonly where applicable
+- Use enums for fixed sets of values
+
+### Testing Requirements
+- Unit tests for business logic
+- Integration tests for API calls
+- Manual testing checklist for UI
+- Document test coverage in task files
+
+### Error Handling
+- Use try-catch for async operations
+- Provide user-friendly error messages
+- Log errors for debugging
+- Handle edge cases explicitly
+
+### VSCode Extension Best Practices
+- Use proper disposal for resources
+- Implement cancellation tokens for long operations
+- Follow VSCode UX patterns
+- Test with VSCode keyboard shortcuts
+- Ensure accessibility
+
+---
+
+## Commit Message Format
+
+```
+<type>: <description>
+
+[optional body]
+
+[optional footer]
+```
+
+**Types:**
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation only
+- `refactor`: Code refactoring
+- `test`: Adding tests
+- `chore`: Maintenance tasks
+
+**Examples:**
+```
+feat: complete task 003 - context menus
+
+- Add context menus for all tree node types
+- Implement copy, open, state, download commands
+- Update documentation (TODO.md, task file)
+
+Closes #003
+```
+
+---
+
+## Review Checklist for Every Session
+
+**Before ending work session:**
+- [ ] All code changes committed
+- [ ] Documentation updated (TODO.md at minimum)
+- [ ] Task status current (in-progress or completed)
+- [ ] Activity log entry added
+- [ ] Next task identified in TODO.md
+- [ ] User knows what's next
+
+**Quality checks:**
+- [ ] No TypeScript errors
+- [ ] No console warnings
+- [ ] Manual testing done
+- [ ] Documentation matches reality
+- [ ] Progress percentages accurate
+
+---
+
+**Remember: Documentation is not optional. It's part of completing the task.**
+
+If documentation is not updated, the task is NOT complete.

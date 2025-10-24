@@ -160,3 +160,83 @@ export enum VersionState {
     DEPRECATED = 'DEPRECATED',
     DRAFT = 'DRAFT'
 }
+
+export interface ArtifactReference {
+    groupId?: string;
+    artifactId: string;
+    version?: string;
+    name?: string;
+}
+
+export interface VersionContent {
+    content: string;
+    contentType: string;
+    references?: ArtifactReference[];
+}
+
+export interface CreateVersion {
+    version?: string;
+    content: VersionContent;
+    name?: string;
+    description?: string;
+    labels?: Record<string, string>;
+    branches?: string[];
+    isDraft?: boolean;
+}
+
+export interface CreateArtifactRequest {
+    artifactId?: string;
+    artifactType?: string;
+    name?: string;
+    description?: string;
+    labels?: Record<string, string>;
+    firstVersion?: CreateVersion;
+    // Query params (handled separately)
+    ifExists?: 'FAIL' | 'UPDATE' | 'RETURN' | 'RETURN_OR_UPDATE';
+    canonical?: boolean;
+    dryRun?: boolean;
+}
+
+export interface ArtifactMetaData {
+    groupId: string;
+    artifactId: string;
+    artifactType: string;
+    owner: string;
+    createdOn: number;
+    modifiedOn: number;
+    modifiedBy: string;
+    name?: string;
+    description?: string;
+    labels?: Record<string, string>;
+}
+
+export interface VersionMetaData {
+    version: string;
+    groupId: string;
+    artifactId: string;
+    name?: string;
+    description?: string;
+    owner: string;
+    createdOn: number;
+    artifactType: string;
+    state: VersionState;
+    labels?: Record<string, string>;
+    contentId: string;
+    globalId: string;
+}
+
+export interface CreateArtifactResponse {
+    artifact: ArtifactMetaData;
+    version?: VersionMetaData;
+}
+
+export interface GroupMetaData {
+    groupId: string;
+    description?: string;
+    artifactCount?: number;
+    labels?: Record<string, string>;
+    owner?: string;
+    createdOn?: number;
+    modifiedOn?: number;
+    modifiedBy?: string;
+}

@@ -77,6 +77,16 @@
         "command": "apicurioRegistry.copyFullReference",
         "title": "Copy Full Reference",
         "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.openArtifact",
+        "title": "Open Artifact",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.openVersion",
+        "title": "Open Version",
+        "category": "Apicurio Registry"
       }
     ],
     "menus": {
@@ -103,6 +113,16 @@
         }
       ],
       "view/item/context": [
+        {
+          "command": "apicurioRegistry.openArtifact",
+          "when": "view == apicurioRegistry && viewItem =~ /artifact.*/",
+          "group": "navigation@1"
+        },
+        {
+          "command": "apicurioRegistry.openVersion",
+          "when": "view == apicurioRegistry && viewItem == version",
+          "group": "navigation@1"
+        },
         {
           "command": "apicurioRegistry.copyGroupId",
           "when": "view == apicurioRegistry && viewItem == group",

@@ -9,6 +9,10 @@ import {
     copyVersionCommand,
     copyFullReferenceCommand
 } from './commands/copyCommands';
+import {
+    openArtifactCommand,
+    openVersionCommand
+} from './commands/openCommands';
 
 let registryTreeProvider: RegistryTreeDataProvider;
 let registryService: RegistryService;
@@ -66,6 +70,15 @@ export function activate(context: vscode.ExtensionContext) {
         await copyFullReferenceCommand(node);
     });
 
+    // Open commands
+    const openArtifact = vscode.commands.registerCommand('apicurioRegistry.openArtifact', async (node) => {
+        await openArtifactCommand(registryService, node);
+    });
+
+    const openVersion = vscode.commands.registerCommand('apicurioRegistry.openVersion', async (node) => {
+        await openVersionCommand(registryService, node);
+    });
+
     // Add to context subscriptions
     context.subscriptions.push(
         treeView,
@@ -77,7 +90,9 @@ export function activate(context: vscode.ExtensionContext) {
         copyGroupId,
         copyArtifactId,
         copyVersion,
-        copyFullReference
+        copyFullReference,
+        openArtifact,
+        openVersion
     );
 
     // Set context to enable tree view

@@ -333,4 +333,49 @@ export class RegistryService {
     getConnectionInfo(): RegistryConnection | null {
         return this.connection;
     }
+
+    async updateArtifactState(groupId: string, artifactId: string, state: string): Promise<void> {
+        this.ensureConnected();
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+
+            await this.client!.put(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/state`,
+                { state },
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+        } catch (error) {
+            console.error('Error updating artifact state:', error);
+            throw new Error(`Failed to update state for ${groupId}/${artifactId}: ${error}`);
+        }
+    }
+
+    async updateVersionState(groupId: string, artifactId: string, version: string, state: string): Promise<void> {
+        this.ensureConnected();
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            const encodedVersion = encodeURIComponent(version);
+
+            await this.client!.put(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/versions/${encodedVersion}/state`,
+                { state },
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+        } catch (error) {
+            console.error('Error updating version state:', error);
+            throw new Error(`Failed to update state for ${groupId}/${artifactId}@${version}: ${error}`);
+        }
+    }
 }

@@ -13,6 +13,11 @@ import {
     openArtifactCommand,
     openVersionCommand
 } from './commands/openCommands';
+import {
+    changeArtifactStateCommand,
+    changeVersionStateCommand
+} from './commands/stateCommands';
+import { downloadContentCommand } from './commands/downloadCommand';
 
 let registryTreeProvider: RegistryTreeDataProvider;
 let registryService: RegistryService;
@@ -79,6 +84,20 @@ export function activate(context: vscode.ExtensionContext) {
         await openVersionCommand(registryService, node);
     });
 
+    // State commands
+    const changeArtifactState = vscode.commands.registerCommand('apicurioRegistry.changeArtifactState', async (node) => {
+        await changeArtifactStateCommand(registryService, () => registryTreeProvider.refresh(), node);
+    });
+
+    const changeVersionState = vscode.commands.registerCommand('apicurioRegistry.changeVersionState', async (node) => {
+        await changeVersionStateCommand(registryService, () => registryTreeProvider.refresh(), node);
+    });
+
+    // Download command
+    const downloadContent = vscode.commands.registerCommand('apicurioRegistry.downloadContent', async (node) => {
+        await downloadContentCommand(registryService, node);
+    });
+
     // Add to context subscriptions
     context.subscriptions.push(
         treeView,
@@ -92,7 +111,10 @@ export function activate(context: vscode.ExtensionContext) {
         copyVersion,
         copyFullReference,
         openArtifact,
-        openVersion
+        openVersion,
+        changeArtifactState,
+        changeVersionState,
+        downloadContent
     );
 
     // Set context to enable tree view

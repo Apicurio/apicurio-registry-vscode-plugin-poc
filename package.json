@@ -57,6 +57,36 @@
         "title": "Create Artifact",
         "icon": "$(add)",
         "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.copyGroupId",
+        "title": "Copy Group ID",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.copyArtifactId",
+        "title": "Copy Artifact ID",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.copyVersion",
+        "title": "Copy Version",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.copyFullReference",
+        "title": "Copy Full Reference",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.openArtifact",
+        "title": "Open Artifact",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.openVersion",
+        "title": "Open Version",
+        "category": "Apicurio Registry"
       }
     ],
     "menus": {
@@ -80,6 +110,43 @@
           "command": "apicurioRegistry.connect",
           "when": "view == apicurioRegistry",
           "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "apicurioRegistry.openArtifact",
+          "when": "view == apicurioRegistry && viewItem =~ /artifact.*/",
+          "group": "navigation@1"
+        },
+        {
+          "command": "apicurioRegistry.openVersion",
+          "when": "view == apicurioRegistry && viewItem == version",
+          "group": "navigation@1"
+        },
+        {
+          "command": "apicurioRegistry.copyGroupId",
+          "when": "view == apicurioRegistry && viewItem == group",
+          "group": "1_copy@1"
+        },
+        {
+          "command": "apicurioRegistry.copyArtifactId",
+          "when": "view == apicurioRegistry && viewItem =~ /artifact.*/",
+          "group": "1_copy@1"
+        },
+        {
+          "command": "apicurioRegistry.copyFullReference",
+          "when": "view == apicurioRegistry && viewItem =~ /artifact.*/",
+          "group": "1_copy@2"
+        },
+        {
+          "command": "apicurioRegistry.copyVersion",
+          "when": "view == apicurioRegistry && viewItem == version",
+          "group": "1_copy@1"
+        },
+        {
+          "command": "apicurioRegistry.copyFullReference",
+          "when": "view == apicurioRegistry && viewItem == version",
+          "group": "1_copy@2"
         }
       ]
     },

@@ -67,6 +67,20 @@ export enum ProgressLocation {
     Notification = 15
 }
 
+export enum ViewColumn {
+    Active = -1,
+    Beside = -2,
+    One = 1,
+    Two = 2,
+    Three = 3,
+    Four = 4,
+    Five = 5,
+    Six = 6,
+    Seven = 7,
+    Eight = 8,
+    Nine = 9
+}
+
 export namespace window {
     export function showErrorMessage(message: string, ...items: string[]): Thenable<string | undefined> {
         return Promise.resolve(undefined);
@@ -93,6 +107,10 @@ export namespace window {
         };
         return task(progress);
     }
+
+    export function showTextDocument(document: any, options?: any): Thenable<any> {
+        return Promise.resolve({});
+    }
 }
 
 export namespace workspace {
@@ -102,10 +120,24 @@ export namespace workspace {
             update: () => Promise.resolve()
         };
     }
+
+    export function openTextDocument(options: { content: string; language?: string } | string): Thenable<any> {
+        return Promise.resolve({
+            getText: () => typeof options === 'string' ? '' : options.content,
+            languageId: typeof options === 'string' ? 'plaintext' : (options.language || 'plaintext')
+        });
+    }
 }
 
 export namespace commands {
     export function registerCommand(command: string, callback: (...args: any[]) => any): any {
         return { dispose: () => {} };
     }
+}
+
+export namespace env {
+    export const clipboard = {
+        writeText: (value: string): Thenable<void> => Promise.resolve(),
+        readText: (): Thenable<string> => Promise.resolve('')
+    };
 }

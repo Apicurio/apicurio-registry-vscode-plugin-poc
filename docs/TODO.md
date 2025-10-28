@@ -1,6 +1,6 @@
 # Apicurio VSCode Plugin - Quick TODO
 
-**Last Updated:** 2025-10-24
+**Last Updated:** 2025-10-28
 **Current Focus:** UX Improvements (Sprint 2)
 **Overall Status:** Phase 2 Complete → UX In Progress → Phase 3 Next
 
@@ -11,18 +11,20 @@
 
 ## 🎯 What to Work on TODAY
 
-**Current Task:** **003 - Context Menus** 📋 **START HERE**
-- **Priority:** 🔴 High
-- **Effort:** 4-6 hours
-- **Spec:** [tasks/todo/high-priority/003-context-menus.md](tasks/todo/high-priority/003-context-menus.md)
-- **Quick Steps:**
-  1. Add `contextValue` to tree items
-  2. Create command files (copy, open, state, download)
-  3. Update `package.json` menus
-  4. Register commands in `extension.ts`
-  5. Test all context menus
+**Decision Point:** **Merge Task 003 or Continue?** 🔀
 
-**After This:** Task 004 - Add Version Command (4-6h)
+**Option A - Merge Now (Recommended):**
+- ✅ Task 003 (Copy + Open commands) complete and tested
+- Ready to merge to `main`
+- Continue with Task 004 (Add Version)
+
+**Option B - Complete Task 003 Fully:**
+- Continue with Task 003b (State + Download commands)
+- Then merge Task 003 fully complete
+
+**Next Task After Decision:**
+- If Option A: **Task 004 - Add Version Command** (4-6h)
+- If Option B: **Task 003b - State & Download** (2-3h)
 
 ---
 
@@ -58,6 +60,11 @@ Overall Progress: ██████░░░░░░░░░░░░░░�
 ---
 
 ## ✅ Recently Completed
+
+### Sprint 2 (Oct 25-28)
+| # | Task | Effort | Completed | Phase |
+|---|------|--------|-----------|-------|
+| 003 | Context Menus (Copy + Open) | 6h | Oct 28 | UX Improvements |
 
 ### Sprint 1 (Oct 23-24)
 | # | Task | Effort | Completed | Phase |
@@ -110,21 +117,23 @@ Overall Progress: ██████░░░░░░░░░░░░░░�
 
 ## 📂 All Tasks Status
 
-### ✅ Completed (2 tasks)
+### ✅ Completed (3 tasks)
 - **001** - Search Command ([spec](tasks/completed/001-search-command.md)) - UX
 - **002** - Create Artifact Wizard ([spec](tasks/completed/002-create-artifact.md)) - UX
+- **003** - Context Menus - Copy + Open ([spec](tasks/in-progress/TASK_003_TEST_RESULTS.md)) - UX (partial)
 
 ### 🚧 In Progress (0 tasks)
-- _(Next: Start task 003)_
+- _(Pending: Merge decision)_
 
-### 📋 UX Improvements - Pending (8 tasks)
+### 📋 UX Improvements - Pending (9 tasks)
 
 **🔴 High Priority (1)**
-- **003** - Context Menus ([spec](tasks/todo/high-priority/003-context-menus.md)) ← **Current**
+- **003b** - State & Download Commands ([spec](tasks/todo/high-priority/003b-state-and-download.md)) ← **Complete Task 003**
 
-**🟡 Medium Priority (4)**
+**🟡 Medium Priority (5)**
 - **004** - Add Version ([spec](tasks/todo/medium-priority/004-add-version.md))
 - **007** - Delete Operations ([spec](tasks/todo/medium-priority/007-delete-operations.md))
+- **008** - API v3.1 Compatibility ([spec](tasks/todo/medium-priority/008-api-v31-compatibility.md)) ← **NEW**
 - **006** - User Preferences ([spec](tasks/todo/medium-priority/006-user-preferences.md))
 - **005** - Custom SVG Icons ([spec](tasks/todo/medium-priority/005-custom-svg-icons.md))
 
@@ -273,6 +282,13 @@ Overall Progress: ██████░░░░░░░░░░░░░░�
 ---
 
 ## 📝 Recent Activity Log
+
+### 2025-10-28
+- ✅ Completed Task 003: Context Menus - Copy + Open commands (6h)
+- ✅ Fixed 2 critical API v3.1 compatibility issues
+- ✅ All 27 unit tests passing + manual testing successful
+- 📝 Created Task 003b (State & Download) and Task 008 (API Compatibility)
+- 🔀 Decision point: Merge now or complete Task 003b first
 
 ### 2025-10-24
 - ✅ Completed Task 002: Create Artifact Wizard (4h)

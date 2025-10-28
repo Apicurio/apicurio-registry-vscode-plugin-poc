@@ -3,6 +3,16 @@ import { RegistryTreeDataProvider } from './providers/registryTreeProvider';
 import { RegistryService } from './services/registryService';
 import { searchArtifactsCommand } from './commands/searchCommand';
 import { createArtifactCommand } from './commands/createArtifactCommand';
+import {
+    copyGroupIdCommand,
+    copyArtifactIdCommand,
+    copyVersionCommand,
+    copyFullReferenceCommand
+} from './commands/copyCommands';
+import {
+    openArtifactCommand,
+    openVersionCommand
+} from './commands/openCommands';
 
 let registryTreeProvider: RegistryTreeDataProvider;
 let registryService: RegistryService;
@@ -43,6 +53,32 @@ export function activate(context: vscode.ExtensionContext) {
         await createArtifactCommand(registryService, registryTreeProvider);
     });
 
+    // Copy commands
+    const copyGroupId = vscode.commands.registerCommand('apicurioRegistry.copyGroupId', async (node) => {
+        await copyGroupIdCommand(node);
+    });
+
+    const copyArtifactId = vscode.commands.registerCommand('apicurioRegistry.copyArtifactId', async (node) => {
+        await copyArtifactIdCommand(node);
+    });
+
+    const copyVersion = vscode.commands.registerCommand('apicurioRegistry.copyVersion', async (node) => {
+        await copyVersionCommand(node);
+    });
+
+    const copyFullReference = vscode.commands.registerCommand('apicurioRegistry.copyFullReference', async (node) => {
+        await copyFullReferenceCommand(node);
+    });
+
+    // Open commands
+    const openArtifact = vscode.commands.registerCommand('apicurioRegistry.openArtifact', async (node) => {
+        await openArtifactCommand(registryService, node);
+    });
+
+    const openVersion = vscode.commands.registerCommand('apicurioRegistry.openVersion', async (node) => {
+        await openVersionCommand(registryService, node);
+    });
+
     // Add to context subscriptions
     context.subscriptions.push(
         treeView,
@@ -50,7 +86,13 @@ export function activate(context: vscode.ExtensionContext) {
         connectCommand,
         disconnectCommand,
         searchCommand,
-        createArtifact
+        createArtifact,
+        copyGroupId,
+        copyArtifactId,
+        copyVersion,
+        copyFullReference,
+        openArtifact,
+        openVersion
     );
 
     // Set context to enable tree view

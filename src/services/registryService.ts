@@ -155,11 +155,12 @@ export class RegistryService {
             const encodedArtifactId = encodeURIComponent(artifactId);
             const encodedVersion = encodeURIComponent(version);
 
+            // Get the actual content (not metadata) by appending /content
             const response = await this.client!.get(
-                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/versions/${encodedVersion}`,
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/versions/${encodedVersion}/content`,
                 {
                     headers: {
-                        'Accept': 'application/json'
+                        'Accept': '*/*'  // Accept any content type
                     }
                 }
             );

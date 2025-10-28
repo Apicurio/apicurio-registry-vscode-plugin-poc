@@ -66,8 +66,26 @@ export async function openArtifactCommand(
                 cancellable: false
             },
             async (progress) => {
-                progress.report({ message: 'Fetching content...' });
-                return await registryService.getArtifactContent(groupId, artifactId, 'latest');
+                progress.report({ message: 'Finding latest version...' });
+
+                // Get all versions to find the latest one
+                const versions = await registryService.getVersions(groupId, artifactId);
+
+                if (!versions || versions.length === 0) {
+                    throw new Error('No versions found for this artifact');
+                }
+
+                // Find the version with the highest globalId (most recent)
+                const latestVersion = versions.reduce((prev, current) => {
+                    return (current.globalId || 0) > (prev.globalId || 0) ? current : prev;
+                });
+
+                if (!latestVersion.version) {
+                    throw new Error('Could not determine latest version');
+                }
+
+                progress.report({ message: `Fetching content (${latestVersion.version})...` });
+                return await registryService.getArtifactContent(groupId, artifactId, latestVersion.version);
             }
         );
 

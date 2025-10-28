@@ -46,12 +46,18 @@ describe('Open Commands', () => {
                 'test-group'
             );
 
+            const mockVersions = [
+                { version: '1.0.0', globalId: 1 },
+                { version: '2.0.0', globalId: 2 }
+            ];
+
             const mockContent = {
                 content: 'openapi: 3.0.0\ninfo:\n  title: Test API',
                 contentType: 'application/x-yaml',
                 artifactType: 'OPENAPI'
             };
 
+            mockService.getVersions = jest.fn().mockResolvedValue(mockVersions);
             mockService.getArtifactContent = jest.fn().mockResolvedValue(mockContent);
 
             // Act
@@ -59,7 +65,8 @@ describe('Open Commands', () => {
 
             // Assert
             expect(mockWithProgress).toHaveBeenCalled();
-            expect(mockService.getArtifactContent).toHaveBeenCalledWith('test-group', 'test-artifact', 'latest');
+            expect(mockService.getVersions).toHaveBeenCalledWith('test-group', 'test-artifact');
+            expect(mockService.getArtifactContent).toHaveBeenCalledWith('test-group', 'test-artifact', '2.0.0');
             expect(mockShowTextDocument).toHaveBeenCalled();
         });
 
@@ -73,12 +80,17 @@ describe('Open Commands', () => {
                 'test-group'
             );
 
+            const mockVersions = [
+                { version: '1.0.0', globalId: 1 }
+            ];
+
             const mockContent = {
                 content: '{"type": "object"}',
                 contentType: 'application/json',
                 artifactType: 'JSON'
             };
 
+            mockService.getVersions = jest.fn().mockResolvedValue(mockVersions);
             mockService.getArtifactContent = jest.fn().mockResolvedValue(mockContent);
 
             // Act
@@ -120,7 +132,7 @@ describe('Open Commands', () => {
                 'test-group'
             );
 
-            mockService.getArtifactContent = jest.fn().mockRejectedValue(new Error('Network error'));
+            mockService.getVersions = jest.fn().mockRejectedValue(new Error('Network error'));
 
             // Act
             await openArtifactCommand(mockService, mockNode);
@@ -231,12 +243,17 @@ describe('Open Commands', () => {
                 'group'
             );
 
+            const mockVersions = [
+                { version: '1.0.0', globalId: 1 }
+            ];
+
             const mockContent = {
                 content: 'content',
                 contentType: 'text/plain',
                 artifactType
             };
 
+            mockService.getVersions = jest.fn().mockResolvedValue(mockVersions);
             mockService.getArtifactContent = jest.fn().mockResolvedValue(mockContent);
 
             // Act

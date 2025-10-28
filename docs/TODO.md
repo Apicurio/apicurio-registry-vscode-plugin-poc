@@ -15,10 +15,11 @@ _No tasks currently in progress_
 
 ## 🎯 What to Work on NEXT
 
-**Recommended:** Task 008 - API v3.1 Compatibility (2-3h)
-- [Specification](tasks/todo/medium-priority/008-api-v31-compatibility.md)
-- Review and fix remaining API v3.1 compatibility issues
-- Then: Task 006 - User Preferences or Task 005 - Custom SVG Icons
+**Recommended:** Task 015 - Custom Text Document Provider (12-15h)
+- Phase 3.1: Text Editor Integration begins
+- Implement virtual text documents for editing drafts
+- Enable direct editing of draft content in VSCode
+- Then: Task 016 - Save & Auto-Save
 
 ---
 
@@ -43,6 +44,42 @@ _All high priority tasks complete!_
 | 010 | Edit Metadata UI | ⏸️ Deferred | 4-5h | [spec](tasks/todo/low-priority/010-edit-metadata.md) |
 | 008 | Details Panel | ⏸️ Deferred | 6-8h | [spec](tasks/todo/low-priority/008-details-panel.md) |
 | 009 | Reverse Version Order | ⏸️ Deferred | 1-2h | [spec](tasks/todo/low-priority/009-reverse-version-order.md) |
+
+### 🔵 Phase 3: Draft Editing & Apicurio Studio Integration
+
+**Phase 3.0: Draft Infrastructure (Week 1, 30-40h)**
+
+| # | Task | Status | Effort | Details |
+|---|------|--------|--------|---------|
+| 011 | Draft Feature Detection | ✅ Done | 7h | [spec](tasks/completed/011-draft-feature-detection.md) - 22 tests ✅ |
+| 012 | Draft Creation Workflow | ✅ Done | 11.5h | [spec](tasks/completed/012-draft-creation-workflow.md) - 24 tests ✅ |
+| 013 | Draft Management Commands | ✅ Done | 9h | [spec](tasks/completed/013-draft-management-commands.md) - 38 tests ✅ |
+| 014 | Draft List View | ✅ Done | 5h | [spec](tasks/completed/014-draft-list-view.md) - Visual indicators ✅ |
+
+**Phase 3.1: Text Editor Integration (Week 2, 30-40h)**
+
+| # | Task | Status | Effort | Details |
+|---|------|--------|--------|---------|
+| 015 | Custom Text Document Provider | 📋 Todo | 12-15h | Edit drafts as text files |
+| 016 | Save & Auto-Save | 📋 Todo | 10-12h | Auto-save with API sync |
+| 017 | Conflict Detection | 📋 Todo | 8-10h | Detect & handle concurrent edits |
+
+**Phase 3.2: Apicurio Studio Integration (Week 3-4, 40-60h)**
+
+| # | Task | Status | Effort | Details |
+|---|------|--------|--------|---------|
+| 018 | Webview Editor Provider | 📋 Todo | 15-20h | Custom webview for Studio |
+| 019 | Message Passing Protocol | 📋 Todo | 12-15h | Bidirectional communication |
+| 020 | Studio Configuration | 📋 Todo | 8-10h | Load Studio from registry or local |
+| 021 | Content Synchronization | 📋 Todo | 10-12h | Sync text ↔ visual edits |
+
+**Phase 3.3: Draft Workflow & UX (Concurrent, 20-30h)**
+
+| # | Task | Status | Effort | Details |
+|---|------|--------|--------|---------|
+| 022 | Draft Finalization | 📋 Todo | 8-10h | Publish draft workflow |
+| 023 | Visual Indicators | 📋 Todo | 6-8h | Draft badges, colors, icons |
+| 024 | User Preferences | 📋 Todo | 6-8h | Settings for draft features |
 
 ---
 
@@ -70,12 +107,12 @@ _All high priority tasks complete!_
 ## 📊 Progress Overview
 
 ```
-Overall Project Progress: ████████░░░░░░░░░░░░░░ 40%
+Overall Project Progress: ██████████░░░░░░░░░░░░ 46%
 
 Phase 1: Foundation        [████████████████████] 100% ✅
 Phase 2: Core Tree         [████████████████████] 100% ✅
 UX Improvements            [███████░░░░░░░░░░░░░]  40% 🚧
-Phase 3: Editors           [░░░░░░░░░░░░░░░░░░░░]   0% 📋
+Phase 3: Draft Editing     [██████░░░░░░░░░░░░░░]  29% 🚧 IN PROGRESS
 Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░░░░]   0% 📋
 ```
 
@@ -83,6 +120,12 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 - 🔴 High Priority: All complete! ✅
 - 🟡 Medium Priority: 1 of 5 complete (20%)
 - 🟢 Low Priority: 0 of 3 (deferred)
+
+**Phase 3: Draft Editing & Studio Integration:** 4 of 14 tasks complete (29%)
+- Phase 3.0 (Infrastructure): 4 of 4 tasks (100%) ✅ COMPLETE!
+- Phase 3.1 (Text Editor): 0 of 3 tasks (0%)
+- Phase 3.2 (Studio Integration): 0 of 4 tasks (0%)
+- Phase 3.3 (Workflow & UX): 0 of 3 tasks (0%)
 
 ---
 
@@ -99,22 +142,27 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 **Status:** ✅ COMPLETE - All sprint goals achieved!
 **Total Effort:** 9.5h
 
-### Sprint 3 (Nov 1-7) - Planned
+### Sprint 3 (Nov 1-7) - Deferred
 
-**Goal:** UX polish and preferences
+**Goal:** UX polish and preferences - DEFERRED for Phase 3
 
 **Tasks:**
-- [ ] Task 006: User Preferences - 2-3h
-- [ ] Task 005: Custom SVG Icons - 2-3h
+- [ ] Task 006: User Preferences - 2-3h (deferred)
+- [ ] Task 005: Custom SVG Icons - 2-3h (deferred)
 
-**Total Effort:** 4-6 hours
+**Status:** ⏸️ DEFERRED - Shifting focus to Phase 3
 
-### Phase 3 Start (Nov 8+)
+### Phase 3.0 (Nov 8-14) - Active
 
-**Goal:** Editor integration
-- Custom text editor POC
-- Apicurio Studio integration
-- Sync workflow
+**Goal:** Draft Infrastructure Foundation
+
+**Tasks:**
+- [x] Task 011: Draft Feature Detection - 7h ✅
+- [x] Task 012: Draft Creation Workflow - 11.5h ✅
+- [x] Task 013: Draft Management Commands - 9h ✅
+- [x] Task 014: Draft List View - 5h ✅
+
+**Total Effort:** 30-40 hours
 
 ---
 
@@ -133,7 +181,18 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 
 ## 📝 Recent Activity
 
-**2025-10-28**
+**2025-10-28 (Phase 3.0 Complete! 🎉)**
+- ✅ Completed Task 014 (Draft List View) - 5h
+- ✅ State-specific context values for versions (version-draft, version-published, etc.)
+- ✅ Visual indicators: draft = edit icon (blue), published = tag icon, etc.
+- ✅ Draft commands now only appear for draft versions
+- ✅ Menu conditions updated to use state-specific context values
+- ✅ Completed Task 013 (Draft Management Commands) - 9h
+- ✅ Completed Task 012 (Draft Creation Workflow) - 11.5h
+- ✅ Completed Task 011 (Draft Feature Detection) - 7h
+- 🎉 Phase 3.0 Sprint complete: 4 of 4 tasks (100%)
+- 📋 Next: Phase 3.1 - Task 015 - Custom Text Document Provider (12-15h)
+- ⏸️ Deferred Sprint 3 (UX polish) to focus on Phase 3
 - ✅ Completed Task 007 (Delete Operations) - 3.5h
 - ✅ 32 tests passing (16 service + 16 command)
 - ✅ Full TDD: RED-GREEN-REFACTOR cycle

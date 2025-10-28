@@ -129,13 +129,38 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
 
             case RegistryItemType.Version:
                 treeItem.collapsibleState = vscode.TreeItemCollapsibleState.None;
-                treeItem.iconPath = IconService.getVersionIcon();
-                treeItem.contextValue = 'version';
 
                 // Enhanced tooltip with state and metadata
                 const versionState = element.metadata?.state;
                 const versionStateLabel = versionState ? IconService.getStateLabel(versionState) : '';
                 const versionStateEmoji = versionState ? IconService.getStateEmoji(versionState) : '';
+
+                // Set context value based on state for menu visibility
+                if (versionState === 'DRAFT') {
+                    treeItem.contextValue = 'version-draft';
+                    // Use state-specific icon for drafts
+                    const stateIcon = IconService.getIconForState(versionState);
+                    treeItem.iconPath = stateIcon || IconService.getVersionIcon();
+                    // Add draft indicator to description
+                    treeItem.description = 'draft';
+                } else if (versionState === 'ENABLED') {
+                    treeItem.contextValue = 'version-published';
+                    treeItem.iconPath = IconService.getVersionIcon();
+                } else if (versionState === 'DISABLED') {
+                    treeItem.contextValue = 'version-disabled';
+                    const stateIcon = IconService.getIconForState(versionState);
+                    treeItem.iconPath = stateIcon || IconService.getVersionIcon();
+                    treeItem.description = 'disabled';
+                } else if (versionState === 'DEPRECATED') {
+                    treeItem.contextValue = 'version-deprecated';
+                    const stateIcon = IconService.getIconForState(versionState);
+                    treeItem.iconPath = stateIcon || IconService.getVersionIcon();
+                    treeItem.description = 'deprecated';
+                } else {
+                    // Fallback for unknown or missing state
+                    treeItem.contextValue = 'version';
+                    treeItem.iconPath = IconService.getVersionIcon();
+                }
 
                 treeItem.tooltip = new vscode.MarkdownString();
                 treeItem.tooltip.appendMarkdown(`**Version ${element.label}**\n\n`);
@@ -147,11 +172,6 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 }
                 if (element.metadata?.createdOn) {
                     treeItem.tooltip.appendMarkdown(`- Created: ${new Date(element.metadata.createdOn).toLocaleString()}\n`);
-                }
-
-                // Add state emoji to description
-                if (versionStateEmoji) {
-                    treeItem.description = versionStateEmoji;
                 }
 
                 // Make versions clickable to open content

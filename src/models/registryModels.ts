@@ -240,3 +240,14 @@ export interface GroupMetaData {
     modifiedOn?: number;
     modifiedBy?: string;
 }
+
+export interface UIConfig {
+    features?: {
+        draftMutability?: boolean;
+        readOnly?: boolean;
+    };
+    ui?: {
+        contextPath?: string;
+        editorsUrl?: string;
+    };
+}

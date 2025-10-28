@@ -23,6 +23,12 @@ import {
     deleteArtifactCommand,
     deleteVersionCommand
 } from './commands/deleteCommands';
+import {
+    createDraftVersionCommand,
+    finalizeDraftCommand,
+    discardDraftCommand,
+    editDraftMetadataCommand
+} from './commands/draftCommands';
 
 let registryTreeProvider: RegistryTreeDataProvider;
 let registryService: RegistryService;
@@ -116,6 +122,23 @@ export function activate(context: vscode.ExtensionContext) {
         await deleteVersionCommand(registryService, () => registryTreeProvider.refresh(), node);
     });
 
+    // Draft commands
+    const createDraftVersion = vscode.commands.registerCommand('apicurioRegistry.createDraftVersion', async (node) => {
+        await createDraftVersionCommand(registryService, () => registryTreeProvider.refresh(), node);
+    });
+
+    const finalizeDraft = vscode.commands.registerCommand('apicurioRegistry.finalizeDraft', async (node) => {
+        await finalizeDraftCommand(registryService, () => registryTreeProvider.refresh(), node);
+    });
+
+    const discardDraft = vscode.commands.registerCommand('apicurioRegistry.discardDraft', async (node) => {
+        await discardDraftCommand(registryService, () => registryTreeProvider.refresh(), node);
+    });
+
+    const editDraftMetadata = vscode.commands.registerCommand('apicurioRegistry.editDraftMetadata', async (node) => {
+        await editDraftMetadataCommand(registryService, () => registryTreeProvider.refresh(), node);
+    });
+
     // Add to context subscriptions
     context.subscriptions.push(
         treeView,
@@ -135,7 +158,11 @@ export function activate(context: vscode.ExtensionContext) {
         downloadContent,
         deleteGroup,
         deleteArtifact,
-        deleteVersion
+        deleteVersion,
+        createDraftVersion,
+        finalizeDraft,
+        discardDraft,
+        editDraftMetadata
     );
 
     // Set context to enable tree view

@@ -2,7 +2,9 @@ import axios, { AxiosInstance } from 'axios';
 import {
     CreateArtifactRequest,
     CreateArtifactResponse,
-    GroupMetaData
+    CreateVersion,
+    GroupMetaData,
+    UIConfig
 } from '../models/registryModels';
 
 export interface RegistryConnection {
@@ -57,6 +59,7 @@ export interface ArtifactContent {
 export class RegistryService {
     private client: AxiosInstance | null = null;
     private connection: RegistryConnection | null = null;
+    private uiConfig: UIConfig | null = null;
 
     setConnection(connection: RegistryConnection): void {
         this.connection = connection;
@@ -82,6 +85,7 @@ export class RegistryService {
     disconnect(): void {
         this.client = null;
         this.connection = null;
+        this.uiConfig = null;
     }
 
     private ensureConnected(): void {
@@ -417,6 +421,201 @@ export class RegistryService {
         } catch (error) {
             console.error('Error deleting version:', error);
             throw error;
+        }
+    }
+
+    async getUIConfig(): Promise<UIConfig> {
+        this.ensureConnected();
+
+        if (this.uiConfig !== null) {
+            return this.uiConfig;
+        }
+
+        try {
+            const response = await this.client!.get('/system/uiConfig');
+            const config: UIConfig = response.data || {};
+            this.uiConfig = config;
+            return config;
+        } catch (error) {
+            console.error('Error fetching UI config:', error);
+            throw error;
+        }
+    }
+
+    async isDraftSupportEnabled(): Promise<boolean> {
+        try {
+            const config = await this.getUIConfig();
+            return config.features?.draftMutability === true &&
+                   config.features?.readOnly !== true;
+        } catch (error) {
+            console.warn('Failed to get UI config, assuming no draft support:', error);
+            return false;
+        }
+    }
+
+    getEditorsUrl(): string | undefined {
+        return this.uiConfig?.ui?.editorsUrl;
+    }
+
+    async createDraftVersion(
+        groupId: string,
+        artifactId: string,
+        versionData: CreateVersion
+    ): Promise<void> {
+        this.ensureConnected();
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+
+            // Ensure isDraft is set to true
+            const draftVersionData: CreateVersion = {
+                ...versionData,
+                isDraft: true
+            };
+
+            await this.client!.post(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/versions`,
+                draftVersionData
+            );
+        } catch (error: any) {
+            console.error('Error creating draft version:', error);
+
+            if (error.response) {
+                const status = error.response.status;
+                const message = error.response.data?.message || error.response.data?.detail || error.message;
+
+                switch (status) {
+                    case 409:
+                        throw new Error(`Version already exists: ${message}`);
+                    case 400:
+                        throw new Error(`Invalid request: ${message}`);
+                    case 404:
+                        throw new Error(`Artifact not found: ${groupId}/${artifactId}`);
+                    default:
+                        throw new Error(`Failed to create draft version: ${message}`);
+                }
+            }
+
+            throw new Error(`Failed to create draft version: ${error.message || error}`);
+        }
+    }
+
+    async finalizeDraftVersion(
+        groupId: string,
+        artifactId: string,
+        version: string,
+        targetState: 'ENABLED' | 'DISABLED' | 'DEPRECATED' = 'ENABLED'
+    ): Promise<void> {
+        this.ensureConnected();
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            const encodedVersion = encodeURIComponent(version);
+
+            await this.client!.put(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/versions/${encodedVersion}/state`,
+                { state: targetState }
+            );
+        } catch (error: any) {
+            console.error('Error finalizing draft version:', error);
+
+            if (error.response) {
+                const status = error.response.status;
+                const message = error.response.data?.message || error.response.data?.detail || error.message;
+
+                switch (status) {
+                    case 404:
+                        throw new Error(`Version not found: ${groupId}/${artifactId}:${version}`);
+                    case 400:
+                        throw new Error(`Invalid state transition: ${message}`);
+                    case 409:
+                        throw new Error(`Validation failed: ${message}`);
+                    default:
+                        throw new Error(`Failed to finalize draft: ${message}`);
+                }
+            }
+
+            throw new Error(`Failed to finalize draft: ${error.message || error}`);
+        }
+    }
+
+    async discardDraftVersion(
+        groupId: string,
+        artifactId: string,
+        version: string
+    ): Promise<void> {
+        this.ensureConnected();
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            const encodedVersion = encodeURIComponent(version);
+
+            await this.client!.delete(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/versions/${encodedVersion}`
+            );
+        } catch (error: any) {
+            console.error('Error discarding draft version:', error);
+
+            if (error.response) {
+                const status = error.response.status;
+                const message = error.response.data?.message || error.response.data?.detail || error.message;
+
+                switch (status) {
+                    case 404:
+                        throw new Error(`Version not found: ${groupId}/${artifactId}:${version}`);
+                    case 405:
+                        throw new Error(`Version deletion not allowed: ${message}`);
+                    default:
+                        throw new Error(`Failed to discard draft: ${message}`);
+                }
+            }
+
+            throw new Error(`Failed to discard draft: ${error.message || error}`);
+        }
+    }
+
+    async updateDraftMetadata(
+        groupId: string,
+        artifactId: string,
+        version: string,
+        metadata: {
+            name?: string;
+            description?: string;
+            labels?: Record<string, string>;
+        }
+    ): Promise<void> {
+        this.ensureConnected();
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            const encodedVersion = encodeURIComponent(version);
+
+            await this.client!.put(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/versions/${encodedVersion}/meta`,
+                metadata
+            );
+        } catch (error: any) {
+            console.error('Error updating draft metadata:', error);
+
+            if (error.response) {
+                const status = error.response.status;
+                const message = error.response.data?.message || error.response.data?.detail || error.message;
+
+                switch (status) {
+                    case 404:
+                        throw new Error(`Version not found: ${groupId}/${artifactId}:${version}`);
+                    case 400:
+                        throw new Error(`Invalid metadata: ${message}`);
+                    default:
+                        throw new Error(`Failed to update metadata: ${message}`);
+                }
+            }
+
+            throw new Error(`Failed to update metadata: ${error.message || error}`);
         }
     }
 }

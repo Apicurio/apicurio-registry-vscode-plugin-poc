@@ -2,7 +2,7 @@
   "name": "apicurio-vscode-extension",
   "displayName": "Apicurio Registry",
   "description": "Browse and edit API specifications from Apicurio Registry",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "apicurio",
   "engines": {
     "vscode": "^1.70.0"
@@ -117,6 +117,26 @@
         "command": "apicurioRegistry.deleteVersion",
         "title": "Delete Version",
         "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.createDraftVersion",
+        "title": "Create Draft Version",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.finalizeDraft",
+        "title": "Finalize Draft",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.discardDraft",
+        "title": "Discard Draft",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.editDraftMetadata",
+        "title": "Edit Draft Metadata",
+        "category": "Apicurio Registry"
       }
     ],
     "menus": {
@@ -185,7 +205,7 @@
         },
         {
           "command": "apicurioRegistry.changeVersionState",
-          "when": "view == apicurioRegistry && viewItem == version",
+          "when": "view == apicurioRegistry && viewItem =~ /^version/",
           "group": "2_state@1"
         },
         {
@@ -194,9 +214,29 @@
           "group": "3_download@1"
         },
         {
+          "command": "apicurioRegistry.createDraftVersion",
+          "when": "view == apicurioRegistry && viewItem =~ /artifact.*/",
+          "group": "4_draft@1"
+        },
+        {
           "command": "apicurioRegistry.downloadContent",
-          "when": "view == apicurioRegistry && viewItem == version",
+          "when": "view == apicurioRegistry && viewItem =~ /^version/",
           "group": "3_download@1"
+        },
+        {
+          "command": "apicurioRegistry.finalizeDraft",
+          "when": "view == apicurioRegistry && viewItem == version-draft",
+          "group": "4_draft@1"
+        },
+        {
+          "command": "apicurioRegistry.editDraftMetadata",
+          "when": "view == apicurioRegistry && viewItem == version-draft",
+          "group": "4_draft@2"
+        },
+        {
+          "command": "apicurioRegistry.discardDraft",
+          "when": "view == apicurioRegistry && viewItem == version-draft",
+          "group": "9_dangerous@2"
         },
         {
           "command": "apicurioRegistry.deleteGroup",
@@ -210,7 +250,7 @@
         },
         {
           "command": "apicurioRegistry.deleteVersion",
-          "when": "view == apicurioRegistry && viewItem == version",
+          "when": "view == apicurioRegistry && viewItem =~ /^version/",
           "group": "9_dangerous@1"
         }
       ]

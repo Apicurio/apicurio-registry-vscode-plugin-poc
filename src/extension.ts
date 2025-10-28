@@ -18,6 +18,11 @@ import {
     changeVersionStateCommand
 } from './commands/stateCommands';
 import { downloadContentCommand } from './commands/downloadCommand';
+import {
+    deleteGroupCommand,
+    deleteArtifactCommand,
+    deleteVersionCommand
+} from './commands/deleteCommands';
 
 let registryTreeProvider: RegistryTreeDataProvider;
 let registryService: RegistryService;
@@ -98,6 +103,19 @@ export function activate(context: vscode.ExtensionContext) {
         await downloadContentCommand(registryService, node);
     });
 
+    // Delete commands
+    const deleteGroup = vscode.commands.registerCommand('apicurioRegistry.deleteGroup', async (node) => {
+        await deleteGroupCommand(registryService, () => registryTreeProvider.refresh(), node);
+    });
+
+    const deleteArtifact = vscode.commands.registerCommand('apicurioRegistry.deleteArtifact', async (node) => {
+        await deleteArtifactCommand(registryService, () => registryTreeProvider.refresh(), node);
+    });
+
+    const deleteVersion = vscode.commands.registerCommand('apicurioRegistry.deleteVersion', async (node) => {
+        await deleteVersionCommand(registryService, () => registryTreeProvider.refresh(), node);
+    });
+
     // Add to context subscriptions
     context.subscriptions.push(
         treeView,
@@ -114,7 +132,10 @@ export function activate(context: vscode.ExtensionContext) {
         openVersion,
         changeArtifactState,
         changeVersionState,
-        downloadContent
+        downloadContent,
+        deleteGroup,
+        deleteArtifact,
+        deleteVersion
     );
 
     // Set context to enable tree view

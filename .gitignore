@@ -57,3 +57,7 @@ coverage/
 # temporary files
 *.tmp
 *.temp
+
+# E2E test artifacts
+.vscode-test/
+.test-workspace/

@@ -106,6 +106,10 @@ export namespace window {
         return Promise.resolve(undefined);
     }
 
+    export function showWarningMessage(message: string, ...items: any[]): Thenable<string | undefined> {
+        return Promise.resolve(undefined);
+    }
+
     export function showInputBox(options?: any): Thenable<string | undefined> {
         return Promise.resolve(undefined);
     }

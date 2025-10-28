@@ -9,17 +9,13 @@
 
 ## 🚧 In Progress
 
-**Task 003b - State & Download Commands** (Started: 2025-10-28)
-- [Specification](tasks/todo/high-priority/003b-state-and-download.md)
-- Branch: `task/003b-state-and-download`
-- Status: Starting - TDD approach (RED phase)
-- Implements: Change state commands + Download content command
+_No tasks currently in progress_
 
 ---
 
 ## 🎯 What to Work on NEXT
 
-**After 003b:** Task 004 - Add Version Command (4-6h)
+**Recommended:** Task 004 - Add Version Command (4-6h)
 - [Specification](tasks/todo/medium-priority/004-add-version.md)
 - TDD approach: Write tests first
 - Create feature branch: `task/004-add-version`
@@ -30,9 +26,7 @@
 
 ### 🔴 High Priority
 
-| # | Task | Status | Effort | Details |
-|---|------|--------|--------|---------|
-| 003b | State & Download Commands | 📋 Todo | 2-3h | [spec](tasks/todo/high-priority/003b-state-and-download.md) |
+_All high priority tasks complete!_
 
 ### 🟡 Medium Priority
 
@@ -60,6 +54,7 @@
 
 | # | Task | Completed | Effort | Notes |
 |---|------|-----------|--------|-------|
+| 003b | State & Download Commands | 2025-10-28 | 2.5h | 28 tests passing, all artifact types |
 | 003 | Context Menus (Copy + Open) | 2025-10-28 | 6h | Fixed 2 API v3.1 bugs, 27 tests passing |
 | 002 | Create Artifact Wizard | 2025-10-24 | 4h | Full TDD, comprehensive validation |
 | 001 | Search Command | 2025-10-23 | 4h | Multi-criteria search working |
@@ -141,10 +136,13 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 ## 📝 Recent Activity
 
 **2025-10-28**
+- ✅ Completed Task 003b (State & Download Commands) - 2.5h
+- ✅ 28 tests passing (10 state + 18 download)
+- ✅ All 9 artifact types supported for downloads
+- ✅ Merged to main - Task 003 fully complete
 - ✅ Completed Task 003 (Context Menus - Copy + Open)
 - ✅ Fixed 2 critical API v3.1 bugs ("latest" version, content endpoint)
-- ✅ Merged task/003-context-menus to main (27 tests passing)
-- 📝 Created Task 003b (State & Download) and Task 008 (API Compatibility)
+- 📝 Created Task 008 (API Compatibility)
 
 **2025-10-24**
 - ✅ Completed Task 002 (Create Artifact Wizard)

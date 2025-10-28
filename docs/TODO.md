@@ -9,20 +9,20 @@
 
 ## 🚧 In Progress
 
-_No tasks currently in progress_
+**Task 003b - State & Download Commands** (Started: 2025-10-28)
+- [Specification](tasks/todo/high-priority/003b-state-and-download.md)
+- Branch: `task/003b-state-and-download`
+- Status: Starting - TDD approach (RED phase)
+- Implements: Change state commands + Download content command
 
 ---
 
 ## 🎯 What to Work on NEXT
 
-**Recommended:** Task 004 - Add Version Command (4-6h)
+**After 003b:** Task 004 - Add Version Command (4-6h)
 - [Specification](tasks/todo/medium-priority/004-add-version.md)
 - TDD approach: Write tests first
 - Create feature branch: `task/004-add-version`
-
-**Alternative:** Task 003b - State & Download (2-3h) to fully complete Task 003
-- [Specification](tasks/todo/high-priority/003b-state-and-download.md)
-- Completes context menu implementation
 
 ---
 

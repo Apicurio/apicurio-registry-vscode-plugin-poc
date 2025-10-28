@@ -378,4 +378,45 @@ export class RegistryService {
             throw new Error(`Failed to update state for ${groupId}/${artifactId}@${version}: ${error}`);
         }
     }
+
+    async deleteGroup(groupId: string): Promise<void> {
+        this.ensureConnected();
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            await this.client!.delete(`/groups/${encodedGroupId}`);
+        } catch (error) {
+            console.error('Error deleting group:', error);
+            throw error;
+        }
+    }
+
+    async deleteArtifact(groupId: string, artifactId: string): Promise<void> {
+        this.ensureConnected();
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            await this.client!.delete(`/groups/${encodedGroupId}/artifacts/${encodedArtifactId}`);
+        } catch (error) {
+            console.error('Error deleting artifact:', error);
+            throw error;
+        }
+    }
+
+    async deleteVersion(groupId: string, artifactId: string, version: string): Promise<void> {
+        this.ensureConnected();
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            const encodedVersion = encodeURIComponent(version);
+            await this.client!.delete(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/versions/${encodedVersion}`
+            );
+        } catch (error) {
+            console.error('Error deleting version:', error);
+            throw error;
+        }
+    }
 }

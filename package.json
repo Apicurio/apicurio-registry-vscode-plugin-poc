@@ -102,6 +102,21 @@
         "command": "apicurioRegistry.downloadContent",
         "title": "Download Content",
         "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.deleteGroup",
+        "title": "Delete Group",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.deleteArtifact",
+        "title": "Delete Artifact",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.deleteVersion",
+        "title": "Delete Version",
+        "category": "Apicurio Registry"
       }
     ],
     "menus": {
@@ -182,6 +197,21 @@
           "command": "apicurioRegistry.downloadContent",
           "when": "view == apicurioRegistry && viewItem == version",
           "group": "3_download@1"
+        },
+        {
+          "command": "apicurioRegistry.deleteGroup",
+          "when": "view == apicurioRegistry && viewItem == group",
+          "group": "9_dangerous@1"
+        },
+        {
+          "command": "apicurioRegistry.deleteArtifact",
+          "when": "view == apicurioRegistry && viewItem =~ /artifact.*/",
+          "group": "9_dangerous@1"
+        },
+        {
+          "command": "apicurioRegistry.deleteVersion",
+          "when": "view == apicurioRegistry && viewItem == version",
+          "group": "9_dangerous@1"
         }
       ]
     },

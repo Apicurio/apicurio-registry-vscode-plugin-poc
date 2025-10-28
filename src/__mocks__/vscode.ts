@@ -81,6 +81,22 @@ export enum ViewColumn {
     Nine = 9
 }
 
+export class Uri {
+    static file(path: string): Uri {
+        return new Uri('file', path);
+    }
+
+    constructor(public scheme: string, public path: string) {}
+
+    get fsPath(): string {
+        return this.path;
+    }
+
+    toString(): string {
+        return `${this.scheme}://${this.path}`;
+    }
+}
+
 export namespace window {
     export function showErrorMessage(message: string, ...items: string[]): Thenable<string | undefined> {
         return Promise.resolve(undefined);
@@ -110,6 +126,10 @@ export namespace window {
 
     export function showTextDocument(document: any, options?: any): Thenable<any> {
         return Promise.resolve({});
+    }
+
+    export function showSaveDialog(options?: { defaultUri?: Uri; filters?: Record<string, string[]> }): Thenable<Uri | undefined> {
+        return Promise.resolve(undefined);
     }
 }
 

@@ -152,10 +152,10 @@
 - `docs/tasks/**/*.md` - Task specifications
 
 **Supporting Documentation (Update as Needed):**
-- `docs/UX_COMPARISON.md` - Reference (update if new insights)
+- `docs/reference/UX_COMPARISON.md` - Reference (update if new insights)
 - `docs/VSCODE_PLUGIN_PLAN.md` - Original vision (update on major changes)
-- `docs/SEARCH_IMPLEMENTATION.md` - Implementation guides (static unless refactored)
-- `docs/CREATE_ARTIFACT_DEEP_ANALYSIS.md` - Specs (static unless changed)
+- `docs/archive/search-feature/` - Implementation guides (archived, static)
+- `docs/archive/create-artifact-feature/` - Specs (archived, static)
 
 ### Quality Checks
 

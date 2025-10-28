@@ -1,389 +1,201 @@
-# Apicurio VSCode Plugin - Quick TODO
+# Apicurio VSCode Plugin - TODO
 
 **Last Updated:** 2025-10-28
-**Current Focus:** UX Improvements (Sprint 2)
-**Overall Status:** Phase 2 Complete → UX In Progress → Phase 3 Next
+**Status:** UX Improvements Phase (Sprint 2)
 
-> 💡 **This Document:** Quick daily reference for all work
-> 📘 **Full Context:** [MASTER_PLAN.md](MASTER_PLAN.md) - Complete roadmap & strategy
+> 📘 For detailed analysis, strategy, and context → see [MASTER_PLAN.md](MASTER_PLAN.md)
 
 ---
 
-## 🎯 What to Work on TODAY
+## 🚧 In Progress
 
-**Decision Point:** **Merge Task 003 or Continue?** 🔀
-
-**Option A - Merge Now (Recommended):**
-- ✅ Task 003 (Copy + Open commands) complete and tested
-- Ready to merge to `main`
-- Continue with Task 004 (Add Version)
-
-**Option B - Complete Task 003 Fully:**
-- Continue with Task 003b (State + Download commands)
-- Then merge Task 003 fully complete
-
-**Next Task After Decision:**
-- If Option A: **Task 004 - Add Version Command** (4-6h)
-- If Option B: **Task 003b - State & Download** (2-3h)
+_No tasks currently in progress_
 
 ---
 
-## 📊 Overall Project Status
+## 🎯 What to Work on NEXT
+
+**Recommended:** Task 004 - Add Version Command (4-6h)
+- [Specification](tasks/todo/medium-priority/004-add-version.md)
+- TDD approach: Write tests first
+- Create feature branch: `task/004-add-version`
+
+**Alternative:** Task 003b - State & Download (2-3h) to fully complete Task 003
+- [Specification](tasks/todo/high-priority/003b-state-and-download.md)
+- Completes context menu implementation
+
+---
+
+## 📋 Task List by Priority
+
+### 🔴 High Priority
+
+| # | Task | Status | Effort | Details |
+|---|------|--------|--------|---------|
+| 003b | State & Download Commands | 📋 Todo | 2-3h | [spec](tasks/todo/high-priority/003b-state-and-download.md) |
+
+### 🟡 Medium Priority
+
+| # | Task | Status | Effort | Details |
+|---|------|--------|--------|---------|
+| 004 | Add Version Command | 📋 Todo | 4-6h | [spec](tasks/todo/medium-priority/004-add-version.md) |
+| 007 | Delete Operations | 📋 Todo | 3-4h | [spec](tasks/todo/medium-priority/007-delete-operations.md) |
+| 008 | API v3.1 Compatibility | 📋 Todo | 2-3h | [spec](tasks/todo/medium-priority/008-api-v31-compatibility.md) |
+| 006 | User Preferences | 📋 Todo | 2-3h | [spec](tasks/todo/medium-priority/006-user-preferences.md) |
+| 005 | Custom SVG Icons | 📋 Todo | 2-3h | [spec](tasks/todo/medium-priority/005-custom-svg-icons.md) |
+
+### 🟢 Low Priority (Deferred to Phase 3)
+
+| # | Task | Status | Effort | Details |
+|---|------|--------|--------|---------|
+| 010 | Edit Metadata UI | ⏸️ Deferred | 4-5h | [spec](tasks/todo/low-priority/010-edit-metadata.md) |
+| 008 | Details Panel | ⏸️ Deferred | 6-8h | [spec](tasks/todo/low-priority/008-details-panel.md) |
+| 009 | Reverse Version Order | ⏸️ Deferred | 1-2h | [spec](tasks/todo/low-priority/009-reverse-version-order.md) |
+
+---
+
+## ✅ Completed Tasks
+
+### UX Improvements Phase
+
+| # | Task | Completed | Effort | Notes |
+|---|------|-----------|--------|-------|
+| 003 | Context Menus (Copy + Open) | 2025-10-28 | 6h | Fixed 2 API v3.1 bugs, 27 tests passing |
+| 002 | Create Artifact Wizard | 2025-10-24 | 4h | Full TDD, comprehensive validation |
+| 001 | Search Command | 2025-10-23 | 4h | Multi-criteria search working |
+
+### Foundation Phases
+
+| Phase | Completed | Deliverables |
+|-------|-----------|--------------|
+| Phase 1 | Oct 15 | Foundation, Registry Service, Auth, Basic Tree |
+| Phase 2 | Oct 22 | Full Hierarchy, Icons, Tooltips, Multi-registry |
+
+---
+
+## 📊 Progress Overview
 
 ```
-Project Timeline:
-✅ Phase 1: Foundation          [████████████████████] 100% Complete
-✅ Phase 2: Core Tree           [████████████████████] 100% Complete
-🚧 UX Improvements              [████░░░░░░░░░░░░░░░░]  20% (Sprint 2 active)
-📋 Phase 3: Editors             [░░░░░░░░░░░░░░░░░░░░]   0% (Nov start)
-📋 Phase 4: Advanced Features   [░░░░░░░░░░░░░░░░░░░░]   0% (Dec start)
+Overall Project Progress: ██████░░░░░░░░░░░░░░░░ 30%
 
-Overall Progress: ██████░░░░░░░░░░░░░░░░ 30%
+Phase 1: Foundation        [████████████████████] 100% ✅
+Phase 2: Core Tree         [████████████████████] 100% ✅
+UX Improvements            [████░░░░░░░░░░░░░░░░]  30% 🚧
+Phase 3: Editors           [░░░░░░░░░░░░░░░░░░░░]   0% 📋
+Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░░░░]   0% 📋
 ```
+
+**UX Improvements:** 3 of 10 tasks complete (30%)
+- 🔴 High Priority: 0 of 1 remaining
+- 🟡 Medium Priority: 0 of 5 complete
+- 🟢 Low Priority: 0 of 3 (deferred)
 
 ---
 
-## 🚧 Current Sprint (Sprint 2: Oct 25-31)
+## 🗓️ Sprint Schedule
+
+### Sprint 2 (Oct 25-31) - Current
 
 **Goal:** Complete high-priority CRUD operations
-**Focus:** UX Improvements
-**Effort:** 11-16 hours
 
-| # | Task | Priority | Effort | Status | Action |
-|---|------|----------|--------|--------|--------|
-| 003 | Context Menus | 🔴 High | 4-6h | 📋 **Now** | [Start](tasks/todo/high-priority/003-context-menus.md) |
-| 004 | Add Version | 🔴 High | 4-6h | 📋 Next | [Spec](tasks/todo/medium-priority/004-add-version.md) |
-| 007 | Delete Operations | 🟡 Medium | 3-4h | 📋 Next | [Spec](tasks/todo/medium-priority/007-delete-operations.md) |
+**Tasks:**
+- [x] Task 003: Context Menus (Copy + Open) - 6h
+- [ ] Task 004: Add Version - 4-6h
+- [ ] Task 007: Delete Operations - 3-4h
 
-**Sprint Success = Full CRUD:** Create ✅ + Read ✅ + Update 📋 + Delete 📋
+**Status:** 1 of 3 complete
+**Remaining Effort:** 7-10 hours
 
----
+### Sprint 3 (Nov 1-7) - Planned
 
-## ✅ Recently Completed
+**Goal:** UX polish and preferences
 
-### Sprint 2 (Oct 25-28)
-| # | Task | Effort | Completed | Phase |
-|---|------|--------|-----------|-------|
-| 003 | Context Menus (Copy + Open) | 6h | Oct 28 | UX Improvements |
+**Tasks:**
+- [ ] Task 006: User Preferences - 2-3h
+- [ ] Task 005: Custom SVG Icons - 2-3h
 
-### Sprint 1 (Oct 23-24)
-| # | Task | Effort | Completed | Phase |
-|---|------|--------|-----------|-------|
-| 001 | Search Command | 4h | Oct 23 | UX Improvements |
-| 002 | Create Artifact Wizard | 4h | Oct 24 | UX Improvements |
+**Total Effort:** 4-6 hours
 
-### Phases 1-2 (Completed Earlier)
-| Phase | Deliverables | Status |
-|-------|--------------|--------|
-| **Phase 1** | Foundation, Registry Service, Auth, Basic Tree | ✅ Complete |
-| **Phase 2** | Full Hierarchy, Icons, Tooltips, Multi-registry | ✅ Complete |
+### Phase 3 Start (Nov 8+)
 
-**Velocity:** ~8 hours/sprint
-
----
-
-## 📋 Coming Up
-
-### Sprint 3 (Nov 1-7) - UX Polish
-| # | Task | Priority | Effort |
-|---|------|----------|--------|
-| 006 | User Preferences | 🟡 Medium | 2-3h |
-| 005 | Custom SVG Icons | 🟡 Medium | 2-3h |
-
-### Phase 3 (Nov 8-30) - Editors
-| Week | Focus | Deliverables |
-|------|-------|--------------|
-| 1-2 | Custom Text Editor | Syntax highlight, validation, save workflow |
-| 3-4 | Visual Editor | Apicurio Studio integration via webview |
-
-### Phase 4 (Dec) - Advanced Features
-- File system integration (push/pull)
-- Code generation tools
-- Collaboration features
-
----
-
-## 📈 All Phases Overview
-
-| Phase | Status | Progress | Next Milestone |
-|-------|--------|----------|----------------|
-| **Phase 1:** Foundation | ✅ Done | 100% | - |
-| **Phase 2:** Core Tree | ✅ Done | 100% | - |
-| **UX Improvements** | 🚧 Active | 20% (2/10) | M3: High Priority (Oct 31) |
-| **Phase 3:** Editors | 📋 Planned | 0% | M5: Phase 3 Start (Nov 8) |
-| **Phase 4:** Advanced | 📋 Planned | 0% | M6: Full Release (Dec 15) |
-
----
-
-## 📂 All Tasks Status
-
-### ✅ Completed (3 tasks)
-- **001** - Search Command ([spec](tasks/completed/001-search-command.md)) - UX
-- **002** - Create Artifact Wizard ([spec](tasks/completed/002-create-artifact.md)) - UX
-- **003** - Context Menus - Copy + Open ([spec](tasks/in-progress/TASK_003_TEST_RESULTS.md)) - UX (partial)
-
-### 🚧 In Progress (0 tasks)
-- _(Pending: Merge decision)_
-
-### 📋 UX Improvements - Pending (9 tasks)
-
-**🔴 High Priority (1)**
-- **003b** - State & Download Commands ([spec](tasks/todo/high-priority/003b-state-and-download.md)) ← **Complete Task 003**
-
-**🟡 Medium Priority (5)**
-- **004** - Add Version ([spec](tasks/todo/medium-priority/004-add-version.md))
-- **007** - Delete Operations ([spec](tasks/todo/medium-priority/007-delete-operations.md))
-- **008** - API v3.1 Compatibility ([spec](tasks/todo/medium-priority/008-api-v31-compatibility.md)) ← **NEW**
-- **006** - User Preferences ([spec](tasks/todo/medium-priority/006-user-preferences.md))
-- **005** - Custom SVG Icons ([spec](tasks/todo/medium-priority/005-custom-svg-icons.md))
-
-**🟢 Low Priority (3 - Deferred to Phase 3)**
-- **010** - Edit Metadata UI ([spec](tasks/todo/low-priority/010-edit-metadata.md))
-- **008** - Details Panel ([spec](tasks/todo/low-priority/008-details-panel.md))
-- **009** - Reverse Version Order ([spec](tasks/todo/low-priority/009-reverse-version-order.md))
-
-### 📋 Phase 3 Tasks (Not Started)
-- Custom Text Editor implementation
-- Webview-based visual editor
+**Goal:** Editor integration
+- Custom text editor POC
 - Apicurio Studio integration
-- Content synchronization
-- Draft and conflict resolution
-
-### 📋 Phase 4 Tasks (Not Started)
-- File system integration
-- Code generation
-- IntelliSense enhancements
-- Collaboration features
+- Sync workflow
 
 ---
 
 ## 🎯 Key Milestones
 
-| ID | Milestone | Target Date | Status | Progress |
-|----|-----------|-------------|--------|----------|
-| M1 | Foundation Complete | ✅ Oct 15 | Done | 100% |
-| M2 | Core Tree Complete | ✅ Oct 22 | Done | 100% |
-| M3 | UX High Priority | Oct 31 | 🚧 Active | 67% (2/3) |
-| M4 | UX Complete | Nov 7 | 📋 Planned | 20% (2/10) |
-| M5 | Phase 3 Start | Nov 8 | 📋 Planned | - |
-| M6 | Full Release | Dec 15 | 📋 Planned | - |
+| Milestone | Target | Status | Progress |
+|-----------|--------|--------|----------|
+| M1: Foundation Complete | Oct 15 | ✅ Done | 100% |
+| M2: Core Tree Complete | Oct 22 | ✅ Done | 100% |
+| M3: UX High Priority | Oct 31 | 🚧 Active | 67% (2/3) |
+| M4: UX Complete | Nov 7 | 📋 Planned | 30% (3/10) |
+| M5: Phase 3 Start | Nov 8 | 📋 Planned | - |
+| M6: Full Release | Dec 15 | 📋 Planned | - |
 
 ---
 
-## ⚡ Quick Stats
+## 📝 Recent Activity
 
-**This Week (Sprint 2):**
-- Tasks: 3
-- Effort: 11-16 hours
-- Focus: CRUD operations
+**2025-10-28**
+- ✅ Completed Task 003 (Context Menus - Copy + Open)
+- ✅ Fixed 2 critical API v3.1 bugs ("latest" version, content endpoint)
+- ✅ Merged task/003-context-menus to main (27 tests passing)
+- 📝 Created Task 003b (State & Download) and Task 008 (API Compatibility)
 
-**Overall Project:**
-- Total Phases: 4 + UX
-- Completed: 2 phases (Phase 1-2)
-- Active: UX Improvements (20%)
-- Remaining: UX + Phase 3 + Phase 4
+**2025-10-24**
+- ✅ Completed Task 002 (Create Artifact Wizard)
+- 📝 Created integrated MASTER_PLAN.md
+- 📝 Restructured TODO.md as global overview
 
-**Time Estimates:**
-- UX Complete: 2-3 weeks
-- Phase 3 Complete: 3-4 weeks (after UX)
-- Phase 4 Complete: 2-3 weeks (after Phase 3)
-- **Total to Release:** ~8 weeks
-
----
-
-## 💡 Daily Workflow
-
-> 📘 **Detailed Guide:** See [DOCUMENTATION_WORKFLOW.md](DOCUMENTATION_WORKFLOW.md)
-> 🤖 **Automated:** Claude will proactively remind you to update docs (via [.cursorrules](../.cursorrules))
-
-**Every Morning:**
-1. Open this TODO.md
-2. Check "What to Work on TODAY" at the top
-3. Click spec link for task details
-4. Code → Test → Commit
-
-**When Completing a Task:**
-1. Claude will prompt: "Task complete! Let's update documentation together."
-2. Follow checklist:
-   - [ ] Move file from `tasks/todo/` to `tasks/completed/`
-   - [ ] Update TODO.md (Recently Completed, progress bars, activity log)
-   - [ ] Update MASTER_PLAN.md (if milestone reached)
-   - [ ] Commit: `feat: complete task XXX - [name]`
-3. Start next task
-
-**Every Friday:**
-1. Claude reminds: "Weekly review time!"
-2. Review sprint progress
-3. Update completion percentages
-4. Update MASTER_PLAN.md strategy
-5. Plan next week
-
-**Between Sprints:**
-1. Sprint retrospective
-2. Velocity review
-3. Adjust estimates if needed
-
-**Rule:** Documentation is ALWAYS updated before moving to next task.
+**2025-10-23**
+- ✅ Completed Task 001 (Search Command)
+- 📊 Velocity confirmed: ~8h/sprint
 
 ---
 
 ## 🔗 Quick Links
 
-### Primary Documents
-- **📘 [MASTER_PLAN.md](MASTER_PLAN.md)** - Complete roadmap, all phases, integration strategy
-- **📋 [DOCUMENTATION_WORKFLOW.md](DOCUMENTATION_WORKFLOW.md)** - How to maintain docs (workflows & templates)
-- **📊 [UX_COMPARISON.md](UX_COMPARISON.md)** - Why we're doing UX improvements (reference analysis)
-- **🗺️ [VSCODE_PLUGIN_PLAN.md](VSCODE_PLUGIN_PLAN.md)** - Original 4-phase vision
-- **🤖 [.cursorrules](../.cursorrules)** - Automated documentation enforcement
+**Documentation:**
+- [MASTER_PLAN.md](MASTER_PLAN.md) - Complete roadmap & strategy
+- [DOCUMENTATION_WORKFLOW.md](DOCUMENTATION_WORKFLOW.md) - How to maintain docs
+- [UX_COMPARISON.md](UX_COMPARISON.md) - Reference plugin analysis
 
-### Implementation Resources
-- **[tasks/](tasks/)** - All task specifications organized by status/priority
-- [SEARCH_IMPLEMENTATION.md](SEARCH_IMPLEMENTATION.md) - Search feature guide
-- [CREATE_ARTIFACT_DEEP_ANALYSIS.md](CREATE_ARTIFACT_DEEP_ANALYSIS.md) - Create artifact spec (1907 lines)
-- [CREATE_ARTIFACT_IMPLEMENTATION_SUMMARY.md](CREATE_ARTIFACT_IMPLEMENTATION_SUMMARY.md) - Summary
+**Tasks:**
+- [tasks/completed/](tasks/completed/) - ✅ Done
+- [tasks/in-progress/](tasks/in-progress/) - 🚧 Active
+- [tasks/todo/](tasks/todo/) - 📋 Pending (by priority)
 
-### Task Folders
-- [tasks/completed/](tasks/completed/) - ✅ Done, lessons learned
-- [tasks/in-progress/](tasks/in-progress/) - 🚧 Active work
-- [tasks/todo/high-priority/](tasks/todo/high-priority/) - 🔴 Critical
-- [tasks/todo/medium-priority/](tasks/todo/medium-priority/) - 🟡 Important
-- [tasks/todo/low-priority/](tasks/todo/low-priority/) - 🟢 Nice to have
+**Implementation Guides:**
+- [SEARCH_IMPLEMENTATION.md](SEARCH_IMPLEMENTATION.md) - Search feature
+- [CREATE_ARTIFACT_DEEP_ANALYSIS.md](CREATE_ARTIFACT_DEEP_ANALYSIS.md) - Create artifact
+- [tasks/in-progress/TASK_003_TEST_RESULTS.md](tasks/in-progress/TASK_003_TEST_RESULTS.md) - Task 003 testing
 
 ---
 
-## 🎯 Success Criteria
+## 💡 Daily Workflow
 
-### Current Sprint (Sprint 2)
-- [ ] Task 003: Context Menus - Complete & tested
-- [ ] Task 004: Add Version - Complete & tested
-- [ ] Task 007: Delete Operations - Complete & tested
-- [ ] All CRUD operations working
-- [ ] Reference plugin parity for basic workflows
+**Every Morning:**
+1. Open TODO.md
+2. Check "What to Work on NOW"
+3. Create feature branch for task
+4. Follow TDD: RED → GREEN → REFACTOR
 
-### UX Improvements Phase (Overall)
-- [ ] All high + medium priority tasks (001-007)
-- [ ] Reference plugin feature parity
-- [ ] User preferences configurable
-- [ ] Custom icons integrated
-- [ ] Ready for Phase 3
+**When Completing a Task:**
+1. Merge to main
+2. Move spec to `tasks/completed/`
+3. Update TODO.md and MASTER_PLAN.md
+4. Commit doc updates
 
-### Phase 3 (Editors)
-- [ ] Custom text editor working
-- [ ] Visual editor integrated
-- [ ] Content sync bidirectional
-- [ ] Draft system functional
-
-### Full Project (Release)
-- [ ] All 4 phases complete
-- [ ] All UX improvements done
-- [ ] Marketplace ready
-- [ ] Documentation complete
+**Every Friday:**
+- Sprint review
+- Update progress percentages
+- Plan next week
 
 ---
 
-## 📝 Recent Activity Log
-
-### 2025-10-28
-- ✅ Completed Task 003: Context Menus - Copy + Open commands (6h)
-- ✅ Fixed 2 critical API v3.1 compatibility issues
-- ✅ All 27 unit tests passing + manual testing successful
-- 📝 Created Task 003b (State & Download) and Task 008 (API Compatibility)
-- 🔀 Decision point: Merge now or complete Task 003b first
-
-### 2025-10-24
-- ✅ Completed Task 002: Create Artifact Wizard (4h)
-- ✅ Created integrated MASTER_PLAN.md
-- ✅ Restructured TODO.md as global quick overview
-- ✅ Manual testing successful with test artifacts
-- 📋 Sprint 2 starts tomorrow
-
-### 2025-10-23
-- ✅ Completed Task 001: Search Command (4h)
-- ✅ Automated tests passing
-- 📝 Velocity confirmed: ~8h/sprint
-
-### Earlier (Phase 1-2)
-- ✅ Oct 15: Phase 1 complete (Foundation)
-- ✅ Oct 22: Phase 2 complete (Core Tree)
-- ✅ Basic connectivity, auth, tree view, icons, tooltips
-
----
-
-## 📊 Progress Breakdown
-
-### By Phase
-- Phase 1: ████████████████████ 100% ✅
-- Phase 2: ████████████████████ 100% ✅
-- UX Improvements: ████░░░░░░░░░░░░ 20% 🚧
-- Phase 3: ░░░░░░░░░░░░░░░░░░░░ 0% 📋
-- Phase 4: ░░░░░░░░░░░░░░░░░░░░ 0% 📋
-
-### By Priority (UX Improvements)
-- 🔴 High: ████████░░ 67% (2/3)
-- 🟡 Medium: ░░░░░░░░░░ 0% (0/4)
-- 🟢 Low: ░░░░░░░░░░ 0% (0/3, deferred)
-
-### By Sprint
-- Sprint 1: ████████████████████ 100% (2 tasks, 8h)
-- Sprint 2: ░░░░░░░░░░░░░░░░░░░░ 0% (3 tasks, 11-16h) ← Current
-- Sprint 3: ░░░░░░░░░░░░░░░░░░░░ 0% (2 tasks, 4-6h)
-
----
-
-## 🚀 Next Steps
-
-### Immediate (Today)
-1. **Start Task 003: Context Menus**
-   - Read full spec
-   - Add contextValue to tree items
-   - Implement copy/open/state/download commands
-   - Test all menus
-
-### This Week (Sprint 2)
-1. Complete Task 003 (context menus)
-2. Complete Task 004 (add version)
-3. Complete Task 007 (delete operations)
-4. Full CRUD workflow testing
-5. Update documentation
-
-### Next Week (Sprint 3)
-1. Task 006: User Preferences
-2. Task 005: Custom SVG Icons
-3. Final UX polish
-4. UX Improvements retrospective
-5. Prepare for Phase 3
-
-### Following (Phase 3 Start)
-1. Research Apicurio Studio architecture
-2. POC custom text editor
-3. Design sync strategy
-4. Begin editor implementation
-
----
-
-## 🎓 Reference Plugin Parity
-
-Track progress toward reference plugin feature parity:
-
-| Feature | Reference | Ours | Status | Task |
-|---------|-----------|------|--------|------|
-| Tree View | 3-panel | Single tree | ✅ Better | Phase 2 |
-| Connection | Settings | UI-driven | ✅ Better | Phase 1 |
-| Auth | None | Basic+OIDC | ✅ Better | Phase 1 |
-| Search | ✅ Yes | ✅ Yes | ✅ Done | 001 |
-| Create Artifact | ✅ Yes | ✅ Yes | ✅ Done | 002 |
-| Context Menus | ✅ Yes | 📋 | 🚧 Sprint 2 | 003 |
-| Add Version | ✅ Yes | 📋 | 📋 Sprint 2 | 004 |
-| Delete | ✅ Yes | 📋 | 📋 Sprint 2 | 007 |
-| User Prefs | ✅ Yes | 📋 | 📋 Sprint 3 | 006 |
-| Custom Icons | ✅ Yes | 📋 | 📋 Sprint 3 | 005 |
-| Visual Editor | ❌ No | 📋 | 📋 Phase 3 | - |
-
-**Parity Status:** 50% (5/10 features)
-**Target:** 90% after Sprint 3, 100%+ after Phase 3
-
----
-
-_This is your daily quick reference for the entire project. For detailed strategy, see [MASTER_PLAN.md](MASTER_PLAN.md)_
-
-_Last updated: 2025-10-24 | Next review: Weekly on Fridays_
+_For detailed analysis, charts, and strategy → see [MASTER_PLAN.md](MASTER_PLAN.md)_
+_Last updated: 2025-10-28_

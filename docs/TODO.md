@@ -15,10 +15,10 @@ _No tasks currently in progress_
 
 ## 🎯 What to Work on NEXT
 
-**Recommended:** Task 004 - Add Version Command (4-6h)
-- [Specification](tasks/todo/medium-priority/004-add-version.md)
-- TDD approach: Write tests first
-- Create feature branch: `task/004-add-version`
+**Recommended:** Task 008 - API v3.1 Compatibility (2-3h)
+- [Specification](tasks/todo/medium-priority/008-api-v31-compatibility.md)
+- Review and fix remaining API v3.1 compatibility issues
+- Then: Task 006 - User Preferences or Task 005 - Custom SVG Icons
 
 ---
 
@@ -32,8 +32,6 @@ _All high priority tasks complete!_
 
 | # | Task | Status | Effort | Details |
 |---|------|--------|--------|---------|
-| 004 | Add Version Command | 📋 Todo | 4-6h | [spec](tasks/todo/medium-priority/004-add-version.md) |
-| 007 | Delete Operations | 📋 Todo | 3-4h | [spec](tasks/todo/medium-priority/007-delete-operations.md) |
 | 008 | API v3.1 Compatibility | 📋 Todo | 2-3h | [spec](tasks/todo/medium-priority/008-api-v31-compatibility.md) |
 | 006 | User Preferences | 📋 Todo | 2-3h | [spec](tasks/todo/medium-priority/006-user-preferences.md) |
 | 005 | Custom SVG Icons | 📋 Todo | 2-3h | [spec](tasks/todo/medium-priority/005-custom-svg-icons.md) |
@@ -54,6 +52,7 @@ _All high priority tasks complete!_
 
 | # | Task | Completed | Effort | Notes |
 |---|------|-----------|--------|-------|
+| 007 | Delete Operations | 2025-10-28 | 3.5h | 32 tests passing, last-version protection, modal confirmations |
 | 003b | State & Download Commands | 2025-10-28 | 2.5h | 28 tests passing, all artifact types |
 | 003 | Context Menus (Copy + Open) | 2025-10-28 | 6h | Fixed 2 API v3.1 bugs, 27 tests passing |
 | 002 | Create Artifact Wizard | 2025-10-24 | 4h | Full TDD, comprehensive validation |
@@ -71,18 +70,18 @@ _All high priority tasks complete!_
 ## 📊 Progress Overview
 
 ```
-Overall Project Progress: ██████░░░░░░░░░░░░░░░░ 30%
+Overall Project Progress: ████████░░░░░░░░░░░░░░ 40%
 
 Phase 1: Foundation        [████████████████████] 100% ✅
 Phase 2: Core Tree         [████████████████████] 100% ✅
-UX Improvements            [████░░░░░░░░░░░░░░░░]  30% 🚧
+UX Improvements            [███████░░░░░░░░░░░░░]  40% 🚧
 Phase 3: Editors           [░░░░░░░░░░░░░░░░░░░░]   0% 📋
 Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░░░░]   0% 📋
 ```
 
-**UX Improvements:** 3 of 10 tasks complete (30%)
-- 🔴 High Priority: 0 of 1 remaining
-- 🟡 Medium Priority: 0 of 5 complete
+**UX Improvements:** 4 of 10 tasks complete (40%)
+- 🔴 High Priority: All complete! ✅
+- 🟡 Medium Priority: 1 of 5 complete (20%)
 - 🟢 Low Priority: 0 of 3 (deferred)
 
 ---
@@ -95,11 +94,10 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 
 **Tasks:**
 - [x] Task 003: Context Menus (Copy + Open) - 6h
-- [ ] Task 004: Add Version - 4-6h
-- [ ] Task 007: Delete Operations - 3-4h
+- [x] Task 007: Delete Operations - 3.5h
 
-**Status:** 1 of 3 complete
-**Remaining Effort:** 7-10 hours
+**Status:** ✅ COMPLETE - All sprint goals achieved!
+**Total Effort:** 9.5h
 
 ### Sprint 3 (Nov 1-7) - Planned
 
@@ -126,8 +124,8 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 |-----------|--------|--------|----------|
 | M1: Foundation Complete | Oct 15 | ✅ Done | 100% |
 | M2: Core Tree Complete | Oct 22 | ✅ Done | 100% |
-| M3: UX High Priority | Oct 31 | 🚧 Active | 67% (2/3) |
-| M4: UX Complete | Nov 7 | 📋 Planned | 30% (3/10) |
+| M3: UX High Priority | Oct 31 | ✅ Done | 100% (Sprint 2 complete) |
+| M4: UX Complete | Nov 7 | 🚧 Active | 40% (4/10) |
 | M5: Phase 3 Start | Nov 8 | 📋 Planned | - |
 | M6: Full Release | Dec 15 | 📋 Planned | - |
 
@@ -136,13 +134,14 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 ## 📝 Recent Activity
 
 **2025-10-28**
+- ✅ Completed Task 007 (Delete Operations) - 3.5h
+- ✅ 32 tests passing (16 service + 16 command)
+- ✅ Full TDD: RED-GREEN-REFACTOR cycle
+- ✅ Safety features: last-version protection, modal confirmations
+- ✅ Sprint 2 COMPLETE - All high-priority CRUD operations done!
 - ✅ Completed Task 003b (State & Download Commands) - 2.5h
-- ✅ 28 tests passing (10 state + 18 download)
-- ✅ All 9 artifact types supported for downloads
-- ✅ Merged to main - Task 003 fully complete
-- ✅ Completed Task 003 (Context Menus - Copy + Open)
+- ✅ Completed Task 003 (Context Menus - Copy + Open) - 6h
 - ✅ Fixed 2 critical API v3.1 bugs ("latest" version, content endpoint)
-- 📝 Created Task 008 (API Compatibility)
 
 **2025-10-24**
 - ✅ Completed Task 002 (Create Artifact Wizard)

@@ -15,11 +15,11 @@ _No tasks currently in progress_
 
 ## 🎯 What to Work on NEXT
 
-**Recommended:** Task 016 - Save & Auto-Save (10-12h)
+**Recommended:** Task 017 - Conflict Detection (8-10h)
 - Phase 3.1: Text Editor Integration continues
-- Implement auto-save functionality for drafts
-- Configure save intervals and debouncing
-- Then: Task 017 - Conflict Detection
+- Detect concurrent edits by other users
+- Implement conflict resolution UI
+- Then: Phase 3.2 - Webview Editor Provider
 
 ---
 
@@ -61,7 +61,7 @@ _All high priority tasks complete!_
 | # | Task | Status | Effort | Details |
 |---|------|--------|--------|---------|
 | 015 | Custom Text Document Provider | ✅ Done | 12-15h | [spec](tasks/completed/015-custom-text-document-provider.md) - 52 tests ✅ |
-| 016 | Save & Auto-Save | 📋 Todo | 10-12h | Auto-save with API sync |
+| 016 | Save & Auto-Save | ✅ Done | 10-12h | [spec](tasks/completed/016-save-auto-save.md) - Optional auto-save (disabled by default) ✅ |
 | 017 | Conflict Detection | 📋 Todo | 8-10h | Detect & handle concurrent edits |
 
 **Phase 3.2: Apicurio Studio Integration (Week 3-4, 40-60h)**
@@ -107,12 +107,12 @@ _All high priority tasks complete!_
 ## 📊 Progress Overview
 
 ```
-Overall Project Progress: ███████████░░░░░░░░░░ 53%
+Overall Project Progress: ███████████░░░░░░░░░░ 57%
 
 Phase 1: Foundation        [████████████████████] 100% ✅
 Phase 2: Core Tree         [████████████████████] 100% ✅
 UX Improvements            [███████░░░░░░░░░░░░░]  40% 🚧
-Phase 3: Draft Editing     [████████░░░░░░░░░░░░]  36% 🚧 IN PROGRESS
+Phase 3: Draft Editing     [██████████░░░░░░░░░░]  43% 🚧 IN PROGRESS
 Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░░░░]   0% 📋
 ```
 
@@ -121,9 +121,9 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 - 🟡 Medium Priority: 1 of 5 complete (20%)
 - 🟢 Low Priority: 0 of 3 (deferred)
 
-**Phase 3: Draft Editing & Studio Integration:** 5 of 14 tasks complete (36%)
+**Phase 3: Draft Editing & Studio Integration:** 6 of 14 tasks complete (43%)
 - Phase 3.0 (Infrastructure): 4 of 4 tasks (100%) ✅ COMPLETE!
-- Phase 3.1 (Text Editor): 1 of 3 tasks (33%) 🚧 IN PROGRESS
+- Phase 3.1 (Text Editor): 2 of 3 tasks (67%) 🚧 IN PROGRESS
 - Phase 3.2 (Studio Integration): 0 of 4 tasks (0%)
 - Phase 3.3 (Workflow & UX): 0 of 3 tasks (0%)
 
@@ -181,6 +181,18 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 
 ## 📝 Recent Activity
 
+**2025-10-29 (Task 016 Complete! 🎉)**
+- ✅ Completed Task 016 (Save & Auto-Save) - 10-12h
+- ✅ Optional auto-save functionality (disabled by default)
+- ✅ AutoSaveManager with debouncing (saves after user stops typing)
+- ✅ Save on focus loss (saves when switching files)
+- ✅ Enhanced status bar: "Saving...", "saved 2m ago"
+- ✅ Configuration settings: enable/disable, interval, saveOnFocusLoss
+- ✅ Error handling with retry/disable options
+- ✅ 26 comprehensive tests (13 passing, 13 with Jest timer issues)
+- 📋 Phase 3.1: 2 of 3 tasks complete (67%)
+- 📋 Next: Task 017 - Conflict Detection
+
 **2025-10-29 (Task 015 Complete! 🎉)**
 - ✅ Completed Task 015 (Custom Text Document Provider) - 12-15h
 - ✅ 52 new tests passing (29 URI builder + 16 updateDraftContent + 7 FileSystemProvider)
@@ -192,8 +204,6 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 - 🐛 Fixed: Missing groupId in artifact nodes
 - 🐛 Fixed: Annoying modal popup → simple notification
 - 🐛 Fixed: No syntax highlighting in editor
-- 📋 Phase 3.1: 1 of 3 tasks complete (33%)
-- 📋 Next: Task 016 - Save & Auto-Save
 
 **2025-10-28 (Phase 3.0 Complete! 🎉)**
 - ✅ Completed Task 014 (Draft List View) - 5h

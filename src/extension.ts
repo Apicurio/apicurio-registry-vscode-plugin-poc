@@ -4,6 +4,7 @@ import { RegistryService } from './services/registryService';
 import { ApicurioFileSystemProvider } from './providers/apicurioFileSystemProvider';
 import { StatusBarManager } from './ui/statusBarManager';
 import { ApicurioUriBuilder } from './utils/uriBuilder';
+import { AutoSaveManager } from './services/autoSaveManager';
 import { searchArtifactsCommand } from './commands/searchCommand';
 import { createArtifactCommand } from './commands/createArtifactCommand';
 import {
@@ -61,19 +62,95 @@ export function activate(context: vscode.ExtensionContext) {
         )
     );
 
-    // Create status bar manager
-    const statusBarManager = new StatusBarManager();
+    // Get auto-save configuration
+    const config = vscode.workspace.getConfiguration('apicurioRegistry.autoSave');
+    const autoSaveConfig = {
+        enabled: config.get<boolean>('enabled', false),
+        interval: config.get<number>('interval', 2000),
+        saveOnFocusLoss: config.get<boolean>('saveOnFocusLoss', true)
+    };
+
+    // Create auto-save manager
+    const autoSaveManager = new AutoSaveManager(autoSaveConfig);
+    context.subscriptions.push(autoSaveManager);
+
+    // Create status bar manager with auto-save support
+    const statusBarManager = new StatusBarManager(autoSaveManager);
     context.subscriptions.push(statusBarManager);
 
-    // Update status bar when active editor changes
+    // Listen for text changes (debounced auto-save)
     context.subscriptions.push(
-        vscode.window.onDidChangeActiveTextEditor(editor => {
+        vscode.workspace.onDidChangeTextDocument(event => {
+            if (event.document.uri.scheme === ApicurioUriBuilder.SCHEME) {
+                autoSaveManager.scheduleSave(event.document);
+            }
+        })
+    );
+
+    // Listen for editor changes (save on focus loss)
+    let previousEditor: vscode.TextEditor | undefined;
+    context.subscriptions.push(
+        vscode.window.onDidChangeActiveTextEditor(async editor => {
+            // Save previous editor if it was an Apicurio document
+            if (previousEditor?.document.uri.scheme === ApicurioUriBuilder.SCHEME) {
+                await autoSaveManager.saveImmediately(previousEditor.document);
+            }
+            previousEditor = editor;
+
+            // Update status bar
             statusBarManager.updateStatusBar(editor);
         })
     );
 
     // Update status bar for current editor
     statusBarManager.updateStatusBar(vscode.window.activeTextEditor);
+
+    // Listen for save events to update status bar
+    context.subscriptions.push(
+        autoSaveManager.onDidSave(uri => {
+            const editor = vscode.window.activeTextEditor;
+            if (editor?.document.uri.toString() === uri.toString()) {
+                statusBarManager.updateStatusBar(editor);
+            }
+        })
+    );
+
+    // Listen for save failures
+    context.subscriptions.push(
+        autoSaveManager.onSaveFailed(({ uri, error }) => {
+            vscode.window.showErrorMessage(
+                `Auto-save failed: ${error.message}`,
+                'Retry',
+                'Disable Auto-Save'
+            ).then(action => {
+                if (action === 'Retry') {
+                    const editor = vscode.window.visibleTextEditors.find(
+                        e => e.document.uri.toString() === uri.toString()
+                    );
+                    if (editor) {
+                        autoSaveManager.scheduleSave(editor.document);
+                    }
+                } else if (action === 'Disable Auto-Save') {
+                    vscode.workspace.getConfiguration('apicurioRegistry.autoSave')
+                        .update('enabled', false, vscode.ConfigurationTarget.Global);
+                }
+            });
+        })
+    );
+
+    // Listen for configuration changes
+    context.subscriptions.push(
+        vscode.workspace.onDidChangeConfiguration(event => {
+            if (event.affectsConfiguration('apicurioRegistry.autoSave')) {
+                const config = vscode.workspace.getConfiguration('apicurioRegistry.autoSave');
+                autoSaveManager.updateConfig({
+                    enabled: config.get<boolean>('enabled', false),
+                    interval: config.get<number>('interval', 2000),
+                    saveOnFocusLoss: config.get<boolean>('saveOnFocusLoss', true)
+                });
+            }
+        })
+    );
 
     // Register commands
     const refreshCommand = vscode.commands.registerCommand('apicurioRegistry.refresh', () => {

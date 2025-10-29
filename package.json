@@ -2,7 +2,7 @@
   "name": "apicurio-vscode-extension",
   "displayName": "Apicurio Registry",
   "description": "Browse and edit API specifications from Apicurio Registry",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "apicurio",
   "engines": {
     "vscode": "^1.70.0"

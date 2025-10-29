@@ -618,4 +618,54 @@ export class RegistryService {
             throw new Error(`Failed to update metadata: ${error.message || error}`);
         }
     }
+
+    /**
+     * Update draft version content.
+     * Only works for versions in DRAFT state.
+     *
+     * @param groupId - The artifact group ID
+     * @param artifactId - The artifact ID
+     * @param version - The version identifier
+     * @param content - The new content (JSON, YAML, etc.)
+     */
+    async updateDraftContent(
+        groupId: string,
+        artifactId: string,
+        version: string,
+        content: string
+    ): Promise<void> {
+        this.ensureConnected();
+
+        const encodedGroupId = encodeURIComponent(groupId);
+        const encodedArtifactId = encodeURIComponent(artifactId);
+        const encodedVersion = encodeURIComponent(version);
+
+        try {
+            await this.client!.put(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/versions/${encodedVersion}/content`,
+                { content }
+            );
+        } catch (error: any) {
+            console.error('Error updating draft content:', error);
+
+            if (error.response) {
+                const status = error.response.status;
+                const message = error.response.data?.message || error.response.data?.detail || error.message;
+
+                switch (status) {
+                    case 404:
+                        throw new Error(`Version not found: ${groupId}/${artifactId}:${version}`);
+                    case 400:
+                    case 405:
+                        throw new Error('Cannot update published version content. Only draft version content can be modified.');
+                    case 409:
+                        throw new Error('Content conflict. The version may have been modified by another user.');
+                    default:
+                        throw new Error(`Failed to update content: ${message}`);
+                }
+            }
+
+            throw new Error(`Failed to update content: ${error.message || error}`);
+        }
+    }
 }

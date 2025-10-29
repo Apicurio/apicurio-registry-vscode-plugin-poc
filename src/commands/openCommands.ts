@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { RegistryItem, RegistryItemType } from '../models/registryModels';
 import { RegistryService } from '../services/registryService';
+import { ApicurioUriBuilder } from '../utils/uriBuilder';
 
 /**
  * Map artifact type to VSCode language identifier
@@ -113,7 +114,8 @@ export async function openArtifactCommand(
 }
 
 /**
- * Open specific version in editor
+ * Open specific version in editor using custom URI scheme.
+ * Draft versions are editable, published versions are read-only.
  */
 export async function openVersionCommand(
     registryService: RegistryService,
@@ -123,6 +125,7 @@ export async function openVersionCommand(
     const groupId = node.groupId;
     const artifactId = node.parentId;
     const version = node.id;
+    const state = node.metadata?.state || 'ENABLED';
 
     if (!groupId || !artifactId || !version) {
         vscode.window.showErrorMessage('Missing version information');
@@ -130,43 +133,31 @@ export async function openVersionCommand(
     }
 
     try {
-        // Fetch content with progress indicator
-        const content = await vscode.window.withProgress(
-            {
-                location: vscode.ProgressLocation.Notification,
-                title: `Opening ${artifactId} v${version}...`,
-                cancellable: false
-            },
-            async (progress) => {
-                progress.report({ message: 'Fetching content...' });
-                return await registryService.getArtifactContent(groupId, artifactId, version);
-            }
-        );
+        // Build custom URI with state information
+        const uri = ApicurioUriBuilder.buildVersionUri(groupId, artifactId, version, state);
 
-        // Determine language for syntax highlighting
+        // Open document using our custom URI scheme
+        const doc = await vscode.workspace.openTextDocument(uri);
+
+        // Set language mode based on artifact type for syntax highlighting
         const artifactType = node.metadata?.artifactType;
-        let language = 'plaintext';
-
         if (artifactType) {
-            language = getLanguageFromArtifactType(artifactType);
+            const language = getLanguageFromArtifactType(artifactType);
+            await vscode.languages.setTextDocumentLanguage(doc, language);
         }
-
-        // Fall back to content type if artifact type didn't give us a language
-        if (language === 'plaintext' && content.contentType) {
-            language = getLanguageFromContentType(content.contentType);
-        }
-
-        // Create and open document
-        const doc = await vscode.workspace.openTextDocument({
-            content: content.content,
-            language: language
-        });
 
         await vscode.window.showTextDocument(doc, {
-            viewColumn: vscode.ViewColumn.One,
-            preview: false
+            preview: false,
+            viewColumn: vscode.ViewColumn.One
         });
 
+        // For published versions, show a subtle notification (non-blocking)
+        if (state !== 'DRAFT') {
+            // Show info message without action buttons - less intrusive
+            vscode.window.showInformationMessage(
+                `Read-only: ${state} version. Right-click artifact in tree to create a new draft version.`
+            );
+        }
     } catch (error) {
         vscode.window.showErrorMessage(
             `Failed to open version: ${error instanceof Error ? error.message : String(error)}`

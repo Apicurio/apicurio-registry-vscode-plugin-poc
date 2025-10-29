@@ -15,11 +15,11 @@ _No tasks currently in progress_
 
 ## 🎯 What to Work on NEXT
 
-**Recommended:** Task 015 - Custom Text Document Provider (12-15h)
-- Phase 3.1: Text Editor Integration begins
-- Implement virtual text documents for editing drafts
-- Enable direct editing of draft content in VSCode
-- Then: Task 016 - Save & Auto-Save
+**Recommended:** Task 016 - Save & Auto-Save (10-12h)
+- Phase 3.1: Text Editor Integration continues
+- Implement auto-save functionality for drafts
+- Configure save intervals and debouncing
+- Then: Task 017 - Conflict Detection
 
 ---
 
@@ -60,7 +60,7 @@ _All high priority tasks complete!_
 
 | # | Task | Status | Effort | Details |
 |---|------|--------|--------|---------|
-| 015 | Custom Text Document Provider | 📋 Todo | 12-15h | Edit drafts as text files |
+| 015 | Custom Text Document Provider | ✅ Done | 12-15h | [spec](tasks/completed/015-custom-text-document-provider.md) - 52 tests ✅ |
 | 016 | Save & Auto-Save | 📋 Todo | 10-12h | Auto-save with API sync |
 | 017 | Conflict Detection | 📋 Todo | 8-10h | Detect & handle concurrent edits |
 
@@ -107,12 +107,12 @@ _All high priority tasks complete!_
 ## 📊 Progress Overview
 
 ```
-Overall Project Progress: ██████████░░░░░░░░░░░░ 46%
+Overall Project Progress: ███████████░░░░░░░░░░ 53%
 
 Phase 1: Foundation        [████████████████████] 100% ✅
 Phase 2: Core Tree         [████████████████████] 100% ✅
 UX Improvements            [███████░░░░░░░░░░░░░]  40% 🚧
-Phase 3: Draft Editing     [██████░░░░░░░░░░░░░░]  29% 🚧 IN PROGRESS
+Phase 3: Draft Editing     [████████░░░░░░░░░░░░]  36% 🚧 IN PROGRESS
 Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░░░░]   0% 📋
 ```
 
@@ -121,9 +121,9 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 - 🟡 Medium Priority: 1 of 5 complete (20%)
 - 🟢 Low Priority: 0 of 3 (deferred)
 
-**Phase 3: Draft Editing & Studio Integration:** 4 of 14 tasks complete (29%)
+**Phase 3: Draft Editing & Studio Integration:** 5 of 14 tasks complete (36%)
 - Phase 3.0 (Infrastructure): 4 of 4 tasks (100%) ✅ COMPLETE!
-- Phase 3.1 (Text Editor): 0 of 3 tasks (0%)
+- Phase 3.1 (Text Editor): 1 of 3 tasks (33%) 🚧 IN PROGRESS
 - Phase 3.2 (Studio Integration): 0 of 4 tasks (0%)
 - Phase 3.3 (Workflow & UX): 0 of 3 tasks (0%)
 
@@ -180,6 +180,20 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 ---
 
 ## 📝 Recent Activity
+
+**2025-10-29 (Task 015 Complete! 🎉)**
+- ✅ Completed Task 015 (Custom Text Document Provider) - 12-15h
+- ✅ 52 new tests passing (29 URI builder + 16 updateDraftContent + 7 FileSystemProvider)
+- ✅ Custom URI scheme: `apicurio://` for version documents
+- ✅ State-based editing: drafts editable, published read-only
+- ✅ FileSystemProvider with save-back to registry
+- ✅ Status bar integration (📝 for drafts, 🔒 for published)
+- ✅ Syntax highlighting auto-detection (YAML, JSON, XML, etc.)
+- 🐛 Fixed: Missing groupId in artifact nodes
+- 🐛 Fixed: Annoying modal popup → simple notification
+- 🐛 Fixed: No syntax highlighting in editor
+- 📋 Phase 3.1: 1 of 3 tasks complete (33%)
+- 📋 Next: Task 016 - Save & Auto-Save
 
 **2025-10-28 (Phase 3.0 Complete! 🎉)**
 - ✅ Completed Task 014 (Draft List View) - 5h

@@ -1,6 +1,9 @@
 import * as vscode from 'vscode';
 import { RegistryTreeDataProvider } from './providers/registryTreeProvider';
 import { RegistryService } from './services/registryService';
+import { ApicurioFileSystemProvider } from './providers/apicurioFileSystemProvider';
+import { StatusBarManager } from './ui/statusBarManager';
+import { ApicurioUriBuilder } from './utils/uriBuilder';
 import { searchArtifactsCommand } from './commands/searchCommand';
 import { createArtifactCommand } from './commands/createArtifactCommand';
 import {
@@ -47,6 +50,30 @@ export function activate(context: vscode.ExtensionContext) {
         treeDataProvider: registryTreeProvider,
         showCollapseAll: true
     });
+
+    // Register file system provider for Apicurio URIs
+    const fileSystemProvider = new ApicurioFileSystemProvider(registryService);
+    context.subscriptions.push(
+        vscode.workspace.registerFileSystemProvider(
+            ApicurioUriBuilder.SCHEME,
+            fileSystemProvider,
+            { isCaseSensitive: true }
+        )
+    );
+
+    // Create status bar manager
+    const statusBarManager = new StatusBarManager();
+    context.subscriptions.push(statusBarManager);
+
+    // Update status bar when active editor changes
+    context.subscriptions.push(
+        vscode.window.onDidChangeActiveTextEditor(editor => {
+            statusBarManager.updateStatusBar(editor);
+        })
+    );
+
+    // Update status bar for current editor
+    statusBarManager.updateStatusBar(vscode.window.activeTextEditor);
 
     // Register commands
     const refreshCommand = vscode.commands.registerCommand('apicurioRegistry.refresh', () => {

@@ -222,7 +222,8 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 return await this.getArtifacts(element.id!);
             } else if (element.type === RegistryItemType.Artifact) {
                 // Artifact level: return versions
-                return await this.getVersions(element.parentId!, element.id!);
+                const artifactType = element.metadata?.artifactType;
+                return await this.getVersions(element.parentId!, element.id!, artifactType);
             }
         } catch (error) {
             console.error('Error fetching registry data:', error);
@@ -266,11 +267,12 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 description: artifact.description,
                 modifiedOn: artifact.modifiedOn
             },
-            groupId
+            groupId,  // parentId (the group this artifact belongs to)
+            groupId   // groupId (needed for commands that require groupId)
         ));
     }
 
-    private async getVersions(groupId: string, artifactId: string): Promise<RegistryItem[]> {
+    private async getVersions(groupId: string, artifactId: string, artifactType?: string): Promise<RegistryItem[]> {
         const versions = await this.registryService.getVersions(groupId, artifactId);
         return versions.map(version => new RegistryItem(
             version.version || 'unknown',
@@ -280,7 +282,8 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 versionId: version.versionId,
                 globalId: version.globalId,
                 state: version.state,
-                createdOn: version.createdOn
+                createdOn: version.createdOn,
+                artifactType: artifactType  // Pass artifact type for syntax highlighting
             },
             artifactId,
             groupId
@@ -324,7 +327,8 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 description: artifact.description,
                 modifiedOn: artifact.modifiedOn
             },
-            artifact.groupId
+            artifact.groupId,  // parentId
+            artifact.groupId   // groupId (needed for commands)
         ));
     }
 }

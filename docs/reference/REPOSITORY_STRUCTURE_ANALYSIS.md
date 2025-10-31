@@ -168,8 +168,8 @@ To maintain development efficiency while using separate repositories, we recomme
 ### Proposed Workspace Layout
 
 ```
-/Users/astranier/Documents/dev/apicurio/
-├── apicurio-registry/                  # Existing registry (moved)
+<PROJECT_ROOT>/
+├── apicurio-registry/                  # Existing registry
 │   ├── app/
 │   ├── ui/
 │   ├── typescript-sdk/

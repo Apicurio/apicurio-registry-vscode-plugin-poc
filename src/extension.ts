@@ -33,6 +33,17 @@ import {
     discardDraftCommand,
     editDraftMetadataCommand
 } from './commands/draftCommands';
+import {
+    startMCPServerCommand,
+    stopMCPServerCommand,
+    restartMCPServerCommand,
+    showMCPQuickActionsCommand,
+    showMCPServerStatusCommand
+} from './commands/mcpCommands';
+import { MCPServerManager } from './services/mcpServerManager';
+import { MCPConfigurationManager } from './services/mcpConfigurationManager';
+import { MCPStatusBar } from './ui/mcpStatusBar';
+import { DEFAULT_MCP_CONFIG } from './models/mcpServerConfig';
 
 let registryTreeProvider: RegistryTreeDataProvider;
 let registryService: RegistryService;
@@ -152,6 +163,85 @@ export function activate(context: vscode.ExtensionContext) {
         })
     );
 
+    // ==================== MCP Server Setup ====================
+
+    // Get MCP configuration
+    const mcpConfig = vscode.workspace.getConfiguration('apicurioRegistry.mcp');
+    const registryConfig = vscode.workspace.getConfiguration('apicurioRegistry');
+    const connections = registryConfig.get<any[]>('connections', []);
+    const registryUrl = connections.length > 0 ? connections[0].url : 'http://localhost:8080';
+
+    // Convert localhost to host.containers.internal for MCP server (which runs in container)
+    // VSCode extension uses localhost, but containerized MCP server needs host.containers.internal
+    const mcpRegistryUrl = registryUrl.replace('localhost', 'host.containers.internal');
+
+    const mcpServerConfig = {
+        ...DEFAULT_MCP_CONFIG,
+        enabled: mcpConfig.get<boolean>('enabled', true),
+        serverType: mcpConfig.get<any>('serverType', 'docker'),
+        dockerImage: mcpConfig.get<string>('dockerImage', DEFAULT_MCP_CONFIG.dockerImage),
+        jarPath: mcpConfig.get<string>('jarPath', ''),
+        port: mcpConfig.get<number>('port', 3000),
+        autoStart: mcpConfig.get<boolean>('autoStart', true),
+        safeMode: mcpConfig.get<boolean>('safeMode', true),
+        pagingLimit: mcpConfig.get<number>('pagingLimit', 200),
+        registryUrl: mcpRegistryUrl
+    };
+
+    // Create MCP server manager
+    const mcpServerManager = new MCPServerManager(mcpServerConfig);
+    context.subscriptions.push(mcpServerManager);
+
+    // Create MCP configuration manager
+    const mcpConfigurationManager = new MCPConfigurationManager(mcpServerConfig);
+
+    // Create MCP status bar
+    const mcpStatusBar = new MCPStatusBar();
+    context.subscriptions.push(mcpStatusBar);
+    mcpStatusBar.show();
+
+    // Listen for MCP server status changes
+    context.subscriptions.push(
+        mcpServerManager.onStatusChanged(status => {
+            mcpStatusBar.updateStatus(status);
+        })
+    );
+
+    // Auto-start MCP server if enabled
+    // NOTE: Disabled for stdio-based MCP servers - Claude Code manages the lifecycle
+    // if (mcpServerConfig.enabled && mcpServerConfig.autoStart) {
+    //     setTimeout(() => {
+    //         void startMCPServerCommand(mcpServerManager);
+    //     }, 2000);
+    // }
+
+    // Listen for MCP configuration changes
+    context.subscriptions.push(
+        vscode.workspace.onDidChangeConfiguration(event => {
+            if (event.affectsConfiguration('apicurioRegistry.mcp') || event.affectsConfiguration('apicurioRegistry.connections')) {
+                const config = vscode.workspace.getConfiguration('apicurioRegistry.mcp');
+                const registryConfig = vscode.workspace.getConfiguration('apicurioRegistry');
+                const connections = registryConfig.get<any[]>('connections', []);
+                const currentRegistryUrl = connections.length > 0 ? connections[0].url : 'http://localhost:8080';
+                const mcpRegistryUrl = currentRegistryUrl.replace('localhost', 'host.containers.internal');
+
+                const updatedConfig = {
+                    enabled: config.get<boolean>('enabled', true),
+                    serverType: config.get<any>('serverType', 'docker'),
+                    dockerImage: config.get<string>('dockerImage', DEFAULT_MCP_CONFIG.dockerImage),
+                    jarPath: config.get<string>('jarPath', ''),
+                    port: config.get<number>('port', 3000),
+                    autoStart: config.get<boolean>('autoStart', true),
+                    safeMode: config.get<boolean>('safeMode', true),
+                    pagingLimit: config.get<number>('pagingLimit', 200),
+                    registryUrl: mcpRegistryUrl
+                };
+                mcpServerManager.updateConfig(updatedConfig);
+                mcpConfigurationManager.updateConfig(updatedConfig);
+            }
+        })
+    );
+
     // Register commands
     const refreshCommand = vscode.commands.registerCommand('apicurioRegistry.refresh', () => {
         registryTreeProvider.refresh();
@@ -243,6 +333,35 @@ export function activate(context: vscode.ExtensionContext) {
         await editDraftMetadataCommand(registryService, () => registryTreeProvider.refresh(), node);
     });
 
+    // MCP commands
+    const mcpStart = vscode.commands.registerCommand('apicurioRegistry.mcp.start', async () => {
+        await startMCPServerCommand(mcpServerManager);
+    });
+
+    const mcpStop = vscode.commands.registerCommand('apicurioRegistry.mcp.stop', async () => {
+        await stopMCPServerCommand(mcpServerManager);
+    });
+
+    const mcpRestart = vscode.commands.registerCommand('apicurioRegistry.mcp.restart', async () => {
+        await restartMCPServerCommand(mcpServerManager);
+    });
+
+    const mcpQuickActions = vscode.commands.registerCommand('apicurioRegistry.mcp.showQuickActions', async () => {
+        await showMCPQuickActionsCommand(mcpServerManager);
+    });
+
+    const mcpStatus = vscode.commands.registerCommand('apicurioRegistry.mcp.showStatus', async () => {
+        await showMCPServerStatusCommand(mcpServerManager);
+    });
+
+    const mcpConfigure = vscode.commands.registerCommand('apicurioRegistry.mcp.configureClaude', async () => {
+        await mcpConfigurationManager.configureClaudeCode();
+    });
+
+    const mcpSetup = vscode.commands.registerCommand('apicurioRegistry.mcp.setup', async () => {
+        await mcpConfigurationManager.showSetupWizard();
+    });
+
     // Add to context subscriptions
     context.subscriptions.push(
         treeView,
@@ -266,7 +385,14 @@ export function activate(context: vscode.ExtensionContext) {
         createDraftVersion,
         finalizeDraft,
         discardDraft,
-        editDraftMetadata
+        editDraftMetadata,
+        mcpStart,
+        mcpStop,
+        mcpRestart,
+        mcpQuickActions,
+        mcpStatus,
+        mcpConfigure,
+        mcpSetup
     );
 
     // Set context to enable tree view

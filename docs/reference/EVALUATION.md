@@ -107,10 +107,10 @@ This document helps you decide whether to:
 
 ```bash
 # Run this to compare dependencies
-cd /Users/astranier/Documents/dev/apicurio/reference/apicurio-registry-vscode-plugin
+cd <PROJECT_ROOT>/reference/apicurio-registry-vscode-plugin
 npm outdated
 
-cd /Users/astranier/Documents/dev/apicurio/apicurio-vscode-plugin
+cd <PROJECT_ROOT>/apicurio-vscode-plugin
 npm outdated
 ```
 
@@ -256,7 +256,7 @@ START: Do you need to ship Phase 1-2 quickly?
 **Time Budget: 1-2 hours**
 
 ```bash
-cd /Users/astranier/Documents/dev/apicurio/reference/apicurio-registry-vscode-plugin
+cd <PROJECT_ROOT>/reference/apicurio-registry-vscode-plugin
 npm install
 npm run compile
 # Press F5 in VSCode to test the extension

@@ -1,7 +1,7 @@
 # Apicurio VSCode Plugin - TODO
 
-**Last Updated:** 2025-10-28
-**Status:** UX Improvements Phase (Sprint 2)
+**Last Updated:** 2025-11-02
+**Status:** MCP Integration - Local Scenario (PRIORITY)
 
 > 📘 For detailed analysis, strategy, and context → see [MASTER_PLAN.md](MASTER_PLAN.md)
 
@@ -15,11 +15,39 @@ _No tasks currently in progress_
 
 ## 🎯 What to Work on NEXT
 
-**Recommended:** Task 017 - Conflict Detection (8-10h)
-- Phase 3.1: Text Editor Integration continues
-- Detect concurrent edits by other users
-- Implement conflict resolution UI
-- Then: Phase 3.2 - Webview Editor Provider
+**🔥 PRIORITY:** MCP Integration - Local Scenario (15-21h)
+- **Critical for AI features to work correctly**
+- Fix MCPConfigurationManager to generate CLI commands
+- Enhance MCPServerManager for stdio transport
+- Create unified setup wizard
+- User can configure Claude Code MCP in under 5 minutes
+- **Then:** Resume Phase 3.1 - Task 017 (Conflict Detection)
+
+---
+
+## 🔥 MCP Integration - Local Scenario (PRIORITY)
+
+**Goal**: Enable local developers to use Claude Code AI features with Apicurio Registry
+
+**Why Priority**: Current MCP configuration code doesn't work - blocks AI features
+
+**Reference**: [MCP_ARCHITECTURE_VALIDATION.md](ai-integration/MCP_ARCHITECTURE_VALIDATION.md)
+
+| # | Task | Status | Effort | Details |
+|---|------|--------|--------|------------|
+| MCP-1 | Fix MCPConfigurationManager | 📋 Todo | 4-6h | Generate CLI commands instead of VSCode settings |
+| MCP-2 | Enhance MCPServerManager | 📋 Todo | 3-4h | Support stdio transport mode for Claude Code |
+| MCP-3 | Create Setup Wizard | 📋 Todo | 6-8h | Interactive wizard for local scenario setup |
+| MCP-4 | Update Commands | 📋 Todo | 2-3h | Add setupMCP, generateClaudeCommand, verifyMCP |
+
+**Total Effort**: 15-21 hours (~2-3 days)
+
+**Success Criteria**:
+- ✅ User runs "Setup AI Features" command
+- ✅ Wizard generates correct `claude mcp add` command
+- ✅ User copies/pastes command in terminal
+- ✅ Claude Code successfully connects to MCP server
+- ✅ AI features work: "List my registry groups" returns results
 
 ---
 
@@ -27,7 +55,7 @@ _No tasks currently in progress_
 
 ### 🔴 High Priority
 
-_All high priority tasks complete!_
+_Moved to MCP Integration section above_
 
 ### 🟡 Medium Priority
 
@@ -112,18 +140,25 @@ Overall Project Progress: ███████████░░░░░░░
 Phase 1: Foundation        [████████████████████] 100% ✅
 Phase 2: Core Tree         [████████████████████] 100% ✅
 UX Improvements            [███████░░░░░░░░░░░░░]  40% 🚧
-Phase 3: Draft Editing     [██████████░░░░░░░░░░]  43% 🚧 IN PROGRESS
+MCP Integration            [░░░░░░░░░░░░░░░░░░░░]   0% 🔥 PRIORITY
+Phase 3: Draft Editing     [██████████░░░░░░░░░░]  43% ⏸️ PAUSED
 Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░░░░]   0% 📋
 ```
+
+**🔥 MCP Integration - Local Scenario:** 0 of 4 tasks complete (0%) - PRIORITY
+- MCP-1: Fix MCPConfigurationManager (4-6h)
+- MCP-2: Enhance MCPServerManager (3-4h)
+- MCP-3: Create Setup Wizard (6-8h)
+- MCP-4: Update Commands (2-3h)
 
 **UX Improvements:** 4 of 10 tasks complete (40%)
 - 🔴 High Priority: All complete! ✅
 - 🟡 Medium Priority: 1 of 5 complete (20%)
 - 🟢 Low Priority: 0 of 3 (deferred)
 
-**Phase 3: Draft Editing & Studio Integration:** 6 of 14 tasks complete (43%)
+**Phase 3: Draft Editing & Studio Integration:** 6 of 14 tasks complete (43%) - PAUSED
 - Phase 3.0 (Infrastructure): 4 of 4 tasks (100%) ✅ COMPLETE!
-- Phase 3.1 (Text Editor): 2 of 3 tasks (67%) 🚧 IN PROGRESS
+- Phase 3.1 (Text Editor): 2 of 3 tasks (67%) ⏸️ PAUSED for MCP
 - Phase 3.2 (Studio Integration): 0 of 4 tasks (0%)
 - Phase 3.3 (Workflow & UX): 0 of 3 tasks (0%)
 
@@ -180,6 +215,20 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 ---
 
 ## 📝 Recent Activity
+
+**2025-11-02 (MCP Architecture Validation 🔥)**
+- 🔍 Analyzed current MCP integration architecture
+- ✅ Validated two scenarios: Local Development (priority) & Remote/Production (future)
+- 🐛 Identified gap: Code tries VSCode settings, but Claude CLI uses ~/.claude.json
+- 📋 Created comprehensive implementation plan (4 phases, 15-21h for Phase 1)
+- 🎯 **New Priority**: MCP Integration - Local Scenario (4 tasks)
+  - MCP-1: Fix MCPConfigurationManager (generate CLI commands)
+  - MCP-2: Enhance MCPServerManager (stdio transport support)
+  - MCP-3: Create Setup Wizard (interactive local setup)
+  - MCP-4: Update Commands (setupMCP, generateClaudeCommand, verifyMCP)
+- 📄 Documentation: [MCP_ARCHITECTURE_VALIDATION.md](ai-integration/MCP_ARCHITECTURE_VALIDATION.md)
+- ⏸️ Phase 3.1 (Task 017) paused until MCP integration working
+- 🚀 **Next**: Start MCP-1 - Fix MCPConfigurationManager
 
 **2025-10-29 (Task 016 Complete! 🎉)**
 - ✅ Completed Task 016 (Save & Auto-Save) - 10-12h
@@ -278,4 +327,4 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 ---
 
 _For detailed analysis, charts, and strategy → see [MASTER_PLAN.md](MASTER_PLAN.md)_
-_Last updated: 2025-10-28_
+_Last updated: 2025-11-02_

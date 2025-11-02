@@ -15,13 +15,12 @@ _No tasks currently in progress_
 
 ## 🎯 What to Work on NEXT
 
-**🔥 PRIORITY:** MCP Integration - Local Scenario (15-21h)
+**🔥 PRIORITY:** MCP-2 - Enhance MCPServerManager (3-4h)
 - **Critical for AI features to work correctly**
-- Fix MCPConfigurationManager to generate CLI commands
-- Enhance MCPServerManager for stdio transport
-- Create unified setup wizard
-- User can configure Claude Code MCP in under 5 minutes
-- **Then:** Resume Phase 3.1 - Task 017 (Conflict Detection)
+- Support stdio transport mode for Claude Code
+- Add managementMode config option
+- Update health checks for both modes
+- **Then:** MCP-3 - Create Setup Wizard (6-8h)
 
 ---
 
@@ -35,12 +34,13 @@ _No tasks currently in progress_
 
 | # | Task | Status | Effort | Details |
 |---|------|--------|--------|------------|
-| MCP-1 | Fix MCPConfigurationManager | 📋 Todo | 4-6h | Generate CLI commands instead of VSCode settings |
+| MCP-1 | Fix MCPConfigurationManager | ✅ Done | 4-6h | Generate CLI commands instead of VSCode settings |
 | MCP-2 | Enhance MCPServerManager | 📋 Todo | 3-4h | Support stdio transport mode for Claude Code |
 | MCP-3 | Create Setup Wizard | 📋 Todo | 6-8h | Interactive wizard for local scenario setup |
 | MCP-4 | Update Commands | 📋 Todo | 2-3h | Add setupMCP, generateClaudeCommand, verifyMCP |
 
 **Total Effort**: 15-21 hours (~2-3 days)
+**Progress**: 1 of 4 tasks complete (25%)
 
 **Success Criteria**:
 - ✅ User runs "Setup AI Features" command
@@ -135,21 +135,21 @@ _Moved to MCP Integration section above_
 ## 📊 Progress Overview
 
 ```
-Overall Project Progress: ███████████░░░░░░░░░░ 57%
+Overall Project Progress: ███████████░░░░░░░░░░ 58%
 
 Phase 1: Foundation        [████████████████████] 100% ✅
 Phase 2: Core Tree         [████████████████████] 100% ✅
 UX Improvements            [███████░░░░░░░░░░░░░]  40% 🚧
-MCP Integration            [░░░░░░░░░░░░░░░░░░░░]   0% 🔥 PRIORITY
+MCP Integration            [█████░░░░░░░░░░░░░░░]  25% 🔥 IN PROGRESS
 Phase 3: Draft Editing     [██████████░░░░░░░░░░]  43% ⏸️ PAUSED
 Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░░░░]   0% 📋
 ```
 
-**🔥 MCP Integration - Local Scenario:** 0 of 4 tasks complete (0%) - PRIORITY
-- MCP-1: Fix MCPConfigurationManager (4-6h)
-- MCP-2: Enhance MCPServerManager (3-4h)
-- MCP-3: Create Setup Wizard (6-8h)
-- MCP-4: Update Commands (2-3h)
+**🔥 MCP Integration - Local Scenario:** 1 of 4 tasks complete (25%) - IN PROGRESS
+- ✅ MCP-1: Fix MCPConfigurationManager (4-6h) - COMPLETE
+- 📋 MCP-2: Enhance MCPServerManager (3-4h) - NEXT
+- 📋 MCP-3: Create Setup Wizard (6-8h)
+- 📋 MCP-4: Update Commands (2-3h)
 
 **UX Improvements:** 4 of 10 tasks complete (40%)
 - 🔴 High Priority: All complete! ✅
@@ -216,6 +216,21 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 
 ## 📝 Recent Activity
 
+**2025-11-02 (MCP-1 Complete! 🎉)**
+- ✅ **Completed MCP-1**: Fix MCPConfigurationManager (4-6h actual)
+- ✅ Added `generateClaudeMCPCommand()` - generates correct CLI commands
+- ✅ Added `convertToContainerUrl()` - handles Docker networking
+- ✅ Added `normalizeRegistryUrl()` - ensures /apis/registry/v3 path
+- ✅ Added `verifyMCPConfiguration()` - validates Claude CLI setup
+- ✅ Refactored `configureClaudeCode()` - Copy & Run workflow
+- ✅ Updated `showManualSetupInstructions()` - CLI approach
+- ✅ Updated `removeMCPServerConfig()` - CLI removal command
+- ✅ **23 new tests** - all passing, comprehensive coverage
+- ✅ TypeScript compilation successful
+- ✅ Git workflow followed: feature branch → tests → merge → push
+- 📊 **Progress**: MCP Integration 0% → 25% (1 of 4 tasks)
+- 🚀 **Next**: MCP-2 - Enhance MCPServerManager (3-4h)
+
 **2025-11-02 (MCP Architecture Validation 🔥)**
 - 🔍 Analyzed current MCP integration architecture
 - ✅ Validated two scenarios: Local Development (priority) & Remote/Production (future)
@@ -228,7 +243,6 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
   - MCP-4: Update Commands (setupMCP, generateClaudeCommand, verifyMCP)
 - 📄 Documentation: [MCP_ARCHITECTURE_VALIDATION.md](ai-integration/MCP_ARCHITECTURE_VALIDATION.md)
 - ⏸️ Phase 3.1 (Task 017) paused until MCP integration working
-- 🚀 **Next**: Start MCP-1 - Fix MCPConfigurationManager
 
 **2025-10-29 (Task 016 Complete! 🎉)**
 - ✅ Completed Task 016 (Save & Auto-Save) - 10-12h

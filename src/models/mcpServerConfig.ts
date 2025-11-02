@@ -6,6 +6,13 @@ export type ServerType = 'docker' | 'jar' | 'external';
 
 export type ServerStatus = 'stopped' | 'starting' | 'running' | 'stopping' | 'error' | 'unknown';
 
+/**
+ * Management mode determines who manages the MCP server lifecycle.
+ * - 'extension': VSCode extension starts/stops the server
+ * - 'claude-code': Claude Code CLI manages the server via stdio transport
+ */
+export type ManagementMode = 'extension' | 'claude-code';
+
 export interface MCPServerConfig {
     enabled: boolean;
     serverType: ServerType;
@@ -16,6 +23,7 @@ export interface MCPServerConfig {
     registryUrl: string;
     safeMode: boolean;
     pagingLimit: number;
+    managementMode?: ManagementMode;
 }
 
 export interface ServerHealth {
@@ -31,6 +39,7 @@ export interface ServerInfo {
     port: number;
     registryUrl: string;
     health?: ServerHealth;
+    managementMode: ManagementMode;
 }
 
 export const DEFAULT_MCP_CONFIG: MCPServerConfig = {
@@ -42,5 +51,6 @@ export const DEFAULT_MCP_CONFIG: MCPServerConfig = {
     autoStart: true,
     registryUrl: 'http://localhost:8080',
     safeMode: true,
-    pagingLimit: 200
+    pagingLimit: 200,
+    managementMode: 'extension'
 };

@@ -1,8 +1,8 @@
 # Apicurio VSCode Plugin - Master Implementation Plan
 
-**Last Updated:** 2025-10-28
-**Status:** Phase 2 Complete + UX Improvements In Progress (Sprint 2 Complete)
-**Next:** Complete Medium Priority UX Tasks → Phase 3 (Editors)
+**Last Updated:** 2025-11-02
+**Status:** MCP Integration In Progress (Critical Priority)
+**Next:** Complete MCP Integration → Resume Phase 3 (Editors)
 
 ---
 
@@ -20,15 +20,26 @@ This master plan integrates three planning documents into a unified roadmap:
 |------|--------|----------|-----------|
 | **Phase 1** (Foundation) | ✅ Complete | 100% | - |
 | **Phase 2** (Tree View) | ✅ Complete | 100% | - |
-| **UX Improvements** | 🚧 In Progress | 40% (4/10) | Medium Priority Tasks |
-| **Phase 3** (Editors) | 📋 Planned | 0% | After UX improvements |
+| **UX Improvements** | 🚧 In Progress | 40% (4/10) | Deferred for MCP |
+| **🔥 MCP Integration** | 🚧 **IN PROGRESS** | **25% (1/4)** | **MCP-2: Enhance MCPServerManager** |
+| **Phase 3** (Editors) | ⏸️ Paused | 43% (6/14) | Resume after MCP complete |
 | **Phase 4** (Advanced) | 📋 Planned | 0% | Future |
 
 ---
 
 ## Integration Strategy
 
-### Decision: Complete UX Improvements Before Phase 3
+### NEW PRIORITY: MCP Integration (2025-11-02)
+
+**Rationale:**
+1. **Critical Bug Fix** - Current MCP configuration code doesn't work (tries VSCode settings, but Claude CLI uses ~/.claude.json)
+2. **AI Features Blocked** - Cannot enable AI-powered schema development without working MCP connection
+3. **User Value** - AI assistance is high-value feature for users
+4. **Quick Win** - Phase 1 (Local Scenario) only 15-21 hours, can complete in 2-3 days
+
+**Decision**: Pause Phase 3.1 and complete MCP Integration (Local Scenario) first
+
+### Previous Decision: Complete UX Improvements Before Phase 3
 
 **Rationale:**
 1. **User Experience First** - CRUD operations are more critical than editors
@@ -40,9 +51,13 @@ This master plan integrates three planning documents into a unified roadmap:
 ```
 ✅ Phase 1 + 2 (Complete)
    ↓
-🚧 UX Improvements (Current, 2-4 weeks)
+✅ UX High Priority (Complete)
    ↓
-📋 Phase 3: Editors (3-4 weeks)
+🔥 MCP Integration - Local Scenario (CURRENT, 2-3 days)
+   ↓
+📋 Phase 3: Editors (Resume after MCP, 3-4 weeks)
+   ↓
+📋 UX Medium/Low Priority (Deferred)
    ↓
 📋 Phase 4: Advanced Features (2-3 weeks)
 ```
@@ -159,11 +174,65 @@ Based on [UX_COMPARISON.md](UX_COMPARISON.md) analysis of reference plugin.
 
 ---
 
-### 📋 Phase 3: Editor Integration (NEXT MAJOR PHASE)
+### 🔥 MCP Integration - Local Scenario (IN PROGRESS - CRITICAL PRIORITY)
+
+**Duration:** 2-3 days (15-21 hours)
+**Status:** 🚧 25% Complete (1/4 tasks)
+**Started:** 2025-11-02
+**Reference:** [MCP_ARCHITECTURE_VALIDATION.md](ai-integration/MCP_ARCHITECTURE_VALIDATION.md)
+
+**Goal:** Enable local developers to use Claude Code AI features with Apicurio Registry
+
+**Why Critical:**
+- Current MCP configuration code doesn't work (tries VSCode settings, but Claude CLI uses ~/.claude.json)
+- AI features completely blocked without working MCP connection
+- High user value feature that should work correctly
+
+#### ✅ Completed (1 task, ~5 hours)
+
+| ID | Task | Effort | Completed | Details |
+|----|------|--------|-----------|---------|
+| MCP-1 | Fix MCPConfigurationManager | 4-6h | 2025-11-02 | Generate CLI commands instead of VSCode settings |
+
+**MCP-1 Delivered:**
+- `generateClaudeMCPCommand()` - Generates correct `claude mcp add` command
+- `convertToContainerUrl()` - Converts localhost → host.containers.internal for Docker
+- `normalizeRegistryUrl()` - Ensures /apis/registry/v3 path
+- `verifyMCPConfiguration()` - Validates Claude CLI installation and config
+- Refactored `configureClaudeCode()` - Copy & Run workflow
+- Updated `showManualSetupInstructions()` - CLI approach
+- Updated `removeMCPServerConfig()` - CLI removal command
+- **23 comprehensive tests** - All passing ✅
+- Complete documentation set (5 new docs, 3,195+ lines)
+
+#### 📋 Remaining (3 tasks, 11-15 hours)
+
+| ID | Task | Effort | Status | Details |
+|----|------|--------|--------|---------|
+| MCP-2 | Enhance MCPServerManager | 3-4h | **NEXT** | Support stdio transport mode for Claude Code |
+| MCP-3 | Create Setup Wizard | 6-8h | Todo | Interactive wizard for local scenario setup |
+| MCP-4 | Update Commands | 2-3h | Todo | Add setupMCP, generateClaudeCommand, verifyMCP commands |
+
+**Success Criteria:**
+- ✅ User runs "Setup AI Features" command
+- ✅ Wizard generates correct `claude mcp add` command
+- ✅ User copies/pastes command in terminal
+- ✅ Claude Code successfully connects to MCP server
+- ✅ AI features work: "List my registry groups" returns results
+
+**Key Files:**
+- `src/services/mcpConfigurationManager.ts` (refactored)
+- `src/services/mcpServerManager.ts` (to be enhanced)
+- `src/commands/setupMCPCommand.ts` (to be created)
+- `docs/ai-integration/MCP_ARCHITECTURE_VALIDATION.md` (comprehensive plan)
+
+---
+
+### 📋 Phase 3: Editor Integration (PAUSED - Resume after MCP)
 
 **Duration:** 3-4 weeks
-**Status:** 📋 Planned
-**Prerequisites:** Complete UX Improvements (tasks 003-007)
+**Status:** ⏸️ Paused at 43% (6/14 tasks) - Resume after MCP Integration complete
+**Prerequisites:** Complete UX Improvements (tasks 003-007) ✅
 **Target Start:** Early November 2025
 
 #### Objectives

@@ -9,6 +9,10 @@ import { searchArtifactsCommand } from './commands/searchCommand';
 import { createArtifactCommand } from './commands/createArtifactCommand';
 import { setupMCPCommand } from './commands/setupMCPCommand';
 import {
+    generateClaudeCommandCommand,
+    verifyMCPCommand
+} from './commands/mcpUtilityCommands';
+import {
     copyGroupIdCommand,
     copyArtifactIdCommand,
     copyVersionCommand,
@@ -268,6 +272,14 @@ export function activate(context: vscode.ExtensionContext) {
         await setupMCPCommand(context, mcpConfigurationManager);
     });
 
+    const generateClaudeCommand = vscode.commands.registerCommand('apicurioRegistry.generateClaudeCommand', async () => {
+        await generateClaudeCommandCommand(mcpConfigurationManager);
+    });
+
+    const verifyMCP = vscode.commands.registerCommand('apicurioRegistry.verifyMCP', async () => {
+        await verifyMCPCommand(mcpConfigurationManager);
+    });
+
     // Copy commands
     const copyGroupId = vscode.commands.registerCommand('apicurioRegistry.copyGroupId', async (node) => {
         await copyGroupIdCommand(node);
@@ -376,6 +388,8 @@ export function activate(context: vscode.ExtensionContext) {
         searchCommand,
         createArtifact,
         setupMCP,
+        generateClaudeCommand,
+        verifyMCP,
         copyGroupId,
         copyArtifactId,
         copyVersion,

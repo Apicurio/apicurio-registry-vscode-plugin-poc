@@ -178,6 +178,16 @@
         "command": "apicurioRegistry.mcp.setup",
         "title": "Setup AI Features",
         "category": "Apicurio MCP"
+      },
+      {
+        "command": "apicurioRegistry.generateClaudeCommand",
+        "title": "Generate Claude MCP Command",
+        "category": "Apicurio MCP"
+      },
+      {
+        "command": "apicurioRegistry.verifyMCP",
+        "title": "Verify MCP Configuration",
+        "category": "Apicurio MCP"
       }
     ],
     "menus": {

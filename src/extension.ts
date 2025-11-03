@@ -7,6 +7,7 @@ import { ApicurioUriBuilder } from './utils/uriBuilder';
 import { AutoSaveManager } from './services/autoSaveManager';
 import { searchArtifactsCommand } from './commands/searchCommand';
 import { createArtifactCommand } from './commands/createArtifactCommand';
+import { setupMCPCommand } from './commands/setupMCPCommand';
 import {
     copyGroupIdCommand,
     copyArtifactIdCommand,
@@ -263,6 +264,10 @@ export function activate(context: vscode.ExtensionContext) {
         await createArtifactCommand(registryService, registryTreeProvider);
     });
 
+    const setupMCP = vscode.commands.registerCommand('apicurioRegistry.setupMCP', async () => {
+        await setupMCPCommand(context, mcpConfigurationManager);
+    });
+
     // Copy commands
     const copyGroupId = vscode.commands.registerCommand('apicurioRegistry.copyGroupId', async (node) => {
         await copyGroupIdCommand(node);
@@ -370,6 +375,7 @@ export function activate(context: vscode.ExtensionContext) {
         disconnectCommand,
         searchCommand,
         createArtifact,
+        setupMCP,
         copyGroupId,
         copyArtifactId,
         copyVersion,

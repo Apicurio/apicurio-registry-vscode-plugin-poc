@@ -59,6 +59,12 @@
         "category": "Apicurio Registry"
       },
       {
+        "command": "apicurioRegistry.setupMCP",
+        "title": "Setup AI Features (Claude Code)",
+        "icon": "$(sparkle)",
+        "category": "Apicurio Registry"
+      },
+      {
         "command": "apicurioRegistry.copyGroupId",
         "title": "Copy Group ID",
         "category": "Apicurio Registry"

@@ -36,24 +36,34 @@ export class MCPServerManager {
         this.setStatus('starting');
 
         try {
-            switch (this.config.serverType) {
-                case 'docker':
-                    await this.startDockerServer();
-                    break;
-                case 'jar':
-                    await this.startJarServer();
-                    break;
-                case 'external':
-                    // External server is managed externally, just check health
-                    await this.checkHealth();
-                    this.setStatus('running');
-                    break;
-                default:
-                    throw new Error(`Unknown server type: ${this.config.serverType}`);
-            }
+            const managementMode = this.config.managementMode || 'extension';
 
-            // Start health monitoring
-            this.startHealthMonitoring();
+            if (managementMode === 'claude-code') {
+                // In claude-code mode, verify MCP is configured via Claude CLI
+                await this.verifyClaudeMCPConfiguration();
+                this.setStatus('running');
+                // No health monitoring in claude-code mode - Claude manages the server
+            } else {
+                // Extension mode - start server ourselves
+                switch (this.config.serverType) {
+                    case 'docker':
+                        await this.startDockerServer();
+                        break;
+                    case 'jar':
+                        await this.startJarServer();
+                        break;
+                    case 'external':
+                        // External server is managed externally, just check health
+                        await this.checkHealth();
+                        this.setStatus('running');
+                        break;
+                    default:
+                        throw new Error(`Unknown server type: ${this.config.serverType}`);
+                }
+
+                // Start health monitoring (extension mode only)
+                this.startHealthMonitoring();
+            }
 
             vscode.window.showInformationMessage('Apicurio MCP Server started successfully');
         } catch (error: any) {
@@ -74,16 +84,24 @@ export class MCPServerManager {
         this.stopHealthMonitoring();
 
         try {
-            switch (this.config.serverType) {
-                case 'docker':
-                    await this.stopDockerServer();
-                    break;
-                case 'jar':
-                    await this.stopJarServer();
-                    break;
-                case 'external':
-                    // External server is managed externally
-                    break;
+            const managementMode = this.config.managementMode || 'extension';
+
+            if (managementMode === 'claude-code') {
+                // In claude-code mode, we don't stop the server - Claude manages it
+                // Just update status
+            } else {
+                // Extension mode - stop server ourselves
+                switch (this.config.serverType) {
+                    case 'docker':
+                        await this.stopDockerServer();
+                        break;
+                    case 'jar':
+                        await this.stopJarServer();
+                        break;
+                    case 'external':
+                        // External server is managed externally
+                        break;
+                }
             }
 
             this.setStatus('stopped');
@@ -113,7 +131,8 @@ export class MCPServerManager {
             type: this.config.serverType,
             port: this.config.port,
             registryUrl: this.config.registryUrl,
-            health: this.health
+            health: this.health,
+            managementMode: this.config.managementMode || 'extension'
         };
     }
 
@@ -344,8 +363,23 @@ export class MCPServerManager {
 
     /**
      * Check server health.
+     * - Extension mode: HTTP health check
+     * - Claude-code mode: Claude CLI check
      */
     private async checkHealth(): Promise<boolean> {
+        const managementMode = this.config.managementMode || 'extension';
+
+        if (managementMode === 'claude-code') {
+            return this.checkClaudeMCPHealth();
+        } else {
+            return this.checkHTTPHealth();
+        }
+    }
+
+    /**
+     * Check health via HTTP (extension mode).
+     */
+    private async checkHTTPHealth(): Promise<boolean> {
         try {
             const response = await axios.get(`http://localhost:${this.config.port}/health`, {
                 timeout: 3000,
@@ -370,6 +404,90 @@ export class MCPServerManager {
             this._onHealthChanged.fire(this.health);
             return false;
         }
+    }
+
+    /**
+     * Check health via Claude CLI (claude-code mode).
+     */
+    private async checkClaudeMCPHealth(): Promise<boolean> {
+        return new Promise((resolve) => {
+            const process = spawn('claude', ['mcp', 'list']);
+            let stdout = '';
+
+            process.stdout?.on('data', (data: Buffer) => {
+                stdout += data.toString();
+            });
+
+            process.on('close', () => {
+                const hasRegistry = stdout.includes('apicurio-registry');
+                const isConnected = stdout.includes('✓ Connected') || stdout.includes('Connected');
+                const healthy = hasRegistry && isConnected;
+
+                this.health = {
+                    healthy,
+                    lastCheck: new Date(),
+                    error: healthy ? undefined : hasRegistry ? 'MCP server not connected' : 'MCP server not configured'
+                };
+
+                this._onHealthChanged.fire(this.health);
+                resolve(healthy);
+            });
+
+            process.on('error', () => {
+                this.health = {
+                    healthy: false,
+                    lastCheck: new Date(),
+                    error: 'Claude CLI not found'
+                };
+                this._onHealthChanged.fire(this.health);
+                resolve(false);
+            });
+        });
+    }
+
+    /**
+     * Verify that Claude MCP is configured with apicurio-registry server.
+     * Throws error if Claude CLI not found or server not configured.
+     */
+    private async verifyClaudeMCPConfiguration(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const process = spawn('claude', ['mcp', 'list']);
+            let stdout = '';
+            let stderr = '';
+
+            process.stdout?.on('data', (data: Buffer) => {
+                stdout += data.toString();
+            });
+
+            process.stderr?.on('data', (data: Buffer) => {
+                stderr += data.toString();
+            });
+
+            process.on('close', (code) => {
+                if (code !== 0) {
+                    reject(new Error(`Claude CLI command failed: ${stderr}`));
+                    return;
+                }
+
+                const hasRegistry = stdout.includes('apicurio-registry');
+                if (!hasRegistry) {
+                    reject(new Error('Apicurio Registry MCP server is not configured in Claude Code. Please run the setup wizard first.'));
+                    return;
+                }
+
+                const isConnected = stdout.includes('✓ Connected') || stdout.includes('Connected');
+                if (!isConnected) {
+                    reject(new Error('Apicurio Registry MCP server is configured but not connected. Please check your registry is accessible.'));
+                    return;
+                }
+
+                resolve();
+            });
+
+            process.on('error', (error) => {
+                reject(new Error('Claude CLI not found. Please install Claude Code CLI: npm install -g @anthropic-ai/claude-code'));
+            });
+        });
     }
 
     /**

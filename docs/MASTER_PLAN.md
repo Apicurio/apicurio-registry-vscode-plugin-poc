@@ -1,6 +1,6 @@
 # Apicurio VSCode Plugin - Master Implementation Plan
 
-**Last Updated:** 2025-11-02
+**Last Updated:** 2025-11-03
 **Status:** MCP Integration In Progress (Critical Priority)
 **Next:** Complete MCP Integration → Resume Phase 3 (Editors)
 
@@ -21,7 +21,7 @@ This master plan integrates three planning documents into a unified roadmap:
 | **Phase 1** (Foundation) | ✅ Complete | 100% | - |
 | **Phase 2** (Tree View) | ✅ Complete | 100% | - |
 | **UX Improvements** | 🚧 In Progress | 40% (4/10) | Deferred for MCP |
-| **🔥 MCP Integration** | 🚧 **IN PROGRESS** | **25% (1/4)** | **MCP-2: Enhance MCPServerManager** |
+| **🔥 MCP Integration** | 🚧 **IN PROGRESS** | **50% (2/4)** | **MCP-3: Create Setup Wizard** |
 | **Phase 3** (Editors) | ⏸️ Paused | 43% (6/14) | Resume after MCP complete |
 | **Phase 4** (Advanced) | 📋 Planned | 0% | Future |
 
@@ -177,7 +177,7 @@ Based on [UX_COMPARISON.md](UX_COMPARISON.md) analysis of reference plugin.
 ### 🔥 MCP Integration - Local Scenario (IN PROGRESS - CRITICAL PRIORITY)
 
 **Duration:** 2-3 days (15-21 hours)
-**Status:** 🚧 25% Complete (1/4 tasks)
+**Status:** 🚧 50% Complete (2/4 tasks)
 **Started:** 2025-11-02
 **Reference:** [MCP_ARCHITECTURE_VALIDATION.md](ai-integration/MCP_ARCHITECTURE_VALIDATION.md)
 
@@ -188,11 +188,12 @@ Based on [UX_COMPARISON.md](UX_COMPARISON.md) analysis of reference plugin.
 - AI features completely blocked without working MCP connection
 - High user value feature that should work correctly
 
-#### ✅ Completed (1 task, ~5 hours)
+#### ✅ Completed (2 tasks, ~9 hours)
 
 | ID | Task | Effort | Completed | Details |
 |----|------|--------|-----------|---------|
 | MCP-1 | Fix MCPConfigurationManager | 4-6h | 2025-11-02 | Generate CLI commands instead of VSCode settings |
+| MCP-2 | Enhance MCPServerManager | 3-4h | 2025-11-03 | Support stdio transport mode for Claude Code |
 
 **MCP-1 Delivered:**
 - `generateClaudeMCPCommand()` - Generates correct `claude mcp add` command
@@ -205,12 +206,21 @@ Based on [UX_COMPARISON.md](UX_COMPARISON.md) analysis of reference plugin.
 - **23 comprehensive tests** - All passing ✅
 - Complete documentation set (5 new docs, 3,195+ lines)
 
-#### 📋 Remaining (3 tasks, 11-15 hours)
+**MCP-2 Delivered:**
+- Added `managementMode` to MCPServerConfig ('extension' | 'claude-code')
+- Added `ManagementMode` type and updated ServerInfo interface
+- Implemented claude-code mode - verifies via Claude CLI instead of starting server
+- Split `checkHealth()` into `checkHTTPHealth()` and `checkClaudeMCPHealth()`
+- Added `verifyClaudeMCPConfiguration()` - startup verification for claude-code mode
+- No health monitoring in claude-code mode (Claude manages server lifecycle)
+- Stop is no-op in claude-code mode (extension doesn't control server)
+- **16 comprehensive tests** - All passing ✅
+
+#### 📋 Remaining (2 tasks, 8-11 hours)
 
 | ID | Task | Effort | Status | Details |
 |----|------|--------|--------|---------|
-| MCP-2 | Enhance MCPServerManager | 3-4h | **NEXT** | Support stdio transport mode for Claude Code |
-| MCP-3 | Create Setup Wizard | 6-8h | Todo | Interactive wizard for local scenario setup |
+| MCP-3 | Create Setup Wizard | 6-8h | **NEXT** | Interactive wizard for local scenario setup |
 | MCP-4 | Update Commands | 2-3h | Todo | Add setupMCP, generateClaudeCommand, verifyMCP commands |
 
 **Success Criteria:**

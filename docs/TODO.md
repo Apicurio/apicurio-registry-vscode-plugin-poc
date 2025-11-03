@@ -15,12 +15,12 @@ _No tasks currently in progress_
 
 ## 🎯 What to Work on NEXT
 
-**🔥 PRIORITY:** MCP-2 - Enhance MCPServerManager (3-4h)
+**🔥 PRIORITY:** MCP-3 - Create Setup Wizard (6-8h)
 - **Critical for AI features to work correctly**
-- Support stdio transport mode for Claude Code
-- Add managementMode config option
-- Update health checks for both modes
-- **Then:** MCP-3 - Create Setup Wizard (6-8h)
+- Interactive wizard that detects local vs remote scenario
+- Guides user through setup step-by-step
+- Generates CLI command and verifies configuration
+- **Then:** MCP-4 - Update Commands (2-3h)
 
 ---
 
@@ -35,12 +35,12 @@ _No tasks currently in progress_
 | # | Task | Status | Effort | Details |
 |---|------|--------|--------|------------|
 | MCP-1 | Fix MCPConfigurationManager | ✅ Done | 4-6h | Generate CLI commands instead of VSCode settings |
-| MCP-2 | Enhance MCPServerManager | 📋 Todo | 3-4h | Support stdio transport mode for Claude Code |
+| MCP-2 | Enhance MCPServerManager | ✅ Done | 3-4h | Support stdio transport mode for Claude Code |
 | MCP-3 | Create Setup Wizard | 📋 Todo | 6-8h | Interactive wizard for local scenario setup |
 | MCP-4 | Update Commands | 📋 Todo | 2-3h | Add setupMCP, generateClaudeCommand, verifyMCP |
 
 **Total Effort**: 15-21 hours (~2-3 days)
-**Progress**: 1 of 4 tasks complete (25%)
+**Progress**: 2 of 4 tasks complete (50%)
 
 **Success Criteria**:
 - ✅ User runs "Setup AI Features" command
@@ -135,20 +135,20 @@ _Moved to MCP Integration section above_
 ## 📊 Progress Overview
 
 ```
-Overall Project Progress: ███████████░░░░░░░░░░ 58%
+Overall Project Progress: ███████████░░░░░░░░░░ 59%
 
 Phase 1: Foundation        [████████████████████] 100% ✅
 Phase 2: Core Tree         [████████████████████] 100% ✅
 UX Improvements            [███████░░░░░░░░░░░░░]  40% 🚧
-MCP Integration            [█████░░░░░░░░░░░░░░░]  25% 🔥 IN PROGRESS
+MCP Integration            [██████████░░░░░░░░░░]  50% 🔥 IN PROGRESS
 Phase 3: Draft Editing     [██████████░░░░░░░░░░]  43% ⏸️ PAUSED
 Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░░░░]   0% 📋
 ```
 
-**🔥 MCP Integration - Local Scenario:** 1 of 4 tasks complete (25%) - IN PROGRESS
+**🔥 MCP Integration - Local Scenario:** 2 of 4 tasks complete (50%) - IN PROGRESS
 - ✅ MCP-1: Fix MCPConfigurationManager (4-6h) - COMPLETE
-- 📋 MCP-2: Enhance MCPServerManager (3-4h) - NEXT
-- 📋 MCP-3: Create Setup Wizard (6-8h)
+- ✅ MCP-2: Enhance MCPServerManager (3-4h) - COMPLETE
+- 📋 MCP-3: Create Setup Wizard (6-8h) - NEXT
 - 📋 MCP-4: Update Commands (2-3h)
 
 **UX Improvements:** 4 of 10 tasks complete (40%)
@@ -215,6 +215,22 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 ---
 
 ## 📝 Recent Activity
+
+**2025-11-03 (MCP-2 Complete! 🎉)**
+- ✅ **Completed MCP-2**: Enhance MCPServerManager (3-4h actual)
+- ✅ Added `managementMode` to MCPServerConfig ('extension' | 'claude-code')
+- ✅ Added `ManagementMode` type and updated ServerInfo interface
+- ✅ Implemented claude-code mode - verifies via Claude CLI instead of starting server
+- ✅ Split `checkHealth()` into `checkHTTPHealth()` and `checkClaudeMCPHealth()`
+- ✅ Added `verifyClaudeMCPConfiguration()` - startup verification for claude-code mode
+- ✅ No health monitoring in claude-code mode (Claude manages the server lifecycle)
+- ✅ Stop is no-op in claude-code mode (extension doesn't control server)
+- ✅ **16 new tests** - all passing, comprehensive coverage for both modes
+- ✅ Tests cover: configuration defaults, extension mode behavior, claude-code mode behavior
+- ✅ TypeScript compilation successful
+- ✅ Git workflow followed: feature branch → TDD (RED-GREEN) → merge → push
+- 📊 **Progress**: MCP Integration 25% → 50% (2 of 4 tasks)
+- 🚀 **Next**: MCP-3 - Create Setup Wizard (6-8h)
 
 **2025-11-02 (MCP-1 Complete! 🎉)**
 - ✅ **Completed MCP-1**: Fix MCPConfigurationManager (4-6h actual)

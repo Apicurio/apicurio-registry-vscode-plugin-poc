@@ -24,7 +24,7 @@ _No tasks currently in progress_
 - 📚 Complete documentation in `docs/ai-integration/`
 
 **Next Decision:**
-- **Option A:** Resume Phase 3.1 (Editors) - Task 017: Conflict Detection (8-10h)
+- **Option A:** Complete Phase 3.1 - Task 018: Webview Editor Provider (15-20h)
 - **Option B:** Complete UX Medium Priority tasks (6-9h total)
   - Task 008: API v3.1 Compatibility (2-3h)
   - Task 006: User Preferences (2-3h)
@@ -111,7 +111,7 @@ _Moved to MCP Integration section above_
 |---|------|--------|--------|---------|
 | 015 | Custom Text Document Provider | ✅ Done | 12-15h | [spec](tasks/completed/015-custom-text-document-provider.md) - 52 tests ✅ |
 | 016 | Save & Auto-Save | ✅ Done | 10-12h | [spec](tasks/completed/016-save-auto-save.md) - Optional auto-save (disabled by default) ✅ |
-| 017 | Conflict Detection | 📋 Todo | 8-10h | Detect & handle concurrent edits |
+| 017 | Conflict Detection | ✅ Done | 8h | [spec](tasks/completed/017-conflict-detection.md) - 46 tests (17+18+11) ✅ |
 
 **Phase 3.2: Apicurio Studio Integration (Week 3-4, 40-60h)**
 
@@ -156,13 +156,13 @@ _Moved to MCP Integration section above_
 ## 📊 Progress Overview
 
 ```
-Overall Project Progress: █████████████░░░░░░░░ 65%
+Overall Project Progress: █████████████░░░░░░░░ 67%
 
 Phase 1: Foundation        [████████████████████] 100% ✅
 Phase 2: Core Tree         [████████████████████] 100% ✅
 UX Improvements            [███████░░░░░░░░░░░░░]  40% 🚧
 MCP Integration            [████████████████████] 100% ✅ COMPLETE!
-Phase 3: Draft Editing     [██████████░░░░░░░░░░]  43% ⏸️ PAUSED
+Phase 3: Draft Editing     [██████████░░░░░░░░░░]  50% 🚧
 Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░░░░]   0% 📋
 ```
 
@@ -177,9 +177,9 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 - 🟡 Medium Priority: 1 of 5 complete (20%)
 - 🟢 Low Priority: 0 of 3 (deferred)
 
-**Phase 3: Draft Editing & Studio Integration:** 6 of 14 tasks complete (43%) - PAUSED
+**Phase 3: Draft Editing & Studio Integration:** 7 of 14 tasks complete (50%)
 - Phase 3.0 (Infrastructure): 4 of 4 tasks (100%) ✅ COMPLETE!
-- Phase 3.1 (Text Editor): 2 of 3 tasks (67%) ⏸️ PAUSED for MCP
+- Phase 3.1 (Text Editor): 3 of 3 tasks (100%) ✅ COMPLETE!
 - Phase 3.2 (Studio Integration): 0 of 4 tasks (0%)
 - Phase 3.3 (Workflow & UX): 0 of 3 tasks (0%)
 
@@ -236,6 +236,22 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 ---
 
 ## 📝 Recent Activity
+
+**2025-11-03 (Task 017 Complete! 🎉 Phase 3.1 COMPLETE!)**
+- ✅ **Completed Task 017**: Conflict Detection (8h actual, estimated 8-10h)
+- ✅ **ConflictDetector Service**: Timestamp-based conflict detection with millisecond precision
+- ✅ **ConflictResolutionDialog UI**: Interactive dialog with View Diff, Overwrite, Discard, Cancel options
+- ✅ **Integration**: Wired into ApicurioFileSystemProvider with document cleanup on close
+- ✅ **Edge Case Handling**: Draft deleted (404), draft published (405/400), network errors with retry
+- ✅ **46 comprehensive tests** - All passing ✅
+  - 17 ConflictDetector unit tests
+  - 18 ConflictResolutionDialog UI tests
+  - 11 Integration tests (full workflow, resolutions, edge cases, timestamp tracking)
+- ✅ TypeScript compilation successful
+- ✅ Git workflow followed: feature branch → TDD (RED-GREEN-REFACTOR) → commits → docs update
+- 🎉 **Phase 3.1 COMPLETE!** All text editor integration tasks done (100%)
+- 📊 **Progress**: Phase 3 43% → 50%, Overall 65% → 67%
+- 🚀 **Next**: Choose between Phase 3.2 (Studio Integration) or UX Medium Priority tasks
 
 **2025-11-03 (MCP Integration Complete - Bug Discovered & Documented 🐛)**
 - 🐛 **Discovered Claude Code Bug**: stdio connections drop after ~20 seconds during tool execution

@@ -48,6 +48,7 @@ export interface SearchedVersion {
     state?: string;
     labels?: Record<string, string>;
     createdOn?: Date;
+    modifiedOn?: Date;
 }
 
 export interface ArtifactContent {

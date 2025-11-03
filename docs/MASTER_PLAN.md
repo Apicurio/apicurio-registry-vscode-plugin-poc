@@ -20,9 +20,9 @@ This master plan integrates three planning documents into a unified roadmap:
 |------|--------|----------|-----------|
 | **Phase 1** (Foundation) | ✅ Complete | 100% | - |
 | **Phase 2** (Tree View) | ✅ Complete | 100% | - |
-| **UX Improvements** | 🚧 In Progress | 40% (4/10) | Deferred for MCP |
-| **🔥 MCP Integration** | 🚧 **IN PROGRESS** | **75% (3/4)** | **MCP-4: Update Commands** |
-| **Phase 3** (Editors) | ⏸️ Paused | 43% (6/14) | Resume after MCP complete |
+| **UX Improvements** | 🚧 In Progress | 40% (4/10) | Deferred |
+| **🎉 MCP Integration** | ✅ **COMPLETE** | **100% (4/4)** | **All tasks done!** |
+| **Phase 3** (Editors) | ⏸️ Paused | 43% (6/14) | Decision: Resume or UX tasks |
 | **Phase 4** (Advanced) | 📋 Planned | 0% | Future |
 
 ---
@@ -174,27 +174,30 @@ Based on [UX_COMPARISON.md](UX_COMPARISON.md) analysis of reference plugin.
 
 ---
 
-### 🔥 MCP Integration - Local Scenario (IN PROGRESS - CRITICAL PRIORITY)
+### 🎉 MCP Integration - Local Scenario (COMPLETE!)
 
-**Duration:** 2-3 days (15-21 hours)
-**Status:** 🚧 75% Complete (3/4 tasks)
+**Duration:** 2-3 days (15-21 hours actual)
+**Status:** ✅ **100% Complete (4/4 tasks)**
 **Started:** 2025-11-02
+**Completed:** 2025-11-03
 **Reference:** [MCP_ARCHITECTURE_VALIDATION.md](ai-integration/MCP_ARCHITECTURE_VALIDATION.md)
 
 **Goal:** Enable local developers to use Claude Code AI features with Apicurio Registry
 
-**Why Critical:**
-- Current MCP configuration code doesn't work (tries VSCode settings, but Claude CLI uses ~/.claude.json)
-- AI features completely blocked without working MCP connection
-- High user value feature that should work correctly
+**Achievement:**
+- ✅ Fixed MCP configuration approach (CLI commands instead of VSCode settings)
+- ✅ AI features now fully functional with Claude Code
+- ✅ Interactive setup wizard for seamless user experience
+- ✅ Standalone utility commands for quick access
 
-#### ✅ Completed (3 tasks, ~17 hours)
+#### ✅ Completed (4 tasks, ~19 hours)
 
 | ID | Task | Effort | Completed | Details |
 |----|------|--------|-----------|---------|
 | MCP-1 | Fix MCPConfigurationManager | 4-6h | 2025-11-02 | Generate CLI commands instead of VSCode settings |
 | MCP-2 | Enhance MCPServerManager | 3-4h | 2025-11-03 | Support stdio transport mode for Claude Code |
 | MCP-3 | Create Setup Wizard | 6-8h | 2025-11-03 | Interactive wizard for local scenario setup |
+| MCP-4 | Update Commands | 2-3h | 2025-11-03 | Add generateClaudeCommand, verifyMCP standalone commands |
 
 **MCP-1 Delivered:**
 - `generateClaudeMCPCommand()` - Generates correct `claude mcp add` command
@@ -229,11 +232,14 @@ Based on [UX_COMPARISON.md](UX_COMPARISON.md) analysis of reference plugin.
 - Registered `setupMCP` command with sparkle icon in Command Palette
 - **7 core tests passing** - wizard flow, prerequisite checks, command generation
 
-#### 📋 Remaining (1 task, 2-3 hours)
-
-| ID | Task | Effort | Status | Details |
-|----|------|--------|--------|---------|
-| MCP-4 | Update Commands | 2-3h | **NEXT** | Add generateClaudeCommand, verifyMCP standalone commands |
+**MCP-4 Delivered:**
+- Created `mcpUtilityCommands.ts` with two standalone commands
+- `generateClaudeCommandCommand()` - Quick command generation without full wizard
+- `verifyMCPCommand()` - Check MCP configuration status
+- Registered both commands in package.json under "Apicurio MCP" category
+- Wired commands to MCPConfigurationManager in extension.ts
+- **10 comprehensive tests** - All passing ✅
+- TypeScript compilation successful (602 KiB)
 
 **Success Criteria:**
 - ✅ User runs "Setup AI Features" command

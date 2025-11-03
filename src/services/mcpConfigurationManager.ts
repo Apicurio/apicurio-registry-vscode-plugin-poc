@@ -299,16 +299,15 @@ The command has been copied to your clipboard!`;
     }
 
     /**
-     * Ensure Registry URL includes the /apis/registry/v3 path.
+     * Normalize Registry URL by removing the /apis/registry/v3 path.
+     * The MCP server automatically adds this path, so we need to pass just the base URL.
      */
     private normalizeRegistryUrl(url: string): string {
         // Remove trailing slash
         url = url.replace(/\/$/, '');
 
-        // Add API path if not present
-        if (!url.includes('/apis/registry/v3')) {
-            url = `${url}/apis/registry/v3`;
-        }
+        // Remove /apis/registry/v3 path if present (MCP server adds it automatically)
+        url = url.replace(/\/apis\/registry\/v3$/, '');
 
         return url;
     }

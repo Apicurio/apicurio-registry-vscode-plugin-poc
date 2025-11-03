@@ -64,7 +64,8 @@ describe('MCPConfigurationManager', () => {
 
             expect(command).toContain('claude mcp add apicurio-registry -s local');
             expect(command).toContain('podman run -i --rm');
-            expect(command).toContain('REGISTRY_URL=http://host.containers.internal:8080/apis/registry/v3');
+            expect(command).toContain('REGISTRY_URL=http://host.containers.internal:8080');
+            expect(command).not.toContain('/apis/registry/v3'); // MCP server adds this automatically
             expect(command).toContain('APICURIO_MCP_SAFE_MODE=false');
             expect(command).toContain('APICURIO_MCP_PAGING_LIMIT=200');
             expect(command).toContain('quay.io/apicurio/apicurio-registry-mcp-server:latest-snapshot');
@@ -79,7 +80,8 @@ describe('MCPConfigurationManager', () => {
 
             expect(command).toContain('claude mcp add apicurio-registry -s local');
             expect(command).toContain('java -jar /path/to/mcp-server.jar');
-            expect(command).toContain('Dregistry.url=http://localhost:8080/apis/registry/v3');
+            expect(command).toContain('Dregistry.url=http://localhost:8080');
+            expect(command).not.toContain('/apis/registry/v3'); // MCP server adds this automatically
             expect(command).toContain('Dapicurio.mcp.safe-mode=false');
             expect(command).toContain('Dapicurio.mcp.paging.limit=200');
         });
@@ -114,20 +116,25 @@ describe('MCPConfigurationManager', () => {
             expect(command).not.toContain('host.containers.internal');
         });
 
-        it('should add /apis/registry/v3 path if missing', () => {
-            const command = manager.generateClaudeMCPCommand();
-
-            expect(command).toContain('/apis/registry/v3');
-        });
-
-        it('should not duplicate /apis/registry/v3 path if already present', () => {
+        it('should remove /apis/registry/v3 path if present (MCP server adds it)', () => {
             mockConfig.registryUrl = 'http://localhost:8080/apis/registry/v3';
             manager = new MCPConfigurationManager(mockConfig);
 
             const command = manager.generateClaudeMCPCommand();
 
-            const matches = command.match(/\/apis\/registry\/v3/g);
-            expect(matches).toHaveLength(1);
+            // Should NOT contain /apis/registry/v3 in REGISTRY_URL
+            expect(command).toContain('REGISTRY_URL=http://host.containers.internal:8080');
+            expect(command).not.toContain('/apis/registry/v3');
+        });
+
+        it('should handle base URL without /apis/registry/v3 path', () => {
+            mockConfig.registryUrl = 'http://localhost:8080';
+            manager = new MCPConfigurationManager(mockConfig);
+
+            const command = manager.generateClaudeMCPCommand();
+
+            expect(command).toContain('REGISTRY_URL=http://host.containers.internal:8080');
+            expect(command).not.toContain('/apis/registry/v3');
         });
 
         it('should handle Registry URL with trailing slash', () => {
@@ -136,8 +143,8 @@ describe('MCPConfigurationManager', () => {
 
             const command = manager.generateClaudeMCPCommand();
 
-            expect(command).toContain('/apis/registry/v3');
-            expect(command).not.toContain('//apis');
+            expect(command).toContain('REGISTRY_URL=http://host.containers.internal:8080');
+            expect(command).not.toContain('/apis/registry/v3');
         });
 
         it('should throw error for JAR mode without jarPath', () => {
@@ -164,7 +171,8 @@ describe('MCPConfigurationManager', () => {
 
             const command = manager.generateClaudeMCPCommand();
 
-            expect(command).toContain('https://host.containers.internal:8443/apis/registry/v3');
+            expect(command).toContain('REGISTRY_URL=https://host.containers.internal:8443');
+            expect(command).not.toContain('/apis/registry/v3');
         });
 
         it('should respect safeMode setting', () => {

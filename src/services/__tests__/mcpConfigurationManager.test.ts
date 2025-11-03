@@ -62,7 +62,7 @@ describe('MCPConfigurationManager', () => {
         it('should generate correct command for Docker mode', () => {
             const command = manager.generateClaudeMCPCommand();
 
-            expect(command).toContain('claude mcp add apicurio-registry -g');
+            expect(command).toContain('claude mcp add apicurio-registry -s local');
             expect(command).toContain('podman run -i --rm');
             expect(command).toContain('REGISTRY_URL=http://host.containers.internal:8080/apis/registry/v3');
             expect(command).toContain('APICURIO_MCP_SAFE_MODE=false');
@@ -77,7 +77,7 @@ describe('MCPConfigurationManager', () => {
 
             const command = manager.generateClaudeMCPCommand();
 
-            expect(command).toContain('claude mcp add apicurio-registry -g');
+            expect(command).toContain('claude mcp add apicurio-registry -s local');
             expect(command).toContain('java -jar /path/to/mcp-server.jar');
             expect(command).toContain('Dregistry.url=http://localhost:8080/apis/registry/v3');
             expect(command).toContain('Dapicurio.mcp.safe-mode=false');
@@ -91,7 +91,7 @@ describe('MCPConfigurationManager', () => {
 
             const command = manager.generateClaudeMCPCommand();
 
-            expect(command).toContain('claude mcp add apicurio-registry -g');
+            expect(command).toContain('claude mcp add apicurio-registry -s local');
             expect(command).toContain('--transport http');
             expect(command).toContain('--url http://localhost:3000');
         });
@@ -252,7 +252,7 @@ describe('MCPConfigurationManager', () => {
             await manager.removeMCPServerConfig();
 
             expect(vscode.env.clipboard.writeText).toHaveBeenCalledWith(
-                'claude mcp remove "apicurio-registry" -g'
+                'claude mcp remove "apicurio-registry" -s local'
             );
         });
 

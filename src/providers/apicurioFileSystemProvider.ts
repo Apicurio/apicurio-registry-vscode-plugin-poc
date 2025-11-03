@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import { RegistryService } from '../services/registryService';
 import { ApicurioUriBuilder } from '../utils/uriBuilder';
+import { ConflictDetector, ConflictResolution } from '../services/conflictDetector';
+import { ConflictResolutionDialog } from '../ui/conflictResolutionDialog';
 
 /**
  * File System Provider for Apicurio Registry artifacts.
@@ -8,6 +10,7 @@ import { ApicurioUriBuilder } from '../utils/uriBuilder';
  *
  * - Draft versions: Content is editable and can be saved back to registry
  * - Published versions: Content is read-only
+ * - Concurrent edit detection: Checks for conflicts before saving drafts
  */
 export class ApicurioFileSystemProvider implements vscode.FileSystemProvider {
     private _emitter = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
@@ -16,7 +19,10 @@ export class ApicurioFileSystemProvider implements vscode.FileSystemProvider {
     // In-memory cache of file contents
     private fileCache = new Map<string, Uint8Array>();
 
-    constructor(private registryService: RegistryService) {}
+    constructor(
+        private registryService: RegistryService,
+        private conflictDetector: ConflictDetector
+    ) {}
 
     // Required FileSystemProvider methods
 
@@ -64,6 +70,24 @@ export class ApicurioFileSystemProvider implements vscode.FileSystemProvider {
 
             const data = Buffer.from(content.content, 'utf-8');
             this.fileCache.set(uri.toString(), data);
+
+            // Track when draft is opened for conflict detection
+            if (ApicurioUriBuilder.isDraft(uri)) {
+                try {
+                    const versionMeta = await this.registryService.getVersionMetadata(
+                        metadata.groupId,
+                        metadata.artifactId,
+                        metadata.version
+                    );
+                    if (versionMeta.modifiedOn) {
+                        this.conflictDetector.trackOpened(uri, versionMeta.modifiedOn);
+                    }
+                } catch (error) {
+                    // Ignore tracking errors - don't block file opening
+                    console.warn('Failed to track draft opening for conflict detection:', error);
+                }
+            }
+
             return data;
         } catch (error: any) {
             throw vscode.FileSystemError.FileNotFound(uri);
@@ -87,6 +111,46 @@ export class ApicurioFileSystemProvider implements vscode.FileSystemProvider {
             throw vscode.FileSystemError.FileNotFound(uri);
         }
 
+        // Check for conflicts before saving
+        const conflict = await this.conflictDetector.checkForConflict(
+            uri,
+            content.toString()
+        );
+
+        if (conflict) {
+            // Conflict detected - show resolution dialog
+            const resolution = await ConflictResolutionDialog.show(conflict);
+
+            switch (resolution) {
+                case ConflictResolution.Cancel:
+                    // User cancelled - don't save
+                    throw vscode.FileSystemError.Unavailable('Save cancelled due to conflict');
+
+                case ConflictResolution.Discard:
+                    // Discard local changes - reload remote content
+                    this.fileCache.delete(uri.toString());
+                    const remoteContent = Buffer.from(conflict.remoteContent, 'utf-8');
+                    this.fileCache.set(uri.toString(), remoteContent);
+
+                    // Update timestamp to remote
+                    this.conflictDetector.updateTimestamp(uri, conflict.remoteModifiedOn);
+
+                    // Fire change event to reload editor
+                    this._emitter.fire([{
+                        type: vscode.FileChangeType.Changed,
+                        uri
+                    }]);
+
+                    vscode.window.showInformationMessage('Local changes discarded. Reloaded remote version.');
+                    return;
+
+                case ConflictResolution.Overwrite:
+                    // User chose to overwrite - proceed with save
+                    vscode.window.showWarningMessage('Saving changes and overwriting remote version...');
+                    break;
+            }
+        }
+
         try {
             // Save to registry
             await this.registryService.updateDraftContent(
@@ -95,6 +159,18 @@ export class ApicurioFileSystemProvider implements vscode.FileSystemProvider {
                 metadata.version,
                 content.toString()
             );
+
+            // Fetch updated metadata to get new modifiedOn timestamp
+            const updatedMeta = await this.registryService.getVersionMetadata(
+                metadata.groupId,
+                metadata.artifactId,
+                metadata.version
+            );
+
+            // Update tracked timestamp
+            if (updatedMeta.modifiedOn) {
+                this.conflictDetector.updateTimestamp(uri, updatedMeta.modifiedOn);
+            }
 
             // Update cache
             this.fileCache.set(uri.toString(), content);

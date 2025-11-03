@@ -5,6 +5,7 @@ import { ApicurioFileSystemProvider } from './providers/apicurioFileSystemProvid
 import { StatusBarManager } from './ui/statusBarManager';
 import { ApicurioUriBuilder } from './utils/uriBuilder';
 import { AutoSaveManager } from './services/autoSaveManager';
+import { ConflictDetector } from './services/conflictDetector';
 import { searchArtifactsCommand } from './commands/searchCommand';
 import { createArtifactCommand } from './commands/createArtifactCommand';
 import { setupMCPCommand } from './commands/setupMCPCommand';
@@ -68,14 +69,26 @@ export function activate(context: vscode.ExtensionContext) {
         showCollapseAll: true
     });
 
+    // Create conflict detector for concurrent edit detection
+    const conflictDetector = new ConflictDetector(registryService);
+
     // Register file system provider for Apicurio URIs
-    const fileSystemProvider = new ApicurioFileSystemProvider(registryService);
+    const fileSystemProvider = new ApicurioFileSystemProvider(registryService, conflictDetector);
     context.subscriptions.push(
         vscode.workspace.registerFileSystemProvider(
             ApicurioUriBuilder.SCHEME,
             fileSystemProvider,
             { isCaseSensitive: true }
         )
+    );
+
+    // Clean up conflict tracking when documents are closed
+    context.subscriptions.push(
+        vscode.workspace.onDidCloseTextDocument(doc => {
+            if (doc.uri.scheme === ApicurioUriBuilder.SCHEME) {
+                conflictDetector.stopTracking(doc.uri);
+            }
+        })
     );
 
     // Get auto-save configuration

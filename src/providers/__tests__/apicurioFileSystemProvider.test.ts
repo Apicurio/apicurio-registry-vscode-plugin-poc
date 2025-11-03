@@ -45,6 +45,7 @@ jest.mock('vscode', () => {
 
 import { ApicurioFileSystemProvider } from '../apicurioFileSystemProvider';
 import { RegistryService } from '../../services/registryService';
+import { ConflictDetector } from '../../services/conflictDetector';
 
 const vscode = require('vscode');
 const MockUri = vscode.Uri;
@@ -52,14 +53,24 @@ const MockUri = vscode.Uri;
 describe('ApicurioFileSystemProvider', () => {
     let provider: ApicurioFileSystemProvider;
     let mockRegistryService: jest.Mocked<RegistryService>;
+    let mockConflictDetector: jest.Mocked<ConflictDetector>;
 
     beforeEach(() => {
         mockRegistryService = {
             getArtifactContent: jest.fn(),
-            updateDraftContent: jest.fn()
+            updateDraftContent: jest.fn(),
+            getVersionMetadata: jest.fn()
         } as any;
 
-        provider = new ApicurioFileSystemProvider(mockRegistryService);
+        mockConflictDetector = {
+            trackOpened: jest.fn(),
+            checkForConflict: jest.fn(),
+            updateTimestamp: jest.fn(),
+            stopTracking: jest.fn(),
+            clear: jest.fn()
+        } as any;
+
+        provider = new ApicurioFileSystemProvider(mockRegistryService, mockConflictDetector);
     });
 
     describe('readFile', () => {

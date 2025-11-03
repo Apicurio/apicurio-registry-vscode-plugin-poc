@@ -258,7 +258,7 @@ The command has been copied to your clipboard!`;
      * Provides CLI command for user to run.
      */
     async removeMCPServerConfig(): Promise<void> {
-        const removeCommand = 'claude mcp remove "apicurio-registry" -s local';
+        const removeCommand = 'claude mcp remove "apicurio-registry" -g';
 
         await vscode.env.clipboard.writeText(removeCommand);
 
@@ -328,7 +328,7 @@ The command has been copied to your clipboard!`;
 
         switch (this.config.serverType) {
             case 'docker':
-                return `claude mcp add apicurio-registry -s local -- \\
+                return `claude mcp add apicurio-registry -g -- \\
   podman run -i --rm \\
   -e REGISTRY_URL=${registryUrl} \\
   -e APICURIO_MCP_SAFE_MODE=${this.config.safeMode} \\
@@ -339,7 +339,7 @@ The command has been copied to your clipboard!`;
                 if (!this.config.jarPath) {
                     throw new Error('JAR path not configured');
                 }
-                return `claude mcp add apicurio-registry -s local -- \\
+                return `claude mcp add apicurio-registry -g -- \\
   java -jar ${this.config.jarPath} \\
   -Dregistry.url=${registryUrl} \\
   -Dapicurio.mcp.safe-mode=${this.config.safeMode} \\
@@ -349,7 +349,7 @@ The command has been copied to your clipboard!`;
                 // For external servers, assume HTTP transport
                 return `# External MCP server at http://localhost:${this.config.port}
 # Note: This server must already be running
-claude mcp add apicurio-registry -s local --transport http --url http://localhost:${this.config.port}`;
+claude mcp add apicurio-registry -g --transport http --url http://localhost:${this.config.port}`;
 
             default:
                 throw new Error(`Unknown server type: ${this.config.serverType}`);

@@ -112,43 +112,80 @@ export class ApicurioFileSystemProvider implements vscode.FileSystemProvider {
         }
 
         // Check for conflicts before saving
-        const conflict = await this.conflictDetector.checkForConflict(
-            uri,
-            content.toString()
-        );
+        try {
+            const conflict = await this.conflictDetector.checkForConflict(
+                uri,
+                content.toString()
+            );
 
-        if (conflict) {
-            // Conflict detected - show resolution dialog
-            const resolution = await ConflictResolutionDialog.show(conflict);
+            if (conflict) {
+                // Conflict detected - show resolution dialog
+                const resolution = await ConflictResolutionDialog.show(conflict);
 
-            switch (resolution) {
-                case ConflictResolution.Cancel:
-                    // User cancelled - don't save
-                    throw vscode.FileSystemError.Unavailable('Save cancelled due to conflict');
+                switch (resolution) {
+                    case ConflictResolution.Cancel:
+                        // User cancelled - don't save
+                        throw vscode.FileSystemError.Unavailable('Save cancelled due to conflict');
 
-                case ConflictResolution.Discard:
-                    // Discard local changes - reload remote content
-                    this.fileCache.delete(uri.toString());
-                    const remoteContent = Buffer.from(conflict.remoteContent, 'utf-8');
-                    this.fileCache.set(uri.toString(), remoteContent);
+                    case ConflictResolution.Discard:
+                        // Discard local changes - reload remote content
+                        this.fileCache.delete(uri.toString());
+                        const remoteContent = Buffer.from(conflict.remoteContent, 'utf-8');
+                        this.fileCache.set(uri.toString(), remoteContent);
 
-                    // Update timestamp to remote
-                    this.conflictDetector.updateTimestamp(uri, conflict.remoteModifiedOn);
+                        // Update timestamp to remote
+                        this.conflictDetector.updateTimestamp(uri, conflict.remoteModifiedOn);
 
-                    // Fire change event to reload editor
-                    this._emitter.fire([{
-                        type: vscode.FileChangeType.Changed,
-                        uri
-                    }]);
+                        // Fire change event to reload editor
+                        this._emitter.fire([{
+                            type: vscode.FileChangeType.Changed,
+                            uri
+                        }]);
 
-                    vscode.window.showInformationMessage('Local changes discarded. Reloaded remote version.');
-                    return;
+                        vscode.window.showInformationMessage('Local changes discarded. Reloaded remote version.');
+                        return;
 
-                case ConflictResolution.Overwrite:
-                    // User chose to overwrite - proceed with save
-                    vscode.window.showWarningMessage('Saving changes and overwriting remote version...');
-                    break;
+                    case ConflictResolution.Overwrite:
+                        // User chose to overwrite - proceed with save
+                        vscode.window.showWarningMessage('Saving changes and overwriting remote version...');
+                        break;
+                }
             }
+        } catch (error: any) {
+            // Edge case: Draft might have been deleted or published
+            if (error.message && error.message.includes('404')) {
+                const choice = await vscode.window.showErrorMessage(
+                    `Draft "${ApicurioUriBuilder.getDisplayName(metadata.groupId, metadata.artifactId, metadata.version)}" has been deleted. Cannot save changes.`,
+                    { modal: true },
+                    'Discard Changes',
+                    'Cancel'
+                );
+
+                if (choice === 'Discard Changes') {
+                    // Close the document
+                    await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+                    return;
+                }
+                throw vscode.FileSystemError.Unavailable('Draft was deleted');
+            }
+
+            // Network error during conflict check
+            const choice = await vscode.window.showWarningMessage(
+                `Cannot check for conflicts: ${error.message}\n\nDo you want to save anyway? This may overwrite changes made by other users.`,
+                { modal: true },
+                'Retry',
+                'Force Save',
+                'Cancel'
+            );
+
+            if (choice === 'Retry') {
+                // Retry the whole save operation
+                return this.writeFile(uri, content, options);
+            } else if (choice !== 'Force Save') {
+                // User cancelled
+                throw vscode.FileSystemError.Unavailable('Save cancelled - could not verify conflicts');
+            }
+            // If 'Force Save', continue with save operation
         }
 
         try {
@@ -186,6 +223,29 @@ export class ApicurioFileSystemProvider implements vscode.FileSystemProvider {
             );
         } catch (error: any) {
             const message = error.message || 'Unknown error';
+
+            // Check if draft was published (state changed)
+            if (message.includes('published version') || message.includes('405') || message.includes('400')) {
+                const choice = await vscode.window.showErrorMessage(
+                    `Draft "${ApicurioUriBuilder.getDisplayName(metadata.groupId, metadata.artifactId, metadata.version)}" has been published. Cannot save content to published versions.`,
+                    { modal: true },
+                    'Create New Draft',
+                    'Discard Changes',
+                    'Cancel'
+                );
+
+                if (choice === 'Create New Draft') {
+                    // TODO: Could automatically create a new draft version
+                    vscode.window.showInformationMessage('Please create a new draft version manually to continue editing.');
+                    return;
+                } else if (choice === 'Discard Changes') {
+                    await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+                    return;
+                }
+                throw vscode.FileSystemError.NoPermissions('Draft was published - cannot save');
+            }
+
+            // Other errors
             vscode.window.showErrorMessage(`Failed to save: ${message}`);
             throw vscode.FileSystemError.Unavailable(message);
         }

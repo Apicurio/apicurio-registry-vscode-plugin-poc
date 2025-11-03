@@ -1,0 +1,139 @@
+/**
+ * VSCode Theme Mapping for PatternFly
+ *
+ * This file maps VSCode CSS variables to PatternFly CSS variables,
+ * allowing PatternFly components to automatically adapt to the user's
+ * VSCode theme (light, dark, high-contrast).
+ *
+ * VSCode CSS variables documentation:
+ * https://code.visualstudio.com/api/references/theme-color
+ */
+
+:root {
+  /* ========================================
+   * Base Colors
+   * ======================================== */
+
+  /* Background colors */
+  --pf-v5-global--BackgroundColor--100: var(--vscode-editor-background);
+  --pf-v5-global--BackgroundColor--200: var(--vscode-editorWidget-background);
+  --pf-v5-global--BackgroundColor--300: var(--vscode-sideBar-background);
+
+  /* Foreground/Text colors */
+  --pf-v5-global--Color--100: var(--vscode-editor-foreground);
+  --pf-v5-global--Color--200: var(--vscode-foreground);
+
+  /* ========================================
+   * Primary/Accent Colors
+   * ======================================== */
+
+  --pf-v5-global--primary-color--100: var(--vscode-button-background);
+  --pf-v5-global--primary-color--200: var(--vscode-button-hoverBackground);
+  --pf-v5-global--link--Color: var(--vscode-textLink-foreground);
+  --pf-v5-global--link--Color--hover: var(--vscode-textLink-activeForeground);
+
+  /* ========================================
+   * Border Colors
+   * ======================================== */
+
+  --pf-v5-global--BorderColor--100: var(--vscode-panel-border);
+  --pf-v5-global--BorderColor--200: var(--vscode-widget-border);
+  --pf-v5-global--BorderColor--300: var(--vscode-input-border);
+
+  /* ========================================
+   * Status Colors
+   * ======================================== */
+
+  --pf-v5-global--success-color--100: var(--vscode-terminal-ansiGreen);
+  --pf-v5-global--warning-color--100: var(--vscode-terminal-ansiYellow);
+  --pf-v5-global--danger-color--100: var(--vscode-terminal-ansiRed);
+  --pf-v5-global--info-color--100: var(--vscode-terminal-ansiBlue);
+
+  /* ========================================
+   * Input/Form Colors
+   * ======================================== */
+
+  --pf-v5-global--active-color--100: var(--vscode-input-background);
+  --pf-v5-global--active-color--200: var(--vscode-input-foreground);
+  --pf-v5-global--disabled-color--100: var(--vscode-input-placeholderForeground);
+  --pf-v5-global--disabled-color--200: var(--vscode-disabledForeground);
+
+  /* ========================================
+   * Focus/Hover States
+   * ======================================== */
+
+  --pf-v5-global--focus-ring-color: var(--vscode-focusBorder);
+  --pf-v5-global--hover-color: var(--vscode-list-hoverBackground);
+  --pf-v5-global--active-hover-color: var(--vscode-list-activeSelectionBackground);
+}
+
+/* ========================================
+ * Component-Specific Overrides
+ * ======================================== */
+
+/* Button */
+.pf-v5-c-button {
+  --pf-v5-c-button--m-primary--BackgroundColor: var(--vscode-button-background);
+  --pf-v5-c-button--m-primary--Color: var(--vscode-button-foreground);
+  --pf-v5-c-button--m-primary--hover--BackgroundColor: var(--vscode-button-hoverBackground);
+  --pf-v5-c-button--m-secondary--BackgroundColor: var(--vscode-button-secondaryBackground);
+  --pf-v5-c-button--m-secondary--Color: var(--vscode-button-secondaryForeground);
+}
+
+/* Form/Input */
+.pf-v5-c-form-control {
+  --pf-v5-c-form-control--BackgroundColor: var(--vscode-input-background);
+  --pf-v5-c-form-control--Color: var(--vscode-input-foreground);
+  --pf-v5-c-form-control--BorderColor: var(--vscode-input-border);
+  --pf-v5-c-form-control--focus--BorderColor: var(--vscode-focusBorder);
+}
+
+/* Card */
+.pf-v5-c-card {
+  --pf-v5-c-card--BackgroundColor: var(--vscode-editorWidget-background);
+  --pf-v5-c-card--BorderColor: var(--vscode-panel-border);
+}
+
+/* Navigation/Tree */
+.pf-v5-c-nav {
+  --pf-v5-c-nav--BackgroundColor: var(--vscode-sideBar-background);
+  --pf-v5-c-nav__link--Color: var(--vscode-sideBar-foreground);
+  --pf-v5-c-nav__link--hover--BackgroundColor: var(--vscode-list-hoverBackground);
+  --pf-v5-c-nav__link--m-current--BackgroundColor: var(--vscode-list-activeSelectionBackground);
+}
+
+/* ========================================
+ * Global Styles
+ * ======================================== */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+}
+
+#root {
+  width: 100%;
+  height: 100vh;
+  overflow: auto;
+}
+
+/* ========================================
+ * Accessibility: Screen Reader & Reduce Motion
+ * ======================================== */
+
+/* Applied when user is using screen reader */
+body.vscode-using-screen-reader {
+  /* Ensure focus indicators are more visible */
+  --pf-v5-global--focus-ring-width: 2px;
+}
+
+/* Applied when user prefers reduced motion */
+body.vscode-reduce-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}

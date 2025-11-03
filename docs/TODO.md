@@ -15,21 +15,27 @@ _No tasks currently in progress_
 
 ## 🎯 What to Work on NEXT
 
-**🎉 MCP Integration COMPLETE!** All 4 tasks done! 🎊
+**🎉 Phase 3.1 COMPLETE!** Text editor integration done! 🎊
 
-**⚠️ BLOCKING ISSUE:** AI features blocked by Claude Code v2.0.31 bug (stdio connection drops)
-- ✅ Our implementation is 100% complete and tested (56 tests passing)
-- ❌ Claude Code stdio connections drop after ~20 seconds during tool execution
-- 📋 GitHub issue created: See `docs/ai-integration/GITHUB_ISSUE_TEMPLATE.md`
-- 📚 Complete documentation in `docs/ai-integration/`
+**Phase 3.2: React Visual Editor Analysis COMPLETE!**
+- ✅ Analyzed Angular vs React approach
+- ✅ Decision: React rewrite (CSP constraint blocks Angular)
+- ✅ Created comprehensive plan: 200-260h over 7 weeks
+- ✅ Task spec created: `tasks/todo/018-021-react-visual-editor.md`
 
-**Next Decision:**
-- **Option A:** Complete Phase 3.1 - Task 018: Webview Editor Provider (15-20h)
-- **Option B:** Complete UX Medium Priority tasks (6-9h total)
+**Next Actions:**
+- **Option A:** Begin Task 018 - React Foundation & Setup (35-45h, Week 1)
+  - Set up React + Vite + TypeScript
+  - Implement webview provider
+  - Integrate @apicurio/data-models
+  - Build state management foundation
+  - Command pattern for undo/redo
+- **Option B:** Complete UX Medium Priority tasks first (6-9h total)
   - Task 008: API v3.1 Compatibility (2-3h)
   - Task 006: User Preferences (2-3h)
   - Task 005: Custom SVG Icons (2-3h)
-- **Option C:** Wait for Claude Code bug fix, then test AI features end-to-end
+
+**Recommended:** Option A - Begin Task 018 (Phase 3.2 is high priority)
 
 ---
 
@@ -113,14 +119,16 @@ _Moved to MCP Integration section above_
 | 016 | Save & Auto-Save | ✅ Done | 10-12h | [spec](tasks/completed/016-save-auto-save.md) - Optional auto-save (disabled by default) ✅ |
 | 017 | Conflict Detection | ✅ Done | 8h | [spec](tasks/completed/017-conflict-detection.md) - 46 tests (17+18+11) ✅ |
 
-**Phase 3.2: Apicurio Studio Integration (Week 3-4, 40-60h)**
+**Phase 3.2: React Visual Editor (Weeks 3-9, 200-260h)**
+
+**⚠️ Critical Decision:** React rewrite chosen over Angular iframe embedding due to VSCode CSP constraint (no unsafe-eval allowed). See [Tasks 018-021 spec](tasks/todo/018-021-react-visual-editor.md) for detailed rationale.
 
 | # | Task | Status | Effort | Details |
 |---|------|--------|--------|---------|
-| 018 | Webview Editor Provider | 📋 Todo | 15-20h | Custom webview for Studio |
-| 019 | Message Passing Protocol | 📋 Todo | 12-15h | Bidirectional communication |
-| 020 | Studio Configuration | 📋 Todo | 8-10h | Load Studio from registry or local |
-| 021 | Content Synchronization | 📋 Todo | 10-12h | Sync text ↔ visual edits |
+| 018 | React Foundation & Setup | 📋 Todo | 35-45h | Webview provider, state management, @apicurio/data-models |
+| 019 | Core UI & Navigation | 📋 Todo | 55-70h | Navigation tree, forms, common components |
+| 020 | Forms & Detail Editors | 📋 Todo | 60-80h | Path, operation, schema, parameter, response editing |
+| 021 | Integration & Polish | 📋 Todo | 50-65h | Dialogs, VSCode integration, testing, bug fixes |
 
 **Phase 3.3: Draft Workflow & UX (Concurrent, 20-30h)**
 
@@ -156,15 +164,17 @@ _Moved to MCP Integration section above_
 ## 📊 Progress Overview
 
 ```
-Overall Project Progress: █████████████░░░░░░░░ 67%
+Overall Project Progress: █████████░░░░░░░░░░░ 46%
 
 Phase 1: Foundation        [████████████████████] 100% ✅
 Phase 2: Core Tree         [████████████████████] 100% ✅
 UX Improvements            [███████░░░░░░░░░░░░░]  40% 🚧
 MCP Integration            [████████████████████] 100% ✅ COMPLETE!
-Phase 3: Draft Editing     [██████████░░░░░░░░░░]  50% 🚧
+Phase 3: Draft Editing     [██████████░░░░░░░░░░]  25% 🚧 (7 of 14 tasks)
 Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░░░░]   0% 📋
 ```
+
+**Note:** Phase 3.2 effort increased from 40-60h to 200-260h due to React rewrite requirement (CSP constraint). Overall project completion % recalculated accordingly.
 
 **✅ MCP Integration - Local Scenario:** 4 of 4 tasks complete (100%) - COMPLETE!
 - ✅ MCP-1: Fix MCPConfigurationManager (4-6h) - 2025-11-02
@@ -180,7 +190,7 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 **Phase 3: Draft Editing & Studio Integration:** 7 of 14 tasks complete (50%)
 - Phase 3.0 (Infrastructure): 4 of 4 tasks (100%) ✅ COMPLETE!
 - Phase 3.1 (Text Editor): 3 of 3 tasks (100%) ✅ COMPLETE!
-- Phase 3.2 (Studio Integration): 0 of 4 tasks (0%)
+- Phase 3.2 (React Visual Editor): 0 of 4 tasks (0%) - 200-260h planned
 - Phase 3.3 (Workflow & UX): 0 of 3 tasks (0%)
 
 ---
@@ -236,6 +246,18 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 ---
 
 ## 📝 Recent Activity
+
+**2025-11-03 (Phase 3.2 Analysis Complete! 🎉 React Approach Chosen)**
+- ✅ **Analyzed Phase 3.2 Architecture**: Compared Angular iframe vs React rewrite approaches
+- ✅ **Critical Finding**: VSCode CSP requires no unsafe-eval → Angular approach blocked
+- ✅ **Decision**: React rewrite approach (200-260h over 7 weeks)
+- ✅ **Created Task Spec**: `tasks/todo/018-021-react-visual-editor.md` (comprehensive 500+ line spec)
+- ✅ **Updated TODO.md**: Revised Phase 3.2 with React approach details
+- ✅ **Effort Recalculation**: Phase 3.2 increased from 40-60h to 200-260h
+- ✅ **Code Reuse Analysis**: Can reuse ~30% (@apicurio/data-models, CSS, business logic)
+- ✅ **Technology Stack**: React 18, Zustand, @vscode/webview-ui-toolkit, @apicurio/data-models
+- 📊 **Progress**: Overall 67% → 46% (due to increased Phase 3.2 scope)
+- 🚀 **Next**: Begin Task 018 - React Foundation & Setup (35-45h)
 
 **2025-11-03 (Task 017 Complete! 🎉 Phase 3.1 COMPLETE!)**
 - ✅ **Completed Task 017**: Conflict Detection (8h actual, estimated 8-10h)

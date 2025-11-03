@@ -22,7 +22,7 @@ This master plan integrates three planning documents into a unified roadmap:
 | **Phase 2** (Tree View) | ✅ Complete | 100% | - |
 | **UX Improvements** | 🚧 In Progress | 40% (4/10) | Deferred |
 | **🎉 MCP Integration** | ⚠️ **COMPLETE (Blocked)** | **100% (4/4)** | **Blocked by Claude Code bug** |
-| **Phase 3** (Editors) | 🚧 In Progress | 50% (7/14) | Phase 3.1 Complete! → 3.2 or UX |
+| **Phase 3** (Editors) | 🚧 In Progress | 25% (7/14) | Phase 3.1 Complete! → 3.2 React (200-260h) |
 | **Phase 4** (Advanced) | 📋 Planned | 0% | Future |
 
 ---
@@ -326,39 +326,100 @@ POST /groups/{groupId}/artifacts/{artifactId}/versions
 - Content synchronization service
 - Version management UI
 
-##### 3.2: Apicurio Studio Integration (Week 3-4)
+##### 3.2: React Visual Editor (Weeks 3-9) - **REVISED APPROACH**
 
-**Tasks:**
-- Create webview-based custom editor
-- Embed Apicurio Studio editors via iframe
-- Implement message passing between webview and extension
-- Handle editor state synchronization
-- Support visual editing mode toggle
+**⚠️ Critical Decision (2025-11-03):** React rewrite chosen over Angular iframe embedding.
+
+**Why React Instead of Angular?**
+
+❌ **Angular Approach Blocked:**
+- VSCode extensions require strict Content Security Policy
+- Angular requires `unsafe-eval` CSP directive for JIT compilation
+- **VSCode cannot relax CSP for webviews** - this is a hard blocker
+- Original plan (40-60h) is technically infeasible
+
+✅ **React Approach (200-260h):**
+- Complies with strict CSP (no unsafe-eval)
+- Full control over codebase and features
+- Reuses ~30% of existing code (@apicurio/data-models, CSS, utilities)
+- Smaller bundle size (~800 KB vs ~2-3 MB)
+- Better VSCode integration patterns
+
+**Tasks (Revised):**
+- **Task 018:** React Foundation & Setup (35-45h)
+  - React + Vite + TypeScript setup
+  - Webview provider implementation
+  - @apicurio/data-models integration
+  - State management (Zustand)
+  - Command pattern for undo/redo
+- **Task 019:** Core UI & Navigation (55-70h)
+  - Navigation tree component
+  - Title bar with validation
+  - Problem drawer
+  - Main forms (info, servers)
+  - Common components library
+- **Task 020:** Forms & Detail Editors (60-80h)
+  - Path/operation forms (OpenAPI)
+  - Channel/message forms (AsyncAPI)
+  - Schema/definition editors
+  - Parameter & response editors
+  - Security scheme forms
+- **Task 021:** Integration & Polish (50-65h)
+  - Modal dialogs (20+ dialogs)
+  - VSCode message passing
+  - Save integration (Task 015)
+  - Conflict detection (Task 017)
+  - Unit & integration testing
+  - Bug fixes and polish
 
 **Architecture:**
 ```
 VSCode Extension
-    ↓ (loads webview)
-Webview Container
-    ↓ (embeds iframe)
-Apicurio Studio Editor (Angular)
+    ↓ (creates webview)
+React Webview (Vite bundle)
+    ↓ (uses)
+@apicurio/data-models (business logic)
     ↓ (message passing)
 VSCode Extension API
-    ↓ (saves to registry)
-Registry API
+    ↓ (uses)
+ApicurioFileSystemProvider (Task 015)
+    ↓ (saves to)
+Apicurio Registry API
 ```
 
+**Technology Stack:**
+- React 18 + TypeScript
+- Vite (build tool, fast HMR)
+- @vscode/webview-ui-toolkit (VSCode native components)
+- Zustand (state management)
+- Immer (immutable updates)
+- @apicurio/data-models v1.1.33 (business logic)
+- react-hook-form + zod (form validation)
+
+**Code Reuse (~30%):**
+- 100% reuse: @apicurio/data-models library
+- 70% reuse: CSS styles (adapt to VSCode theming)
+- 50% reuse: Business logic (validation, helpers)
+- 0% reuse: Angular components (141 components → rewrite in React)
+
 **Challenges:**
-- Loading Apicurio Studio assets in webview
-- Content Security Policy configuration
-- Bidirectional message passing
-- State synchronization between text and visual modes
+- Large scope (17,000 LOC to write)
+- Form complexity (50+ forms, 20+ dialogs)
+- Schema editor (nested, recursive schemas)
+- Performance with large documents
+- Feature parity with Angular editor
 
 **Deliverables:**
-- Webview-based visual editor
-- Apicurio Studio iframe integration
-- Message passing protocol
-- Mode switching (text ↔ visual)
+- React-based visual editor for OpenAPI 2.0/3.0 and AsyncAPI 2.x
+- Full CRUD for all document sections
+- Undo/redo support
+- Validation with problem drawer
+- Save integration with conflict detection
+- 80%+ test coverage
+
+**Timeline:** 7 weeks (200-260 hours)
+
+**Reference Documentation:** [Tasks 018-021 Spec](tasks/todo/018-021-react-visual-editor.md)
 
 ##### 3.3: Content Synchronization (Week 3-4)
 
@@ -733,11 +794,14 @@ Comparison with reference plugin features:
 
 **Remaining:**
 - UX Sprint 3: 6-9 hours (1 week)
-- Phase 3: 120-160 hours (3-4 weeks)
+- Phase 3.2: 200-260 hours (7 weeks) - **REVISED** (was 40-60h)
+- Phase 3.3: 20-30 hours (1 week)
 - Phase 4: 80-120 hours (2-3 weeks)
 
-**Total Project:** ~426-509 hours (11-13 weeks)
-**Completed to Date:** 220 hours (43%)
+**Total Project:** ~646-749 hours (16-19 weeks) - **REVISED**
+**Completed to Date:** 220 hours (30-34%) - **REVISED**
+
+**Note:** Phase 3.2 scope increased significantly due to React rewrite requirement (CSP constraint blocks Angular iframe approach). Original estimate was 40-60h for iframe integration; React rewrite requires 200-260h.
 
 ### Testing Effort
 
@@ -835,10 +899,15 @@ This phased, sprint-based approach ensures:
 
 ---
 
-**Document Version:** 1.1
-**Last Updated:** 2025-10-28
-**Next Review:** 2025-11-07 (End of Sprint 3)
+**Document Version:** 1.2
+**Last Updated:** 2025-11-03
+**Next Review:** 2025-11-10 (After Task 018 Week 1)
 **Owner:** Development Team
+
+**Changelog:**
+- **v1.2 (2025-11-03):** Phase 3.2 revised - React rewrite approach (200-260h) due to CSP constraint
+- **v1.1 (2025-10-28):** MCP integration complete, Phase 3.1 complete
+- **v1.0 (2025-10-24):** Initial integrated master plan
 
 **Related Documents:**
 - [VSCODE_PLUGIN_PLAN.md](VSCODE_PLUGIN_PLAN.md) - Original 4-phase plan

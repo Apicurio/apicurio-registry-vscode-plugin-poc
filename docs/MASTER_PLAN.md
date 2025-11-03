@@ -1,8 +1,8 @@
 # Apicurio VSCode Plugin - Master Implementation Plan
 
 **Last Updated:** 2025-11-03
-**Status:** MCP Integration In Progress (Critical Priority)
-**Next:** Complete MCP Integration → Resume Phase 3 (Editors)
+**Status:** MCP Integration Complete - Blocked by Claude Code Bug
+**Next:** Resume Phase 3 (Editors) OR Complete UX Medium Priority
 
 ---
 
@@ -21,7 +21,7 @@ This master plan integrates three planning documents into a unified roadmap:
 | **Phase 1** (Foundation) | ✅ Complete | 100% | - |
 | **Phase 2** (Tree View) | ✅ Complete | 100% | - |
 | **UX Improvements** | 🚧 In Progress | 40% (4/10) | Deferred |
-| **🎉 MCP Integration** | ✅ **COMPLETE** | **100% (4/4)** | **All tasks done!** |
+| **🎉 MCP Integration** | ⚠️ **COMPLETE (Blocked)** | **100% (4/4)** | **Blocked by Claude Code bug** |
 | **Phase 3** (Editors) | ⏸️ Paused | 43% (6/14) | Decision: Resume or UX tasks |
 | **Phase 4** (Advanced) | 📋 Planned | 0% | Future |
 
@@ -174,21 +174,31 @@ Based on [UX_COMPARISON.md](UX_COMPARISON.md) analysis of reference plugin.
 
 ---
 
-### 🎉 MCP Integration - Local Scenario (COMPLETE!)
+### 🎉 MCP Integration - Local Scenario (COMPLETE - BLOCKED)
 
 **Duration:** 2-3 days (15-21 hours actual)
-**Status:** ✅ **100% Complete (4/4 tasks)**
+**Status:** ✅ **100% Implementation Complete (4/4 tasks)** - ⚠️ **Blocked by Claude Code Bug**
 **Started:** 2025-11-02
 **Completed:** 2025-11-03
-**Reference:** [MCP_ARCHITECTURE_VALIDATION.md](ai-integration/MCP_ARCHITECTURE_VALIDATION.md)
+**Reference:**
+- [MCP_ARCHITECTURE_VALIDATION.md](ai-integration/MCP_ARCHITECTURE_VALIDATION.md)
+- [CLAUDE_CODE_BUG_REPORT.md](ai-integration/CLAUDE_CODE_BUG_REPORT.md)
+- [GITHUB_ISSUE_TEMPLATE.md](ai-integration/GITHUB_ISSUE_TEMPLATE.md)
 
 **Goal:** Enable local developers to use Claude Code AI features with Apicurio Registry
 
-**Achievement:**
+**Implementation Status:**
 - ✅ Fixed MCP configuration approach (CLI commands instead of VSCode settings)
-- ✅ AI features now fully functional with Claude Code
 - ✅ Interactive setup wizard for seamless user experience
 - ✅ Standalone utility commands for quick access
+- ✅ All 56 tests passing (23 + 16 + 7 + 10)
+- ✅ MCP server successfully receives requests and returns data
+
+**Blocking Issue:**
+- ⚠️ **Claude Code v2.0.31 Bug**: stdio connections drop after ~20 seconds during tool execution
+- ❌ Users cannot use AI features (Claude Code never receives MCP responses)
+- 📋 GitHub issue created with complete documentation
+- 🔍 Root cause: stdio pipe closes prematurely while tool is executing
 
 #### ✅ Completed (4 tasks, ~19 hours)
 
@@ -202,13 +212,14 @@ Based on [UX_COMPARISON.md](UX_COMPARISON.md) analysis of reference plugin.
 **MCP-1 Delivered:**
 - `generateClaudeMCPCommand()` - Generates correct `claude mcp add` command
 - `convertToContainerUrl()` - Converts localhost → host.containers.internal for Docker
-- `normalizeRegistryUrl()` - Ensures /apis/registry/v3 path
+- `normalizeRegistryUrl()` - **FIXED**: Now REMOVES `/apis/registry/v3` path (MCP server adds it automatically)
 - `verifyMCPConfiguration()` - Validates Claude CLI installation and config
 - Refactored `configureClaudeCode()` - Copy & Run workflow
 - Updated `showManualSetupInstructions()` - CLI approach
 - Updated `removeMCPServerConfig()` - CLI removal command
-- **23 comprehensive tests** - All passing ✅
+- **23 comprehensive tests** - All passing ✅ (updated to verify URL fix)
 - Complete documentation set (5 new docs, 3,195+ lines)
+- **Bug Fix**: Resolved URL duplication issue (404 errors) - See MCP_404_BUG_FIX.md
 
 **MCP-2 Delivered:**
 - Added `managementMode` to MCPServerConfig ('extension' | 'claude-code')
@@ -241,12 +252,22 @@ Based on [UX_COMPARISON.md](UX_COMPARISON.md) analysis of reference plugin.
 - **10 comprehensive tests** - All passing ✅
 - TypeScript compilation successful (602 KiB)
 
-**Success Criteria:**
+**Success Criteria (What Works):**
 - ✅ User runs "Setup AI Features" command
 - ✅ Wizard generates correct `claude mcp add` command
 - ✅ User copies/pastes command in terminal
 - ✅ Claude Code successfully connects to MCP server
-- ✅ AI features work: "List my registry groups" returns results
+- ✅ MCP server receives requests and returns valid responses
+- ✅ All 56 tests passing
+
+**What Doesn't Work (Blocked by Claude Code Bug):**
+- ❌ AI features hang with "Enchanting..." status
+- ❌ stdio connection drops after ~20 seconds
+- ❌ Claude Code never receives MCP server responses
+- ❌ End-to-end AI workflow blocked
+
+**When Fixed:**
+Once Anthropic fixes the stdio connection bug in Claude Code, AI features will work immediately with **no changes needed** to our extension.
 
 **Key Files:**
 - `src/services/mcpConfigurationManager.ts` (refactored)

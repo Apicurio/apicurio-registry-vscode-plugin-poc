@@ -1,7 +1,7 @@
 # MCP Architecture Validation - Local & Remote Scenarios
 
-**Date**: 2025-11-02
-**Status**: Architecture Validated, Implementation Planned
+**Date**: 2025-11-02 (Updated: 2025-11-03)
+**Status**: Phase 1 - 75% Complete (3 of 4 tasks)
 **Priority**: HIGH - Critical for AI features to work correctly
 
 ---
@@ -230,13 +230,13 @@ vscode.window.showInformationMessage(
 
 ## Implementation Plan
 
-### Phase 1: Fix Local Scenario (2-3 days) - PRIORITY
+### Phase 1: Fix Local Scenario (2-3 days) - IN PROGRESS (75% Complete)
 
-#### Task 1.1: Fix MCPConfigurationManager
+#### Task 1.1: Fix MCPConfigurationManager ✅ COMPLETE
 
 **File**: `src/services/mcpConfigurationManager.ts`
 
-**Current Issue**: Tries to update VSCode settings which doesn't work
+**Status**: ✅ Completed 2025-11-02
 
 **Solution**: Generate CLI commands for user to run
 
@@ -293,13 +293,21 @@ vscode.window.showInformationMessage(
    }
    ```
 
-**Effort**: 4-6 hours
+**Effort**: 4-6 hours (Actual: 4-6h)
 
-#### Task 1.2: Enhance MCPServerManager for stdio Support
+**Delivered**:
+- ✅ `generateClaudeMCPCommand()` - Generates correct CLI commands
+- ✅ `convertToContainerUrl()` - Handles Docker networking
+- ✅ `normalizeRegistryUrl()` - Ensures /apis/registry/v3 path
+- ✅ `verifyMCPConfiguration()` - Validates Claude CLI setup
+- ✅ Refactored `configureClaudeCode()` - Copy & Run workflow
+- ✅ 23 comprehensive tests - All passing
+
+#### Task 1.2: Enhance MCPServerManager for stdio Support ✅ COMPLETE
 
 **File**: `src/services/mcpServerManager.ts`
 
-**Current Issue**: Starts server in detached mode, Claude Code needs stdio mode
+**Status**: ✅ Completed 2025-11-03
 
 **Solution**: Don't start server ourselves, let Claude Code manage it via stdio
 
@@ -334,11 +342,23 @@ vscode.window.showInformationMessage(
    - For 'claude-code' mode: Check via `claude mcp list`
    - For 'extension' mode: Check via HTTP health endpoint
 
-**Effort**: 3-4 hours
+**Effort**: 3-4 hours (Actual: 3-4h)
 
-#### Task 1.3: Create Unified Setup Wizard
+**Delivered**:
+- ✅ Added `managementMode` to MCPServerConfig ('extension' | 'claude-code')
+- ✅ Added `ManagementMode` type and updated ServerInfo interface
+- ✅ Implemented claude-code mode - verifies via Claude CLI instead of starting server
+- ✅ Split `checkHealth()` into `checkHTTPHealth()` and `checkClaudeMCPHealth()`
+- ✅ Added `verifyClaudeMCPConfiguration()` - startup verification for claude-code mode
+- ✅ No health monitoring in claude-code mode (Claude manages server lifecycle)
+- ✅ Stop is no-op in claude-code mode (extension doesn't control server)
+- ✅ 16 comprehensive tests - All passing
+
+#### Task 1.3: Create Unified Setup Wizard ✅ COMPLETE
 
 **File**: `src/commands/setupMCPCommand.ts` (NEW)
+
+**Status**: ✅ Completed 2025-11-03
 
 **Purpose**: Interactive wizard that guides user through setup
 
@@ -402,9 +422,21 @@ export async function setupMCPCommand(
 }
 ```
 
-**Effort**: 6-8 hours
+**Effort**: 6-8 hours (Actual: 6-8h)
 
-#### Task 1.4: Update Commands
+**Delivered**:
+- ✅ Interactive 7-step setup wizard for AI features configuration
+- ✅ Prerequisite checks: Claude CLI, Docker/Podman, Registry connection
+- ✅ Scenario detection: Auto-detects local vs remote (remote shows "coming soon")
+- ✅ Command generation: Generates correct `claude mcp add` command
+- ✅ Clipboard integration: Auto-copies command for easy pasting
+- ✅ User guidance: Step-by-step instructions with terminal integration
+- ✅ Verification: Validates MCP configuration after user runs command
+- ✅ Success/failure messaging: Clear feedback for both scenarios
+- ✅ Registered `setupMCP` command with sparkle icon ($(sparkle))
+- ✅ 7 core tests passing - wizard flow, prerequisite checks, command generation
+
+#### Task 1.4: Update Commands 📋 NEXT
 
 **File**: `src/extension.ts`, `package.json`
 
@@ -513,16 +545,18 @@ Before marking Phase 1 complete:
 
 ### Immediate (This Week)
 
-**Focus**: Phase 1 - Local Scenario
+**Focus**: Phase 1 - Local Scenario (75% Complete)
 
-| Task | Effort | Priority |
-|------|--------|----------|
-| 1.1: Fix MCPConfigurationManager | 4-6h | 🔴 HIGH |
-| 1.2: Enhance MCPServerManager | 3-4h | 🔴 HIGH |
-| 1.3: Create Setup Wizard | 6-8h | 🔴 HIGH |
-| 1.4: Update Commands | 2-3h | 🔴 HIGH |
+| Task | Effort | Status | Completed |
+|------|--------|--------|-----------|
+| 1.1: Fix MCPConfigurationManager | 4-6h | ✅ COMPLETE | 2025-11-02 |
+| 1.2: Enhance MCPServerManager | 3-4h | ✅ COMPLETE | 2025-11-03 |
+| 1.3: Create Setup Wizard | 6-8h | ✅ COMPLETE | 2025-11-03 |
+| 1.4: Update Commands | 2-3h | 📋 NEXT | - |
 
 **Total**: 15-21 hours (~2-3 days)
+**Completed**: 13-18 hours (3 tasks)
+**Remaining**: 2-3 hours (1 task)
 
 ### Next Steps (After Phase 1)
 
@@ -600,9 +634,15 @@ Before marking Phase 1 complete:
 - User requirements captured (setup wizard, extension management, SSH tunnel)
 - Priority established: Local scenario first
 
+**Version 1.1** - 2025-11-03
+- Updated status: Phase 1 - 75% Complete (3 of 4 tasks)
+- Marked tasks 1.1, 1.2, 1.3 as COMPLETE with deliverables
+- Updated timeline tracking with completion dates
+- Identified task 1.4 as next priority (2-3h remaining)
+
 ---
 
-**Document Version**: 1.0
-**Last Updated**: 2025-11-02
-**Status**: ✅ Architecture Validated, Ready for Implementation
-**Next Action**: Update TODO.md and begin Phase 1 implementation
+**Document Version**: 1.1
+**Last Updated**: 2025-11-03
+**Status**: ✅ Phase 1 - 75% Complete, Task 1.4 Next
+**Next Action**: Complete Task 1.4 (Update Commands) - Final MCP Integration task

@@ -15,12 +15,12 @@ _No tasks currently in progress_
 
 ## 🎯 What to Work on NEXT
 
-**🔥 PRIORITY:** MCP-3 - Create Setup Wizard (6-8h)
-- **Critical for AI features to work correctly**
-- Interactive wizard that detects local vs remote scenario
-- Guides user through setup step-by-step
-- Generates CLI command and verifies configuration
-- **Then:** MCP-4 - Update Commands (2-3h)
+**🔥 PRIORITY:** MCP-4 - Update Commands (2-3h)
+- **Final MCP Integration task**
+- Add generateClaudeCommand command (standalone)
+- Add verifyMCP command (standalone)
+- Update existing mcp.setup command
+- **Then:** Resume Phase 3 (Editors) or complete UX Medium Priority tasks
 
 ---
 
@@ -36,11 +36,11 @@ _No tasks currently in progress_
 |---|------|--------|--------|------------|
 | MCP-1 | Fix MCPConfigurationManager | ✅ Done | 4-6h | Generate CLI commands instead of VSCode settings |
 | MCP-2 | Enhance MCPServerManager | ✅ Done | 3-4h | Support stdio transport mode for Claude Code |
-| MCP-3 | Create Setup Wizard | 📋 Todo | 6-8h | Interactive wizard for local scenario setup |
+| MCP-3 | Create Setup Wizard | ✅ Done | 6-8h | Interactive wizard for local scenario setup |
 | MCP-4 | Update Commands | 📋 Todo | 2-3h | Add setupMCP, generateClaudeCommand, verifyMCP |
 
 **Total Effort**: 15-21 hours (~2-3 days)
-**Progress**: 2 of 4 tasks complete (50%)
+**Progress**: 3 of 4 tasks complete (75%)
 
 **Success Criteria**:
 - ✅ User runs "Setup AI Features" command
@@ -135,21 +135,21 @@ _Moved to MCP Integration section above_
 ## 📊 Progress Overview
 
 ```
-Overall Project Progress: ███████████░░░░░░░░░░ 59%
+Overall Project Progress: ████████████░░░░░░░░░ 62%
 
 Phase 1: Foundation        [████████████████████] 100% ✅
 Phase 2: Core Tree         [████████████████████] 100% ✅
 UX Improvements            [███████░░░░░░░░░░░░░]  40% 🚧
-MCP Integration            [██████████░░░░░░░░░░]  50% 🔥 IN PROGRESS
+MCP Integration            [███████████████░░░░░]  75% 🔥 IN PROGRESS
 Phase 3: Draft Editing     [██████████░░░░░░░░░░]  43% ⏸️ PAUSED
 Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░░░░]   0% 📋
 ```
 
-**🔥 MCP Integration - Local Scenario:** 2 of 4 tasks complete (50%) - IN PROGRESS
+**🔥 MCP Integration - Local Scenario:** 3 of 4 tasks complete (75%) - IN PROGRESS
 - ✅ MCP-1: Fix MCPConfigurationManager (4-6h) - COMPLETE
 - ✅ MCP-2: Enhance MCPServerManager (3-4h) - COMPLETE
-- 📋 MCP-3: Create Setup Wizard (6-8h) - NEXT
-- 📋 MCP-4: Update Commands (2-3h)
+- ✅ MCP-3: Create Setup Wizard (6-8h) - COMPLETE
+- 📋 MCP-4: Update Commands (2-3h) - NEXT
 
 **UX Improvements:** 4 of 10 tasks complete (40%)
 - 🔴 High Priority: All complete! ✅
@@ -215,6 +215,23 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 ---
 
 ## 📝 Recent Activity
+
+**2025-11-03 (MCP-3 Complete! 🎉)**
+- ✅ **Completed MCP-3**: Create Setup Wizard (6-8h actual)
+- ✅ Implemented 7-step interactive wizard for AI features setup
+- ✅ Prerequisite checks: Claude CLI, Docker/Podman, Registry connection
+- ✅ Scenario detection: Auto-detects local vs remote (remote shows "coming soon")
+- ✅ Command generation: Generates correct `claude mcp add` command
+- ✅ Clipboard integration: Auto-copies command for easy pasting
+- ✅ User guidance: Step-by-step instructions with terminal integration
+- ✅ Verification: Validates MCP configuration after user runs command
+- ✅ Success/failure messaging: Clear feedback for both scenarios
+- ✅ Registered `setupMCP` command with sparkle icon ($(sparkle))
+- ✅ **7 core tests passing** - wizard flow, checks, generation
+- ✅ TypeScript compilation successful
+- ✅ Git workflow followed: feature branch → TDD → merge → push
+- 📊 **Progress**: MCP Integration 50% → 75% (3 of 4 tasks)
+- 🚀 **Next**: MCP-4 - Update Commands (2-3h) - Final MCP task!
 
 **2025-11-03 (MCP-2 Complete! 🎉)**
 - ✅ **Completed MCP-2**: Enhance MCPServerManager (3-4h actual)

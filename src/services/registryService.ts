@@ -151,6 +151,34 @@ export class RegistryService {
         }
     }
 
+    async getVersionMetadata(groupId: string, artifactId: string, version: string): Promise<SearchedVersion> {
+        this.ensureConnected();
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            const encodedVersion = encodeURIComponent(version);
+
+            const response = await this.client!.get(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/versions/${encodedVersion}`
+            );
+
+            // Convert modifiedOn from timestamp to Date if present
+            const data = response.data;
+            if (data.modifiedOn) {
+                data.modifiedOn = new Date(data.modifiedOn);
+            }
+            if (data.createdOn) {
+                data.createdOn = new Date(data.createdOn);
+            }
+
+            return data;
+        } catch (error) {
+            console.error('Error getting version metadata:', error);
+            throw new Error(`Failed to get metadata for ${groupId}/${artifactId}@${version}: ${error}`);
+        }
+    }
+
     async getArtifactContent(groupId: string, artifactId: string, version: string): Promise<ArtifactContent> {
         this.ensureConnected();
 

@@ -358,12 +358,16 @@ POST /groups/{groupId}/artifacts/{artifactId}/versions
   - Problem drawer
   - Main forms (info, servers)
   - Common components library
-- **Task 020:** Forms & Detail Editors (60-80h)
-  - Path/operation forms (OpenAPI)
-  - Channel/message forms (AsyncAPI)
-  - Schema/definition editors
-  - Parameter & response editors
-  - Security scheme forms
+- **Task 020:** Forms & Detail Editors (**30-40h** - REVISED! ⚡ 40% time savings)
+  - **Strategy:** Copy 60-70% from @apicurio/apicurio-editors, build 30-40% ourselves
+  - Contact/License/Tags (copy & adapt)
+  - Path Explorer (copy 12 KB PathsExplorer.tsx)
+  - Operation forms (build ourselves - not in apicurio-editors)
+  - Schema/Component editors (copy Properties.tsx - 2.9 KB)
+  - Response editor (copy & adapt)
+  - Security schemes (copy & adapt)
+  - AsyncAPI forms (Channel/Message - build ourselves)
+  - See: [020-REVISED spec](tasks/in-progress/020-forms-detail-editors-REVISED.md)
 - **Task 021:** Integration & Polish (50-65h)
   - Modal dialogs (20+ dialogs)
   - VSCode message passing

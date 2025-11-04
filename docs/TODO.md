@@ -45,14 +45,18 @@
 **Total Task 019 Tests: 76 tests passing** ✅
 
 **Next Actions:**
-- **Start Task 020 - Forms & Detail Editors** (60-80h)
-  - Path Form (OpenAPI)
-  - Operation Form (GET/POST/PUT/DELETE)
-  - Channel Form (AsyncAPI)
-  - Schema Editor
-  - Parameter/Response Forms
+- **Start Task 020 - Forms & Detail Editors** (30-40h - REVISED! ⚡)
+  - **Week 1:** Contact/License, Tags, Path Explorer (copy from apicurio-editors)
+  - **Week 2:** Operation Forms (build ourselves), Schema Editor start (copy)
+  - **Week 3:** Schema/Response/Security editors (copy), AsyncAPI forms (build)
+  - **Strategy:** Copy 60-70% from apicurio-editors, build 30-40% ourselves
+  - **Time Savings:** 25-40 hours (40% reduction!)
 
-**Recommended:** Continue with Task 020 - building momentum on Phase 3.2!
+**Recommended:** Start Task 020 immediately - we have all the code to copy! 🚀
+
+**See:**
+- [Task 020 REVISED Spec](tasks/in-progress/020-forms-detail-editors-REVISED.md)
+- [Apicurio Editors Integration Strategy](APICURIO_EDITORS_INTEGRATION_STRATEGY.md)
 
 ---
 
@@ -144,7 +148,7 @@ _Moved to MCP Integration section above_
 |---|------|--------|--------|---------|
 | 018 | React Foundation & Setup | ✅ Done | 35-45h | [completed](tasks/completed/018-react-foundation.md) - Webview provider, state management, @apicurio/data-models ✅ |
 | 019 | Core UI & Navigation | ✅ Done | 55-70h | Layout, navigation tree, problem drawer, info/server forms, common components - 76 tests ✅ |
-| 020 | Forms & Detail Editors | 📋 Todo | 60-80h | Path, operation, schema, parameter, response editing |
+| 020 | Forms & Detail Editors | 📋 Todo | **30-40h** ⚡ | **REVISED:** Copy apicurio-editors components, 40% time savings! See [020-REVISED spec](tasks/in-progress/020-forms-detail-editors-REVISED.md) |
 | 021 | Integration & Polish | 📋 Todo | 50-65h | Dialogs, VSCode integration, testing, bug fixes |
 
 **Phase 3.3: Draft Workflow & UX (Concurrent, 20-30h)**

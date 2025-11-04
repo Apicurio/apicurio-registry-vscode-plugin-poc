@@ -46,25 +46,31 @@ export const InfoForm: React.FC = () => {
 
     /**
      * Update a field in the info object.
+     *
+     * Note: We mutate the document directly because @apicurio/data-models
+     * documents are designed to be mutable. Cloning would lose all methods.
      */
     const updateInfoField = (field: string, value: string) => {
+        if (!document) return;
+
+        const oldValue = info ? info[field] : undefined;
+
         executeCommand({
             execute: () => {
-                const updatedDoc = { ...document };
-                if (!updatedDoc.info) {
-                    (updatedDoc as any).info = {};
+                // Mutate document directly - don't clone!
+                if (!(document as any).info) {
+                    (document as any).info = {};
                 }
-                (updatedDoc as any).info[field] = value;
-                updateDocument(updatedDoc);
+                (document as any).info[field] = value;
+                updateDocument(document);
             },
             undo: () => {
-                const revertedDoc = { ...document };
-                if (info && info[field]) {
-                    (revertedDoc as any).info[field] = info[field];
-                } else {
-                    delete (revertedDoc as any).info[field];
+                if (oldValue !== undefined) {
+                    (document as any).info[field] = oldValue;
+                } else if ((document as any).info) {
+                    delete (document as any).info[field];
                 }
-                updateDocument(revertedDoc);
+                updateDocument(document);
             },
             getDescription: () => `Update ${field}: ${value}`
         });
@@ -74,26 +80,29 @@ export const InfoForm: React.FC = () => {
      * Update contact field.
      */
     const updateContactField = (field: string, value: string) => {
+        if (!document) return;
+
+        const oldValue = info?.contact ? info.contact[field] : undefined;
+
         executeCommand({
             execute: () => {
-                const updatedDoc = { ...document };
-                if (!updatedDoc.info) {
-                    (updatedDoc as any).info = {};
+                // Mutate document directly - don't clone!
+                if (!(document as any).info) {
+                    (document as any).info = {};
                 }
-                if (!(updatedDoc as any).info.contact) {
-                    (updatedDoc as any).info.contact = {};
+                if (!(document as any).info.contact) {
+                    (document as any).info.contact = {};
                 }
-                (updatedDoc as any).info.contact[field] = value;
-                updateDocument(updatedDoc);
+                (document as any).info.contact[field] = value;
+                updateDocument(document);
             },
             undo: () => {
-                const revertedDoc = { ...document };
-                if (info?.contact && info.contact[field]) {
-                    (revertedDoc as any).info.contact[field] = info.contact[field];
-                } else if ((revertedDoc as any).info?.contact) {
-                    delete (revertedDoc as any).info.contact[field];
+                if (oldValue !== undefined) {
+                    (document as any).info.contact[field] = oldValue;
+                } else if ((document as any).info?.contact) {
+                    delete (document as any).info.contact[field];
                 }
-                updateDocument(revertedDoc);
+                updateDocument(document);
             },
             getDescription: () => `Update contact ${field}: ${value}`
         });
@@ -103,26 +112,29 @@ export const InfoForm: React.FC = () => {
      * Update license field.
      */
     const updateLicenseField = (field: string, value: string) => {
+        if (!document) return;
+
+        const oldValue = info?.license ? info.license[field] : undefined;
+
         executeCommand({
             execute: () => {
-                const updatedDoc = { ...document };
-                if (!updatedDoc.info) {
-                    (updatedDoc as any).info = {};
+                // Mutate document directly - don't clone!
+                if (!(document as any).info) {
+                    (document as any).info = {};
                 }
-                if (!(updatedDoc as any).info.license) {
-                    (updatedDoc as any).info.license = {};
+                if (!(document as any).info.license) {
+                    (document as any).info.license = {};
                 }
-                (updatedDoc as any).info.license[field] = value;
-                updateDocument(updatedDoc);
+                (document as any).info.license[field] = value;
+                updateDocument(document);
             },
             undo: () => {
-                const revertedDoc = { ...document };
-                if (info?.license && info.license[field]) {
-                    (revertedDoc as any).info.license[field] = info.license[field];
-                } else if ((revertedDoc as any).info?.license) {
-                    delete (revertedDoc as any).info.license[field];
+                if (oldValue !== undefined) {
+                    (document as any).info.license[field] = oldValue;
+                } else if ((document as any).info?.license) {
+                    delete (document as any).info.license[field];
                 }
-                updateDocument(revertedDoc);
+                updateDocument(document);
             },
             getDescription: () => `Update license ${field}: ${value}`
         });

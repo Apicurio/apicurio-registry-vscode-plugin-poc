@@ -1,6 +1,7 @@
 import React from 'react';
 import { EditorLayout } from './components/layout/EditorLayout';
 import { PlaceholderContent } from './components/content/PlaceholderContent';
+import { NavigationTree } from './components/navigation/NavigationTree';
 
 /**
  * Main App component for Apicurio Visual Editor
@@ -9,21 +10,14 @@ import { PlaceholderContent } from './components/content/PlaceholderContent';
  * for OpenAPI/AsyncAPI specifications.
  *
  * The app uses a 3-column layout:
- * - Left: Navigation tree (will be implemented in Subtask 2)
+ * - Left: Navigation tree (hierarchical document structure)
  * - Center: Main content area (forms and editors)
  * - Right: Properties panel (will be implemented later)
  */
 const App: React.FC = () => {
     return (
         <EditorLayout
-            navigationPanel={
-                <div style={{ padding: '1rem' }}>
-                    <p>Navigation Tree</p>
-                    <p style={{ fontSize: '0.9em', color: 'var(--pf-v5-global--Color--200)' }}>
-                        (Subtask 2)
-                    </p>
-                </div>
-            }
+            navigationPanel={<NavigationTree />}
             mainContent={<PlaceholderContent />}
             propertiesPanel={
                 <div>

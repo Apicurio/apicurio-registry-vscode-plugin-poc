@@ -1,16 +1,23 @@
 module.exports = {
     preset: 'ts-jest',
-    testEnvironment: 'node',
+    testEnvironment: 'jsdom',
     roots: ['<rootDir>/src'],
     testMatch: [
         '**/__tests__/**/*.ts',
-        '**/?(*.)+(spec|test).ts'
+        '**/__tests__/**/*.tsx',
+        '**/?(*.)+(spec|test).ts',
+        '**/?(*.)+(spec|test).tsx'
     ],
     transform: {
-        '^.+\\.ts$': 'ts-jest'
+        '^.+\\.tsx?$': ['ts-jest', {
+            tsconfig: {
+                jsx: 'react'
+            }
+        }]
     },
     moduleNameMapper: {
-        '^vscode$': '<rootDir>/src/__mocks__/vscode.ts'
+        '^vscode$': '<rootDir>/src/__mocks__/vscode.ts',
+        '\\.(css|less|scss|sass)$': 'identity-obj-proxy'
     },
     setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
     collectCoverageFrom: [

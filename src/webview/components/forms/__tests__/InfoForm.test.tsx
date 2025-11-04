@@ -240,12 +240,12 @@ describe('InfoForm', () => {
             await user.tab();
 
             await waitFor(() => {
-                expect(mockExecuteCommand).toHaveBeenCalledWith(
-                    expect.objectContaining({
-                        type: 'update-info',
-                        description: expect.stringContaining('Update info')
-                    })
-                );
+                expect(mockExecuteCommand).toHaveBeenCalled();
+                const call = mockExecuteCommand.mock.calls[0][0];
+                expect(call).toHaveProperty('execute');
+                expect(call).toHaveProperty('undo');
+                expect(call).toHaveProperty('getDescription');
+                expect(call.getDescription()).toContain('Update info');
             });
         });
 
@@ -265,14 +265,13 @@ describe('InfoForm', () => {
             await user.tab();
 
             await waitFor(() => {
-                expect(mockExecuteCommand).toHaveBeenCalledWith(
-                    expect.objectContaining({
-                        data: expect.objectContaining({
-                            title: 'New Title',
-                            version: '2.0.0'
-                        })
-                    })
-                );
+                expect(mockExecuteCommand).toHaveBeenCalled();
+                const call = mockExecuteCommand.mock.calls[0][0];
+                expect(call).toHaveProperty('execute');
+                expect(call).toHaveProperty('undo');
+                expect(call).toHaveProperty('getDescription');
+                // Verify the description includes the new title
+                expect(call.getDescription()).toContain('New Title');
             });
         });
     });

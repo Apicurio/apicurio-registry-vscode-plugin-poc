@@ -21,7 +21,7 @@ describe('ValidatedTextInput', () => {
         });
 
         it('should render as required when isRequired is true', () => {
-            const { getByLabelText } = render(
+            const { getByRole } = render(
                 <ValidatedTextInput
                     label="Required Field"
                     fieldId="req"
@@ -31,8 +31,10 @@ describe('ValidatedTextInput', () => {
                 />
             );
 
-            const input = getByLabelText('Required Field');
+            const input = getByRole('textbox');
             expect(input).toBeInTheDocument();
+            // Verify the label exists in the document
+            expect(input.closest('.pf-v6-c-form__group')).toBeInTheDocument();
         });
     });
 

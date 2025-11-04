@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormGroup } from '@patternfly/react-core';
 
 /**
  * Props for FormField component.
@@ -37,6 +38,31 @@ export const FormField: React.FC<FormFieldProps> = ({
     helperText,
     children
 }) => {
-    // Placeholder implementation
-    return <div>FormField placeholder</div>;
+    return (
+        <FormGroup
+            label={label}
+            isRequired={isRequired}
+            fieldId={fieldId}
+        >
+            {error && (
+                <div style={{
+                    color: 'var(--pf-v5-global--danger-color--100)',
+                    fontSize: '0.875rem',
+                    marginTop: '0.25rem'
+                }}>
+                    {error}
+                </div>
+            )}
+            {!error && helperText && (
+                <div style={{
+                    fontSize: '0.875rem',
+                    color: 'var(--pf-v5-global--Color--200)',
+                    marginTop: '0.25rem'
+                }}>
+                    {helperText}
+                </div>
+            )}
+            {children}
+        </FormGroup>
+    );
 };

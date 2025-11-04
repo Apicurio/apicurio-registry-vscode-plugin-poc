@@ -1,4 +1,6 @@
 import React from 'react';
+import { TextInput } from '@patternfly/react-core';
+import { FormField } from './FormField';
 
 /**
  * Props for ValidatedTextInput component.
@@ -43,6 +45,24 @@ export const ValidatedTextInput: React.FC<ValidatedTextInputProps> = ({
     type = 'text',
     placeholder
 }) => {
-    // Placeholder implementation
-    return <div>ValidatedTextInput placeholder</div>;
+    return (
+        <FormField
+            label={label}
+            fieldId={fieldId}
+            isRequired={isRequired}
+            error={error}
+            helperText={helperText}
+        >
+            <TextInput
+                id={fieldId}
+                type={type}
+                value={value}
+                onChange={(_event, value) => onChange(value)}
+                onBlur={onBlur}
+                validated={error ? 'error' : 'default'}
+                placeholder={placeholder}
+                aria-invalid={error ? true : false}
+            />
+        </FormField>
+    );
 };

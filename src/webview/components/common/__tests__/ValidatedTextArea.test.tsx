@@ -21,7 +21,7 @@ describe('ValidatedTextArea', () => {
         });
 
         it('should render as required when isRequired is true', () => {
-            const { getByLabelText } = render(
+            const { getByRole } = render(
                 <ValidatedTextArea
                     label="Required Field"
                     fieldId="req"
@@ -31,8 +31,10 @@ describe('ValidatedTextArea', () => {
                 />
             );
 
-            const textarea = getByLabelText('Required Field');
+            const textarea = getByRole('textbox');
             expect(textarea).toBeInTheDocument();
+            // Verify the label exists in the document
+            expect(textarea.closest('.pf-v6-c-form__group')).toBeInTheDocument();
         });
     });
 

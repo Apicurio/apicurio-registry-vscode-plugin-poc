@@ -26,6 +26,27 @@ export const FormSection: React.FC<FormSectionProps> = ({
     description,
     children
 }) => {
-    // Placeholder implementation
-    return <div>FormSection placeholder</div>;
+    return (
+        <div
+            style={{
+                marginTop: '2rem',
+                paddingTop: '1rem',
+                borderTop: '1px solid var(--pf-v5-global--BorderColor--100)'
+            }}
+        >
+            <h3 style={{ marginBottom: '1rem' }}>
+                {title}
+            </h3>
+            {description && (
+                <p style={{
+                    fontSize: '0.875rem',
+                    color: 'var(--pf-v5-global--Color--200)',
+                    marginBottom: '1rem'
+                }}>
+                    {description}
+                </p>
+            )}
+            {children}
+        </div>
+    );
 };

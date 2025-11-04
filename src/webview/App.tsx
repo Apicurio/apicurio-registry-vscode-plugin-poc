@@ -9,12 +9,23 @@ import {
     DescriptionListGroup,
     DescriptionListTerm,
     DescriptionListDescription,
-    Label
+    Label,
+    Button,
+    Toolbar,
+    ToolbarContent,
+    ToolbarItem
 } from '@patternfly/react-core';
-import { CheckCircleIcon, ExclamationTriangleIcon } from '@patternfly/react-icons';
+import {
+    CheckCircleIcon,
+    ExclamationTriangleIcon,
+    UndoIcon,
+    RedoIcon,
+    HistoryIcon
+} from '@patternfly/react-icons';
 import { useEnvironment } from './core/hooks/useEnvironment';
 import { useDocument } from './core/hooks/useDocument';
 import { useValidationStore } from './core/stores/validationStore';
+import { useCommandHistoryStore } from './core/stores/commandHistoryStore';
 
 /**
  * Main App component for Apicurio Visual Editor
@@ -26,6 +37,16 @@ const App: React.FC = () => {
     const env = useEnvironment();
     const { document, format, isLoading, error, documentType, uri, isDirty } = useDocument();
     const { problems, isValid, getErrorCount, getWarningCount } = useValidationStore();
+    const {
+        undo,
+        redo,
+        canUndo,
+        canRedo,
+        getUndoDescription,
+        getRedoDescription,
+        undoStack,
+        redoStack
+    } = useCommandHistoryStore();
     const [theme, setTheme] = useState(env.getTheme());
 
     useEffect(() => {
@@ -42,8 +63,41 @@ const App: React.FC = () => {
         <div className="apicurio-editor" style={{ padding: '20px' }}>
             <h1>Apicurio Visual Editor</h1>
 
+            {/* Undo/Redo Toolbar */}
+            <Toolbar style={{ marginBottom: '20px' }}>
+                <ToolbarContent>
+                    <ToolbarItem>
+                        <Button
+                            variant="secondary"
+                            icon={<UndoIcon />}
+                            isDisabled={!canUndo()}
+                            onClick={() => undo()}
+                            title={getUndoDescription() || 'Nothing to undo'}
+                        >
+                            Undo
+                        </Button>
+                    </ToolbarItem>
+                    <ToolbarItem>
+                        <Button
+                            variant="secondary"
+                            icon={<RedoIcon />}
+                            isDisabled={!canRedo()}
+                            onClick={() => redo()}
+                            title={getRedoDescription() || 'Nothing to redo'}
+                        >
+                            Redo
+                        </Button>
+                    </ToolbarItem>
+                    <ToolbarItem>
+                        <Label icon={<HistoryIcon />}>
+                            {undoStack.length} action{undoStack.length !== 1 ? 's' : ''} in history
+                        </Label>
+                    </ToolbarItem>
+                </ToolbarContent>
+            </Toolbar>
+
             <Alert variant="success" isInline title="Integration Complete!" style={{ marginBottom: '20px' }}>
-                React + PatternFly + Environment + Document Parsing ✅
+                React + PatternFly + Environment + Document Parsing + Undo/Redo ✅
             </Alert>
 
             {/* Document Status */}
@@ -178,23 +232,27 @@ const App: React.FC = () => {
 
             {/* Progress Checklist */}
             <Card>
-                <CardTitle>Task 018 Progress</CardTitle>
+                <CardTitle>Task 018 Progress - COMPLETE! 🎉</CardTitle>
                 <CardBody>
+                    <Alert variant="success" isInline title="All Subtasks Complete!" style={{ marginBottom: '15px' }}>
+                        Task 018 React Foundation & Setup is now complete!
+                    </Alert>
                     <ul style={{ listStyle: 'none', padding: 0 }}>
                         <li>✅ Vite + React + PatternFly setup</li>
                         <li>✅ Environment abstraction layer (IEditorEnvironment)</li>
                         <li>✅ Webview provider implementation</li>
                         <li>✅ @apicurio/data-models integration</li>
-                        <li>✅ Zustand state management (4 stores!)</li>
-                        <li>⏳ Command pattern (undo/redo)</li>
+                        <li>✅ Zustand state management (5 stores!)</li>
+                        <li>✅ Command pattern (undo/redo)</li>
                     </ul>
                     <div style={{ marginTop: '15px', padding: '10px', background: 'var(--pf-v5-global--BackgroundColor--200)', borderRadius: '4px' }}>
-                        <strong>Active Stores:</strong>
+                        <strong>Active Architecture:</strong>
                         <ul style={{ marginTop: '8px', marginLeft: '20px', fontSize: '0.9em' }}>
                             <li>📄 Document Store - {document ? 'Loaded' : 'Empty'}</li>
                             <li>✓ Validation Store - {getWarningCount()} warning(s)</li>
                             <li>🎯 Selection Store - Ready</li>
                             <li>⚙️ Editor Store - Ready</li>
+                            <li>↩️ Command History - {undoStack.length} action(s)</li>
                         </ul>
                     </div>
                 </CardBody>

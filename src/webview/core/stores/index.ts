@@ -6,12 +6,14 @@
  * - `useSelectionStore` - Selection and navigation
  * - `useValidationStore` - Validation problems and status
  * - `useEditorStore` - Editor UI state
+ * - `useCommandHistoryStore` - Command history (undo/redo)
  */
 
 export * from './documentStore';
 export * from './selectionStore';
 export * from './validationStore';
 export * from './editorStore';
+export * from './commandHistoryStore';
 
 /**
  * Combined hook for accessing all stores.
@@ -29,10 +31,12 @@ export * from './editorStore';
  * const selection = stores.selection.current;
  * const problems = stores.validation.problems;
  * const viewMode = stores.editor.viewMode;
+ * const canUndo = stores.commandHistory.canUndo();
  *
  * // Dispatch actions
  * stores.document.updateDocument(newDoc);
  * stores.selection.select({ type: 'path', path: '/users' });
+ * stores.commandHistory.undo();
  * ```
  */
 export const useStores = () => {
@@ -41,11 +45,13 @@ export const useStores = () => {
     const { useSelectionStore } = require('./selectionStore');
     const { useValidationStore } = require('./validationStore');
     const { useEditorStore } = require('./editorStore');
+    const { useCommandHistoryStore } = require('./commandHistoryStore');
 
     return {
         document: useDocumentStore(),
         selection: useSelectionStore(),
         validation: useValidationStore(),
-        editor: useEditorStore()
+        editor: useEditorStore(),
+        commandHistory: useCommandHistoryStore()
     };
 };

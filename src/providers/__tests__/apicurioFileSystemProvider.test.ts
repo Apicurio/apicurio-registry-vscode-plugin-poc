@@ -80,6 +80,13 @@ describe('ApicurioFileSystemProvider', () => {
                 content: 'test content',
                 contentType: 'application/json'
             });
+            mockRegistryService.getVersionMetadata.mockResolvedValue({
+                groupId: 'g',
+                artifactId: 'a',
+                version: '1.0.0',
+                state: 'DRAFT',
+                modifiedOn: '2024-01-01T00:00:00Z'
+            } as any);
 
             const data = await provider.readFile(uri as any);
             const content = Buffer.from(data).toString();
@@ -100,6 +107,13 @@ describe('ApicurioFileSystemProvider', () => {
                 content: 'test content',
                 contentType: 'application/json'
             });
+            mockRegistryService.getVersionMetadata.mockResolvedValue({
+                groupId: 'g',
+                artifactId: 'a',
+                version: '1.0.0',
+                state: 'DRAFT',
+                modifiedOn: '2024-01-01T00:00:00Z'
+            } as any);
 
             await provider.readFile(uri as any);
             await provider.readFile(uri as any);
@@ -115,6 +129,13 @@ describe('ApicurioFileSystemProvider', () => {
             const content = Buffer.from('updated content');
 
             mockRegistryService.updateDraftContent.mockResolvedValue();
+            mockRegistryService.getVersionMetadata.mockResolvedValue({
+                groupId: 'g',
+                artifactId: 'a',
+                version: '1.0.0',
+                state: 'DRAFT',
+                modifiedOn: '2024-01-01T00:00:01Z'
+            } as any);
 
             await provider.writeFile(uri as any, content, { create: false, overwrite: true });
 

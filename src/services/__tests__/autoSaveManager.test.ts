@@ -319,7 +319,9 @@ describe('AutoSaveManager', () => {
 
     describe('last save time', () => {
         it('should track last save time', async () => {
-            await manager.saveImmediately(mockDocument);
+            const savePromise = manager.saveImmediately(mockDocument);
+            await jest.runAllTimersAsync();
+            await savePromise;
 
             const lastSaveTime = manager.getLastSaveTime(mockDocument.uri);
             expect(lastSaveTime).toBeInstanceOf(Date);
@@ -331,13 +333,17 @@ describe('AutoSaveManager', () => {
         });
 
         it('should update last save time on each save', async () => {
-            await manager.saveImmediately(mockDocument);
+            const save1 = manager.saveImmediately(mockDocument);
+            await jest.runAllTimersAsync();
+            await save1;
             const firstSaveTime = manager.getLastSaveTime(mockDocument.uri);
 
             // Wait a bit
             jest.advanceTimersByTime(1000);
 
-            await manager.saveImmediately(mockDocument);
+            const save2 = manager.saveImmediately(mockDocument);
+            await jest.runAllTimersAsync();
+            await save2;
             const secondSaveTime = manager.getLastSaveTime(mockDocument.uri);
 
             expect(secondSaveTime).not.toEqual(firstSaveTime);
@@ -358,12 +364,12 @@ describe('AutoSaveManager', () => {
             jest.advanceTimersByTime(2000);
 
             // Should be saving now
-            await new Promise(resolve => setTimeout(resolve, 0));
+            await Promise.resolve();
             expect(manager.isSaving(mockDocument.uri)).toBe(true);
 
             // Resolve save
             resolveSave(true);
-            await new Promise(resolve => setTimeout(resolve, 0));
+            await Promise.resolve();
 
             // Should not be saving anymore
             expect(manager.isSaving(mockDocument.uri)).toBe(false);
@@ -386,7 +392,9 @@ describe('AutoSaveManager', () => {
         });
 
         it('should clear all state on dispose', async () => {
-            await manager.saveImmediately(mockDocument);
+            const savePromise = manager.saveImmediately(mockDocument);
+            await jest.runAllTimersAsync();
+            await savePromise;
 
             expect(manager.getLastSaveTime(mockDocument.uri)).toBeDefined();
 
@@ -403,7 +411,9 @@ describe('AutoSaveManager', () => {
             const onDidSaveMock = jest.fn();
             manager.onDidSave(onDidSaveMock);
 
-            await manager.saveImmediately(mockDocument);
+            const savePromise = manager.saveImmediately(mockDocument);
+            await jest.runAllTimersAsync();
+            await savePromise;
 
             expect(onDidSaveMock).toHaveBeenCalledWith(mockDocument.uri);
         });
@@ -417,7 +427,7 @@ describe('AutoSaveManager', () => {
             manager.scheduleSave(mockDocument);
             jest.advanceTimersByTime(2000);
 
-            await new Promise(resolve => setTimeout(resolve, 0));
+            await jest.runAllTimersAsync();
 
             expect(onDidSaveMock).not.toHaveBeenCalled();
         });

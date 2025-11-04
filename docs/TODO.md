@@ -9,33 +9,38 @@
 
 ## 🚧 In Progress
 
-_No tasks currently in progress_
+**Task 019: Core UI & Navigation (2 of 6 subtasks complete - 33%)**
+- ✅ Subtask 1: Master Layout Component - DONE
+- ✅ Subtask 2: Navigation Tree Component - DONE (15 tests ✅)
+- ⏭️ Subtask 3: Problem Drawer Component - NEXT
+- Status: Building React-based visual editor for OpenAPI/AsyncAPI specs
 
 ---
 
 ## 🎯 What to Work on NEXT
 
-**🎉 Phase 3.1 COMPLETE!** Text editor integration done! 🎊
+**🎉 Task 018 COMPLETE!** React Foundation & Setup done! 🎊
 
-**Phase 3.2: React Visual Editor Analysis COMPLETE!**
-- ✅ Analyzed Angular vs React approach
-- ✅ Decision: React rewrite (CSP constraint blocks Angular)
-- ✅ Created comprehensive plan: 200-260h over 7 weeks
-- ✅ Task spec created: `tasks/todo/018-021-react-visual-editor.md`
+**Task 019 - Core UI & Navigation: IN PROGRESS (2 of 6 subtasks complete)**
+- ✅ Subtask 1: Master Layout Component (8-10h) - COMPLETE!
+- ✅ Subtask 2: Navigation Tree Component (12-15h) - COMPLETE!
+  - Hierarchical tree view with PatternFly Tree
+  - OpenAPI 2.0/3.0/3.1 support (Info, Servers, Paths, Components, Security, Tags)
+  - AsyncAPI 2.x support (Info, Servers, Channels, Components)
+  - 15 tests passing ✅
+- ⏭️ Subtask 3: Problem Drawer Component (6-8h) - NEXT
+- ⏭️ Subtask 4: Info Form (10-12h)
+- ⏭️ Subtask 5: Server Form (8-10h)
+- ⏭️ Subtask 6: Common Components Library (11-15h)
 
 **Next Actions:**
-- **Option A:** Begin Task 018 - React Foundation & Setup (35-45h, Week 1)
-  - Set up React + Vite + TypeScript
-  - Implement webview provider
-  - Integrate @apicurio/data-models
-  - Build state management foundation
-  - Command pattern for undo/redo
-- **Option B:** Complete UX Medium Priority tasks first (6-9h total)
-  - Task 008: API v3.1 Compatibility (2-3h)
-  - Task 006: User Preferences (2-3h)
-  - Task 005: Custom SVG Icons (2-3h)
+- **Continue Task 019 - Subtask 3: Problem Drawer Component** (6-8h)
+  - Bottom panel for validation problems
+  - Error/warning/info display
+  - Click to navigate to problem location
+  - Integration with validationStore
 
-**Recommended:** Option A - Begin Task 018 (Phase 3.2 is high priority)
+**Recommended:** Continue with Task 019 - building momentum on Phase 3.2!
 
 ---
 
@@ -125,8 +130,8 @@ _Moved to MCP Integration section above_
 
 | # | Task | Status | Effort | Details |
 |---|------|--------|--------|---------|
-| 018 | React Foundation & Setup | 📋 Todo | 35-45h | Webview provider, state management, @apicurio/data-models |
-| 019 | Core UI & Navigation | 📋 Todo | 55-70h | Navigation tree, forms, common components |
+| 018 | React Foundation & Setup | ✅ Done | 35-45h | [completed](tasks/completed/018-react-foundation.md) - Webview provider, state management, @apicurio/data-models ✅ |
+| 019 | Core UI & Navigation | 🚧 In Progress | 55-70h | Navigation tree ✅, forms, common components (2 of 6 subtasks complete) |
 | 020 | Forms & Detail Editors | 📋 Todo | 60-80h | Path, operation, schema, parameter, response editing |
 | 021 | Integration & Polish | 📋 Todo | 50-65h | Dialogs, VSCode integration, testing, bug fixes |
 
@@ -246,6 +251,26 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 ---
 
 ## 📝 Recent Activity
+
+**2025-11-04 (Task 019 Started! 🚀 Navigation Tree Complete)**
+- ✅ **Started Task 019**: Core UI & Navigation (55-70h estimated)
+- ✅ **Subtask 1 Complete**: Master Layout Component (8-10h)
+  - 3-column layout with PatternFly Page/Masthead/Drawer
+  - Title bar with document type, validation status, modified indicator
+  - Quick actions toolbar (undo, redo, settings)
+  - Collapsible navigation and properties panels
+  - Responsive design
+- ✅ **Subtask 2 Complete**: Navigation Tree Component (12-15h)
+  - Hierarchical tree view using PatternFly Tree
+  - Tree builder service for @apicurio/data-models parsing
+  - **OpenAPI 2.0/3.0/3.1 support**: Info, Servers, Paths, Components, Security, Tags
+  - **AsyncAPI 2.x support**: Info, Servers, Channels, Components (Messages, Schemas)
+  - Icon mapping for different node types
+  - Integration with selectionStore for user interaction
+  - **15 comprehensive tests** - All passing ✅
+  - Fixed Jest config for browser environment (@apicurio/data-models)
+- 📊 **Progress**: Task 019 - 2 of 6 subtasks complete (33%)
+- 🚀 **Next**: Subtask 3 - Problem Drawer Component (6-8h)
 
 **2025-11-03 (Phase 3.2 Analysis Complete! 🎉 React Approach Chosen)**
 - ✅ **Analyzed Phase 3.2 Architecture**: Compared Angular iframe vs React rewrite approaches

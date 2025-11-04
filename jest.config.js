@@ -17,6 +17,7 @@ module.exports = {
     },
     moduleNameMapper: {
         '^vscode$': '<rootDir>/src/__mocks__/vscode.ts',
+        '^yaml$': '<rootDir>/src/__mocks__/yaml.ts',
         '\\.(css|less|scss|sass)$': 'identity-obj-proxy'
     },
     setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],

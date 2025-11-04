@@ -118,8 +118,12 @@ body {
 #root {
   width: 100%;
   height: 100vh;
-  overflow: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
+
+/* No Page component overrides needed - using custom layout! */
 
 /* ========================================
  * Accessibility: Screen Reader & Reduce Motion

@@ -47,19 +47,11 @@ export const InfoForm: React.FC = () => {
     const { document } = useDocument();
     const { executeCommand } = useCommandHistoryStore();
 
-    // Handle missing document
-    if (!document) {
-        return (
-            <div style={{ padding: '2rem', textAlign: 'center' }}>
-                <p>No document loaded</p>
-            </div>
-        );
-    }
-
-    // Get info object from document
-    const info = (document as any).info;
+    // Get info object from document (safe to access even if null)
+    const info = (document as any)?.info;
 
     // Initialize form with current values
+    // IMPORTANT: All hooks MUST be called before any conditional returns
     const {
         control,
         handleSubmit,
@@ -82,6 +74,7 @@ export const InfoForm: React.FC = () => {
     });
 
     // Reset form when document changes
+    // IMPORTANT: This useEffect MUST be before any conditional returns
     useEffect(() => {
         reset({
             title: info?.title || '',
@@ -95,6 +88,15 @@ export const InfoForm: React.FC = () => {
             licenseUrl: info?.license?.url || ''
         });
     }, [document, info, reset]);
+
+    // Handle missing document AFTER all hooks are called
+    if (!document) {
+        return (
+            <div style={{ padding: '2rem', textAlign: 'center' }}>
+                <p>No document loaded</p>
+            </div>
+        );
+    }
 
     /**
      * Handle form field blur - execute update command.

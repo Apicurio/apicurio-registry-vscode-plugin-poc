@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import {
-    Page,
-    PageSection,
-    Masthead,
-    MastheadToggle,
-    MastheadMain,
-    MastheadContent,
-    PageSidebar,
-    PageSidebarBody,
+    Toolbar,
+    ToolbarContent,
+    ToolbarItem,
+    ToolbarGroup,
+    Button,
+    Label,
     Drawer,
     DrawerContent,
     DrawerContentBody,
@@ -15,14 +13,6 @@ import {
     DrawerHead,
     DrawerActions,
     DrawerCloseButton,
-    Toolbar,
-    ToolbarContent,
-    ToolbarItem,
-    ToolbarGroup,
-    Button,
-    Label,
-    Split,
-    SplitItem,
     Title
 } from '@patternfly/react-core';
 import {
@@ -37,6 +27,7 @@ import {
 import { useDocument } from '../../core/hooks/useDocument';
 import { useValidationStore } from '../../core/stores/validationStore';
 import { useCommandHistoryStore } from '../../core/stores/commandHistoryStore';
+import './EditorLayout.css';
 
 /**
  * Props for EditorLayout component.
@@ -53,18 +44,10 @@ export interface EditorLayoutProps {
 }
 
 /**
- * Master layout component for the visual editor.
+ * Custom layout component for the visual editor.
  *
- * Provides a 3-column layout:
- * - Left: Navigation tree (collapsible)
- * - Center: Main content area (forms)
- * - Right: Properties panel (collapsible)
- *
- * Features:
- * - Title bar with document info and validation status
- * - Quick actions toolbar (undo, redo, format)
- * - Collapsible side panels
- * - Responsive design
+ * Uses simple flexbox layout instead of PatternFly Page component.
+ * Still uses individual PatternFly components (Toolbar, Drawer, etc.)
  */
 export const EditorLayout: React.FC<EditorLayoutProps> = ({
     navigationPanel,
@@ -112,50 +95,47 @@ export const EditorLayout: React.FC<EditorLayoutProps> = ({
 
     const validationStatus = getValidationStatus();
 
-    /**
-     * Masthead (title bar) component.
-     */
-    const masthead = (
-        <Masthead>
-            <MastheadToggle>
-                <Button
-                    variant="plain"
-                    onClick={() => setIsNavOpen(!isNavOpen)}
-                    aria-label="Toggle navigation"
-                >
-                    <BarsIcon />
-                </Button>
-            </MastheadToggle>
-
-            <MastheadMain>
-                <Split hasGutter>
-                    <SplitItem>
-                        <Title headingLevel="h1" size="md">
-                            Apicurio Visual Editor
-                        </Title>
-                    </SplitItem>
-                    {documentType && (
-                        <SplitItem>
-                            <Label color="blue">{documentType}</Label>
-                        </SplitItem>
-                    )}
-                    {isDirty && (
-                        <SplitItem>
-                            <Label color="orange">Modified</Label>
-                        </SplitItem>
-                    )}
-                    <SplitItem>
-                        <Label color={validationStatus.color} icon={validationStatus.icon}>
-                            {validationStatus.text}
-                        </Label>
-                    </SplitItem>
-                </Split>
-            </MastheadMain>
-
-            <MastheadContent>
-                <Toolbar isFullHeight isStatic>
+    return (
+        <div className="apicurio-editor-layout">
+            {/* Header/Toolbar */}
+            <div className="apicurio-editor-header">
+                <Toolbar isFullHeight>
                     <ToolbarContent>
-                        <ToolbarGroup variant="icon-button-group">
+                        {/* Left side - toggle and title */}
+                        <ToolbarGroup>
+                            <ToolbarItem>
+                                <Button
+                                    variant="plain"
+                                    onClick={() => setIsNavOpen(!isNavOpen)}
+                                    aria-label="Toggle navigation"
+                                >
+                                    <BarsIcon />
+                                </Button>
+                            </ToolbarItem>
+                            <ToolbarItem>
+                                <Title headingLevel="h1" size="md">
+                                    Apicurio Visual Editor
+                                </Title>
+                            </ToolbarItem>
+                            {documentType && (
+                                <ToolbarItem>
+                                    <Label color="blue">{documentType}</Label>
+                                </ToolbarItem>
+                            )}
+                            {isDirty && (
+                                <ToolbarItem>
+                                    <Label color="orange">Modified</Label>
+                                </ToolbarItem>
+                            )}
+                            <ToolbarItem>
+                                <Label color={validationStatus.color} icon={validationStatus.icon}>
+                                    {validationStatus.text}
+                                </Label>
+                            </ToolbarItem>
+                        </ToolbarGroup>
+
+                        {/* Right side - actions */}
+                        <ToolbarGroup align={{ default: 'alignEnd' }}>
                             <ToolbarItem>
                                 <Button
                                     variant="plain"
@@ -176,72 +156,64 @@ export const EditorLayout: React.FC<EditorLayoutProps> = ({
                                     title={getRedoDescription() || 'Nothing to redo'}
                                 />
                             </ToolbarItem>
+                            <ToolbarItem>
+                                <Button
+                                    variant="plain"
+                                    icon={<CogIcon />}
+                                    onClick={() => setIsPropsPanelOpen(!isPropsPanelOpen)}
+                                    aria-label="Toggle properties panel"
+                                />
+                            </ToolbarItem>
                         </ToolbarGroup>
-
-                        <ToolbarItem>
-                            <Button
-                                variant="plain"
-                                icon={<CogIcon />}
-                                onClick={() => setIsPropsPanelOpen(!isPropsPanelOpen)}
-                                aria-label="Toggle properties panel"
-                            />
-                        </ToolbarItem>
                     </ToolbarContent>
                 </Toolbar>
-            </MastheadContent>
-        </Masthead>
-    );
-
-    /**
-     * Navigation sidebar (left panel).
-     */
-    const sidebar = (
-        <PageSidebar isSidebarOpen={isNavOpen}>
-            <PageSidebarBody>
-                {navigationPanel || (
-                    <div style={{ padding: '1rem' }}>
-                        <p>Navigation tree will appear here</p>
-                    </div>
-                )}
-            </PageSidebarBody>
-        </PageSidebar>
-    );
-
-    /**
-     * Properties panel (right drawer).
-     */
-    const propertiesDrawer = propertiesPanel && (
-        <DrawerPanelContent isResizable defaultSize="400px" minSize="200px">
-            <DrawerHead>
-                <Title headingLevel="h2" size="md">
-                    Properties
-                </Title>
-                <DrawerActions>
-                    <DrawerCloseButton onClick={() => setIsPropsPanelOpen(false)} />
-                </DrawerActions>
-            </DrawerHead>
-            <div style={{ padding: '1rem' }}>
-                {propertiesPanel}
             </div>
-        </DrawerPanelContent>
-    );
 
-    return (
-        <Page masthead={masthead} sidebar={sidebar} isManagedSidebar>
-            <PageSection variant="light" padding={{ default: 'noPadding' }} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <Drawer isExpanded={isPropsPanelOpen} isInline>
-                    <DrawerContent panelContent={propertiesDrawer}>
-                        <DrawerContentBody style={{ flex: 1, overflow: 'auto' }}>
-                            {mainContent}
-                        </DrawerContentBody>
-                    </DrawerContent>
-                </Drawer>
-                {problemsPanel && (
-                    <div style={{ borderTop: '1px solid var(--pf-v5-global--BorderColor--100)', maxHeight: '300px', overflow: 'auto' }}>
-                        {problemsPanel}
+            {/* Body - Sidebar + Main + Properties */}
+            <div className="apicurio-editor-body">
+                {/* Left Sidebar (Navigation) */}
+                {isNavOpen && (
+                    <div className="apicurio-editor-sidebar">
+                        {navigationPanel}
                     </div>
                 )}
-            </PageSection>
-        </Page>
+
+                {/* Main Content Area with Drawer for Properties */}
+                <div className="apicurio-editor-main-wrapper">
+                    <Drawer isExpanded={isPropsPanelOpen} isInline>
+                        <DrawerContent
+                            panelContent={
+                                propertiesPanel && (
+                                    <DrawerPanelContent isResizable defaultSize="400px" minSize="200px">
+                                        <DrawerHead>
+                                            <Title headingLevel="h2" size="md">
+                                                Properties
+                                            </Title>
+                                            <DrawerActions>
+                                                <DrawerCloseButton onClick={() => setIsPropsPanelOpen(false)} />
+                                            </DrawerActions>
+                                        </DrawerHead>
+                                        <div style={{ padding: '1rem' }}>
+                                            {propertiesPanel}
+                                        </div>
+                                    </DrawerPanelContent>
+                                )
+                            }
+                        >
+                            <DrawerContentBody className="apicurio-editor-main-content">
+                                {mainContent}
+                            </DrawerContentBody>
+                        </DrawerContent>
+                    </Drawer>
+                </div>
+            </div>
+
+            {/* Problems Panel (Bottom) */}
+            {problemsPanel && (
+                <div className="apicurio-editor-problems">
+                    {problemsPanel}
+                </div>
+            )}
+        </div>
     );
 };

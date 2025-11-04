@@ -1,36 +1,24 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
-    Form,
-    FormGroup,
-    TextInput,
+    DescriptionList,
+    DescriptionListGroup,
+    DescriptionListTerm,
+    DescriptionListDescription,
+    Title,
     TextArea
 } from '@patternfly/react-core';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useDocument } from '../../core/hooks/useDocument';
 import { useCommandHistoryStore } from '../../core/stores/commandHistoryStore';
-import { Library } from '@apicurio/data-models';
-
-/**
- * Zod schema for info form validation.
- */
-const infoSchema = z.object({
-    title: z.string().min(1, 'Title is required'),
-    version: z.string().min(1, 'Version is required'),
-    description: z.string().optional(),
-    termsOfService: z.string().optional(),
-    contactName: z.string().optional(),
-    contactUrl: z.string().url('Invalid URL').optional().or(z.literal('')),
-    contactEmail: z.string().email('Invalid email').optional().or(z.literal('')),
-    licenseName: z.string().optional(),
-    licenseUrl: z.string().url('Invalid URL').optional().or(z.literal(''))
-});
-
-type InfoFormData = z.infer<typeof infoSchema>;
+import { InlineEdit } from '../common/InlineEdit';
 
 /**
  * InfoForm component for editing OpenAPI/AsyncAPI info section.
+ *
+ * Refactored to use apicurio-editors patterns:
+ * - DescriptionList layout (cleaner than stacked FormGroups)
+ * - InlineEdit for simple fields (click-to-edit UX)
+ * - TextArea for description (Markdown coming later)
+ * - Simpler code, better UX
  *
  * Displays and allows editing of:
  * - Title (required)
@@ -39,57 +27,15 @@ type InfoFormData = z.infer<typeof infoSchema>;
  * - Terms of Service
  * - Contact (name, url, email)
  * - License (name, url)
- *
- * Uses react-hook-form for form management and zod for validation.
- * Integrates with command pattern for undo/redo support.
  */
 export const InfoForm: React.FC = () => {
-    const { document } = useDocument();
+    const { document, updateDocument } = useDocument();
     const { executeCommand } = useCommandHistoryStore();
 
-    // Get info object from document (safe to access even if null)
+    // Get info object from document
     const info = (document as any)?.info;
 
-    // Initialize form with current values
-    // IMPORTANT: All hooks MUST be called before any conditional returns
-    const {
-        control,
-        handleSubmit,
-        formState: { errors },
-        watch,
-        reset
-    } = useForm<InfoFormData>({
-        resolver: zodResolver(infoSchema),
-        defaultValues: {
-            title: info?.title || '',
-            version: info?.version || '',
-            description: info?.description || '',
-            termsOfService: info?.termsOfService || '',
-            contactName: info?.contact?.name || '',
-            contactUrl: info?.contact?.url || '',
-            contactEmail: info?.contact?.email || '',
-            licenseName: info?.license?.name || '',
-            licenseUrl: info?.license?.url || ''
-        }
-    });
-
-    // Reset form when document changes
-    // IMPORTANT: This useEffect MUST be before any conditional returns
-    useEffect(() => {
-        reset({
-            title: info?.title || '',
-            version: info?.version || '',
-            description: info?.description || '',
-            termsOfService: info?.termsOfService || '',
-            contactName: info?.contact?.name || '',
-            contactUrl: info?.contact?.url || '',
-            contactEmail: info?.contact?.email || '',
-            licenseName: info?.license?.name || '',
-            licenseUrl: info?.license?.url || ''
-        });
-    }, [document, info, reset]);
-
-    // Handle missing document AFTER all hooks are called
+    // Handle missing document
     if (!document) {
         return (
             <div style={{ padding: '2rem', textAlign: 'center' }}>
@@ -99,285 +45,262 @@ export const InfoForm: React.FC = () => {
     }
 
     /**
-     * Handle form field blur - execute update command.
+     * Update a field in the info object.
      */
-    const handleFieldBlur = () => {
-        handleSubmit((data) => {
-            // Build updated info object
-            const updatedInfo: any = {
-                title: data.title,
-                version: data.version
-            };
+    const updateInfoField = (field: string, value: string) => {
+        executeCommand({
+            execute: () => {
+                const updatedDoc = { ...document };
+                if (!updatedDoc.info) {
+                    (updatedDoc as any).info = {};
+                }
+                (updatedDoc as any).info[field] = value;
+                updateDocument(updatedDoc);
+            },
+            undo: () => {
+                const revertedDoc = { ...document };
+                if (info && info[field]) {
+                    (revertedDoc as any).info[field] = info[field];
+                } else {
+                    delete (revertedDoc as any).info[field];
+                }
+                updateDocument(revertedDoc);
+            },
+            getDescription: () => `Update ${field}: ${value}`
+        });
+    };
 
-            if (data.description) {
-                updatedInfo.description = data.description;
-            }
+    /**
+     * Update contact field.
+     */
+    const updateContactField = (field: string, value: string) => {
+        executeCommand({
+            execute: () => {
+                const updatedDoc = { ...document };
+                if (!updatedDoc.info) {
+                    (updatedDoc as any).info = {};
+                }
+                if (!(updatedDoc as any).info.contact) {
+                    (updatedDoc as any).info.contact = {};
+                }
+                (updatedDoc as any).info.contact[field] = value;
+                updateDocument(updatedDoc);
+            },
+            undo: () => {
+                const revertedDoc = { ...document };
+                if (info?.contact && info.contact[field]) {
+                    (revertedDoc as any).info.contact[field] = info.contact[field];
+                } else if ((revertedDoc as any).info?.contact) {
+                    delete (revertedDoc as any).info.contact[field];
+                }
+                updateDocument(revertedDoc);
+            },
+            getDescription: () => `Update contact ${field}: ${value}`
+        });
+    };
 
-            if (data.termsOfService) {
-                updatedInfo.termsOfService = data.termsOfService;
-            }
+    /**
+     * Update license field.
+     */
+    const updateLicenseField = (field: string, value: string) => {
+        executeCommand({
+            execute: () => {
+                const updatedDoc = { ...document };
+                if (!updatedDoc.info) {
+                    (updatedDoc as any).info = {};
+                }
+                if (!(updatedDoc as any).info.license) {
+                    (updatedDoc as any).info.license = {};
+                }
+                (updatedDoc as any).info.license[field] = value;
+                updateDocument(updatedDoc);
+            },
+            undo: () => {
+                const revertedDoc = { ...document };
+                if (info?.license && info.license[field]) {
+                    (revertedDoc as any).info.license[field] = info.license[field];
+                } else if ((revertedDoc as any).info?.license) {
+                    delete (revertedDoc as any).info.license[field];
+                }
+                updateDocument(revertedDoc);
+            },
+            getDescription: () => `Update license ${field}: ${value}`
+        });
+    };
 
-            if (data.contactName || data.contactUrl || data.contactEmail) {
-                updatedInfo.contact = {};
-                if (data.contactName) updatedInfo.contact.name = data.contactName;
-                if (data.contactUrl) updatedInfo.contact.url = data.contactUrl;
-                if (data.contactEmail) updatedInfo.contact.email = data.contactEmail;
-            }
+    /**
+     * Validator for URL fields.
+     */
+    const validateUrl = (value: string) => {
+        if (!value) {
+            return { status: 'default' as const, errMessages: [] };
+        }
+        try {
+            new URL(value);
+            return { status: 'success' as const, errMessages: [] };
+        } catch {
+            return { status: 'error' as const, errMessages: ['Invalid URL'] };
+        }
+    };
 
-            if (data.licenseName || data.licenseUrl) {
-                updatedInfo.license = {};
-                if (data.licenseName) updatedInfo.license.name = data.licenseName;
-                if (data.licenseUrl) updatedInfo.license.url = data.licenseUrl;
-            }
+    /**
+     * Validator for email fields.
+     */
+    const validateEmail = (value: string) => {
+        if (!value) {
+            return { status: 'default' as const, errMessages: [] };
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailRegex.test(value)) {
+            return { status: 'success' as const, errMessages: [] };
+        }
+        return { status: 'error' as const, errMessages: ['Invalid email'] };
+    };
 
-            // Execute update command
-            executeCommand({
-                execute: () => {
-                    // Command execution handled by command history store
-                },
-                undo: () => {
-                    // Command undo handled by command history store
-                },
-                getDescription: () => `Update info: ${data.title}`
-            });
-        })();
+    /**
+     * Validator for required fields.
+     */
+    const validateRequired = (value: string) => {
+        if (!value || value.trim() === '') {
+            return { status: 'error' as const, errMessages: ['This field is required'] };
+        }
+        return { status: 'success' as const, errMessages: [] };
     };
 
     return (
-        <Form style={{ padding: '1rem' }}>
-            {/* Title */}
-            <FormGroup
-                label="Title"
-                isRequired
-                fieldId="info-title"
-            >
-                {errors.title && (
-                    <div style={{ color: 'var(--pf-v5-global--danger-color--100)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-                        {errors.title.message}
-                    </div>
-                )}
-                <Controller
-                    name="title"
-                    control={control}
-                    render={({ field }) => (
-                        <TextInput
-                            {...field}
-                            id="info-title"
-                            type="text"
-                            validated={errors.title ? 'error' : 'default'}
-                            onBlur={(e) => {
-                                field.onBlur();
-                                handleFieldBlur();
-                            }}
+        <div style={{ padding: '1rem' }}>
+            {/* Overview Section */}
+            <DescriptionList>
+                <DescriptionListGroup>
+                    <DescriptionListTerm>Title *</DescriptionListTerm>
+                    <DescriptionListDescription>
+                        <InlineEdit
+                            value={info?.title || ''}
+                            onChange={(value) => updateInfoField('title', value)}
+                            editing={true}
+                            autoFocus={false}
+                            validator={validateRequired}
                         />
-                    )}
-                />
-            </FormGroup>
+                    </DescriptionListDescription>
+                </DescriptionListGroup>
 
-            {/* Version */}
-            <FormGroup
-                label="Version"
-                isRequired
-                fieldId="info-version"
-            >
-                {errors.version && (
-                    <div style={{ color: 'var(--pf-v5-global--danger-color--100)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-                        {errors.version.message}
-                    </div>
-                )}
-                <Controller
-                    name="version"
-                    control={control}
-                    render={({ field }) => (
-                        <TextInput
-                            {...field}
-                            id="info-version"
-                            type="text"
-                            validated={errors.version ? 'error' : 'default'}
-                            onBlur={(e) => {
-                                field.onBlur();
-                                handleFieldBlur();
-                            }}
+                <DescriptionListGroup>
+                    <DescriptionListTerm>Version *</DescriptionListTerm>
+                    <DescriptionListDescription>
+                        <InlineEdit
+                            value={info?.version || ''}
+                            onChange={(value) => updateInfoField('version', value)}
+                            editing={true}
+                            autoFocus={false}
+                            validator={validateRequired}
                         />
-                    )}
-                />
-            </FormGroup>
+                    </DescriptionListDescription>
+                </DescriptionListGroup>
 
-            {/* Description */}
-            <FormGroup
-                label="Description"
-                fieldId="info-description"
-            >
-                <Controller
-                    name="description"
-                    control={control}
-                    render={({ field }) => (
+                <DescriptionListGroup>
+                    <DescriptionListTerm>Description</DescriptionListTerm>
+                    <DescriptionListDescription>
                         <TextArea
-                            {...field}
-                            id="info-description"
-                            onBlur={(e) => {
-                                field.onBlur();
-                                handleFieldBlur();
-                            }}
+                            value={info?.description || ''}
+                            onChange={(_event, value) => updateInfoField('description', value)}
+                            rows={5}
+                            resizeOrientation="vertical"
                         />
-                    )}
-                />
-            </FormGroup>
+                    </DescriptionListDescription>
+                </DescriptionListGroup>
 
-            {/* Terms of Service */}
-            <FormGroup
-                label="Terms of Service"
-                fieldId="info-terms"
-            >
-                <Controller
-                    name="termsOfService"
-                    control={control}
-                    render={({ field }) => (
-                        <TextInput
-                            {...field}
-                            id="info-terms"
-                            type="url"
-                            onBlur={(e) => {
-                                field.onBlur();
-                                handleFieldBlur();
-                            }}
+                <DescriptionListGroup>
+                    <DescriptionListTerm>Terms of Service</DescriptionListTerm>
+                    <DescriptionListDescription>
+                        <InlineEdit
+                            value={info?.termsOfService || ''}
+                            onChange={(value) => updateInfoField('termsOfService', value)}
+                            editing={true}
+                            autoFocus={false}
+                            validator={validateUrl}
                         />
-                    )}
-                />
-            </FormGroup>
+                    </DescriptionListDescription>
+                </DescriptionListGroup>
+            </DescriptionList>
 
             {/* Contact Section */}
             <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid var(--pf-v5-global--BorderColor--100)' }}>
-                <h3 style={{ marginBottom: '1rem' }}>Contact Information</h3>
-
-                <FormGroup
-                    label="Contact Name"
-                    fieldId="info-contact-name"
-                >
-                    <Controller
-                        name="contactName"
-                        control={control}
-                        render={({ field }) => (
-                            <TextInput
-                                {...field}
-                                id="info-contact-name"
-                                type="text"
-                                onBlur={(e) => {
-                                    field.onBlur();
-                                    handleFieldBlur();
-                                }}
+                <Title headingLevel="h3" size="md" style={{ marginBottom: '1rem' }}>
+                    Contact Information
+                </Title>
+                <DescriptionList>
+                    <DescriptionListGroup>
+                        <DescriptionListTerm>Name</DescriptionListTerm>
+                        <DescriptionListDescription>
+                            <InlineEdit
+                                value={info?.contact?.name || ''}
+                                onChange={(value) => updateContactField('name', value)}
+                                editing={true}
+                                autoFocus={false}
                             />
-                        )}
-                    />
-                </FormGroup>
+                        </DescriptionListDescription>
+                    </DescriptionListGroup>
 
-                <FormGroup
-                    label="Contact URL"
-                    fieldId="info-contact-url"
-                >
-                    {errors.contactUrl && (
-                        <div style={{ color: 'var(--pf-v5-global--danger-color--100)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-                            {errors.contactUrl.message}
-                        </div>
-                    )}
-                    <Controller
-                        name="contactUrl"
-                        control={control}
-                        render={({ field }) => (
-                            <TextInput
-                                {...field}
-                                id="info-contact-url"
-                                type="url"
-                                validated={errors.contactUrl ? 'error' : 'default'}
-                                onBlur={(e) => {
-                                    field.onBlur();
-                                    handleFieldBlur();
-                                }}
+                    <DescriptionListGroup>
+                        <DescriptionListTerm>URL</DescriptionListTerm>
+                        <DescriptionListDescription>
+                            <InlineEdit
+                                value={info?.contact?.url || ''}
+                                onChange={(value) => updateContactField('url', value)}
+                                editing={true}
+                                autoFocus={false}
+                                validator={validateUrl}
                             />
-                        )}
-                    />
-                </FormGroup>
+                        </DescriptionListDescription>
+                    </DescriptionListGroup>
 
-                <FormGroup
-                    label="Contact Email"
-                    fieldId="info-contact-email"
-                >
-                    {errors.contactEmail && (
-                        <div style={{ color: 'var(--pf-v5-global--danger-color--100)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-                            {errors.contactEmail.message}
-                        </div>
-                    )}
-                    <Controller
-                        name="contactEmail"
-                        control={control}
-                        render={({ field }) => (
-                            <TextInput
-                                {...field}
-                                id="info-contact-email"
-                                type="email"
-                                validated={errors.contactEmail ? 'error' : 'default'}
-                                onBlur={(e) => {
-                                    field.onBlur();
-                                    handleFieldBlur();
-                                }}
+                    <DescriptionListGroup>
+                        <DescriptionListTerm>Email</DescriptionListTerm>
+                        <DescriptionListDescription>
+                            <InlineEdit
+                                value={info?.contact?.email || ''}
+                                onChange={(value) => updateContactField('email', value)}
+                                editing={true}
+                                autoFocus={false}
+                                validator={validateEmail}
                             />
-                        )}
-                    />
-                </FormGroup>
+                        </DescriptionListDescription>
+                    </DescriptionListGroup>
+                </DescriptionList>
             </div>
 
             {/* License Section */}
             <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid var(--pf-v5-global--BorderColor--100)' }}>
-                <h3 style={{ marginBottom: '1rem' }}>License Information</h3>
-
-                <FormGroup
-                    label="License Name"
-                    fieldId="info-license-name"
-                >
-                    <Controller
-                        name="licenseName"
-                        control={control}
-                        render={({ field }) => (
-                            <TextInput
-                                {...field}
-                                id="info-license-name"
-                                type="text"
-                                onBlur={(e) => {
-                                    field.onBlur();
-                                    handleFieldBlur();
-                                }}
+                <Title headingLevel="h3" size="md" style={{ marginBottom: '1rem' }}>
+                    License Information
+                </Title>
+                <DescriptionList>
+                    <DescriptionListGroup>
+                        <DescriptionListTerm>Name</DescriptionListTerm>
+                        <DescriptionListDescription>
+                            <InlineEdit
+                                value={info?.license?.name || ''}
+                                onChange={(value) => updateLicenseField('name', value)}
+                                editing={true}
+                                autoFocus={false}
                             />
-                        )}
-                    />
-                </FormGroup>
+                        </DescriptionListDescription>
+                    </DescriptionListGroup>
 
-                <FormGroup
-                    label="License URL"
-                    fieldId="info-license-url"
-                >
-                    {errors.licenseUrl && (
-                        <div style={{ color: 'var(--pf-v5-global--danger-color--100)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-                            {errors.licenseUrl.message}
-                        </div>
-                    )}
-                    <Controller
-                        name="licenseUrl"
-                        control={control}
-                        render={({ field }) => (
-                            <TextInput
-                                {...field}
-                                id="info-license-url"
-                                type="url"
-                                validated={errors.licenseUrl ? 'error' : 'default'}
-                                onBlur={(e) => {
-                                    field.onBlur();
-                                    handleFieldBlur();
-                                }}
+                    <DescriptionListGroup>
+                        <DescriptionListTerm>URL</DescriptionListTerm>
+                        <DescriptionListDescription>
+                            <InlineEdit
+                                value={info?.license?.url || ''}
+                                onChange={(value) => updateLicenseField('url', value)}
+                                editing={true}
+                                autoFocus={false}
+                                validator={validateUrl}
                             />
-                        )}
-                    />
-                </FormGroup>
+                        </DescriptionListDescription>
+                    </DescriptionListGroup>
+                </DescriptionList>
             </div>
-        </Form>
+        </div>
     );
 };

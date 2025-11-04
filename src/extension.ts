@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { RegistryTreeDataProvider } from './providers/registryTreeProvider';
 import { RegistryService } from './services/registryService';
 import { ApicurioFileSystemProvider } from './providers/apicurioFileSystemProvider';
+import { ApicurioVisualEditorProvider } from './providers/apicurioVisualEditorProvider';
 import { StatusBarManager } from './ui/statusBarManager';
 import { ApicurioUriBuilder } from './utils/uriBuilder';
 import { AutoSaveManager } from './services/autoSaveManager';
@@ -79,6 +80,21 @@ export function activate(context: vscode.ExtensionContext) {
             ApicurioUriBuilder.SCHEME,
             fileSystemProvider,
             { isCaseSensitive: true }
+        )
+    );
+
+    // Register visual editor provider for OpenAPI/AsyncAPI files
+    const visualEditorProvider = new ApicurioVisualEditorProvider(context);
+    context.subscriptions.push(
+        vscode.window.registerCustomEditorProvider(
+            ApicurioVisualEditorProvider.viewType,
+            visualEditorProvider,
+            {
+                webviewOptions: {
+                    retainContextWhenHidden: true
+                },
+                supportsMultipleEditorsPerDocument: false
+            }
         )
     );
 

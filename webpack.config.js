@@ -21,11 +21,19 @@ const config = {
     module: {
         rules: [
             {
-                test: /\.ts$/,
-                exclude: [/node_modules/, /\.test\.ts$/],
+                test: /\.tsx?$/,
+                exclude: [
+                    /node_modules/,
+                    /\.test\.ts$/,
+                    path.resolve(__dirname, 'src/webview') // Webview code is built by Vite, not webpack
+                ],
                 use: [
                     {
-                        loader: 'ts-loader'
+                        loader: 'ts-loader',
+                        options: {
+                            // Don't typecheck webview files
+                            onlyCompileBundledFiles: true
+                        }
                     }
                 ]
             }

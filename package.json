@@ -31,6 +31,18 @@
         }
       ]
     },
+    "customEditors": [
+      {
+        "viewType": "apicurio.visualEditor",
+        "displayName": "Apicurio Visual Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.{json,yaml,yml}"
+          }
+        ],
+        "priority": "option"
+      }
+    ],
     "commands": [
       {
         "command": "apicurioRegistry.refresh",

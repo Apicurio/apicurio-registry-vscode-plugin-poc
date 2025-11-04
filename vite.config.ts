@@ -5,8 +5,9 @@ import { resolve } from 'path';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  root: resolve(__dirname, 'src/webview'),
   build: {
-    outDir: 'out/webview',
+    outDir: resolve(__dirname, 'out/webview'),
     emptyOutDir: true,
     rollupOptions: {
       input: {

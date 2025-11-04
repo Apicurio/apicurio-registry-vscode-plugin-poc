@@ -1,6 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Alert } from '@patternfly/react-core';
+import {
+    Button,
+    Alert,
+    Spinner,
+    Card,
+    CardBody,
+    CardTitle,
+    DescriptionList,
+    DescriptionListGroup,
+    DescriptionListTerm,
+    DescriptionListDescription
+} from '@patternfly/react-core';
 import { useEnvironment } from './core/hooks/useEnvironment';
+import { useDocument } from './core/hooks/useDocument';
 
 /**
  * Main App component for Apicurio Visual Editor
@@ -10,82 +22,131 @@ import { useEnvironment } from './core/hooks/useEnvironment';
  */
 const App: React.FC = () => {
     const env = useEnvironment();
+    const { document, format, isLoading, error, documentType, uri } = useDocument();
     const [theme, setTheme] = useState(env.getTheme());
-    const [message, setMessage] = useState<string>('');
 
     useEffect(() => {
         // Listen for theme changes
         const dispose = env.onThemeChange((newTheme) => {
             setTheme(newTheme);
-            setMessage(`Theme changed to: ${newTheme}`);
         });
 
         // Cleanup
         return dispose;
     }, [env]);
 
-    const handleTestNotification = () => {
-        env.showInfo('Environment abstraction working! ✅');
-        setMessage('Info notification sent to VSCode');
-    };
-
-    const handleTestWarning = () => {
-        env.showWarning('This is a test warning');
-        setMessage('Warning notification sent to VSCode');
-    };
-
-    const handleTestError = () => {
-        env.showError('This is a test error');
-        setMessage('Error notification sent to VSCode');
-    };
-
     return (
         <div className="apicurio-editor" style={{ padding: '20px' }}>
             <h1>Apicurio Visual Editor</h1>
 
-            <Alert variant="success" isInline title="Setup Complete!">
-                React + Vite + PatternFly + TypeScript + Environment Abstraction Layer ✅
+            <Alert variant="success" isInline title="Integration Complete!" style={{ marginBottom: '20px' }}>
+                React + PatternFly + Environment + Document Parsing ✅
             </Alert>
 
-            <div style={{ marginTop: '20px' }}>
-                <h2>Current Theme: {theme}</h2>
-                <p>The editor automatically detects VSCode theme changes!</p>
-            </div>
-
-            <div style={{ marginTop: '20px' }}>
-                <h3>Test Environment Abstraction:</h3>
-                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                    <Button variant="primary" onClick={handleTestNotification}>
-                        Test Info Notification
-                    </Button>
-                    <Button variant="warning" onClick={handleTestWarning}>
-                        Test Warning
-                    </Button>
-                    <Button variant="danger" onClick={handleTestError}>
-                        Test Error
-                    </Button>
-                </div>
-            </div>
-
-            {message && (
-                <div style={{ marginTop: '20px' }}>
-                    <Alert variant="info" isInline title="Action">
-                        {message}
-                    </Alert>
-                </div>
+            {/* Document Status */}
+            {isLoading && (
+                <Card style={{ marginBottom: '20px' }}>
+                    <CardBody>
+                        <Spinner size="lg" /> Loading document...
+                    </CardBody>
+                </Card>
             )}
 
-            <div style={{ marginTop: '20px' }}>
-                <p><strong>Next Steps:</strong></p>
-                <ul>
-                    <li>✅ Vite + React + PatternFly setup</li>
-                    <li>✅ Environment abstraction layer (IEditorEnvironment)</li>
-                    <li>⏳ Webview provider implementation</li>
-                    <li>⏳ @apicurio/data-models integration</li>
-                    <li>⏳ Zustand state management</li>
-                    <li>⏳ Command pattern (undo/redo)</li>
-                </ul>
-            </div>
+            {error && (
+                <Alert variant="danger" isInline title="Parsing Error" style={{ marginBottom: '20px' }}>
+                    {error}
+                </Alert>
+            )}
+
+            {document && (
+                <Card style={{ marginBottom: '20px' }}>
+                    <CardTitle>Document Information</CardTitle>
+                    <CardBody>
+                        <DescriptionList>
+                            <DescriptionListGroup>
+                                <DescriptionListTerm>Document Type</DescriptionListTerm>
+                                <DescriptionListDescription>
+                                    <strong>{documentType}</strong>
+                                </DescriptionListDescription>
+                            </DescriptionListGroup>
+
+                            <DescriptionListGroup>
+                                <DescriptionListTerm>Format</DescriptionListTerm>
+                                <DescriptionListDescription>
+                                    {format?.toUpperCase()}
+                                </DescriptionListDescription>
+                            </DescriptionListGroup>
+
+                            {document.info && (
+                                <>
+                                    <DescriptionListGroup>
+                                        <DescriptionListTerm>Title</DescriptionListTerm>
+                                        <DescriptionListDescription>
+                                            {document.info.title || 'No title'}
+                                        </DescriptionListDescription>
+                                    </DescriptionListGroup>
+
+                                    <DescriptionListGroup>
+                                        <DescriptionListTerm>Version</DescriptionListTerm>
+                                        <DescriptionListDescription>
+                                            {document.info.version || 'No version'}
+                                        </DescriptionListDescription>
+                                    </DescriptionListGroup>
+
+                                    {document.info.description && (
+                                        <DescriptionListGroup>
+                                            <DescriptionListTerm>Description</DescriptionListTerm>
+                                            <DescriptionListDescription>
+                                                {document.info.description}
+                                            </DescriptionListDescription>
+                                        </DescriptionListGroup>
+                                    )}
+                                </>
+                            )}
+
+                            <DescriptionListGroup>
+                                <DescriptionListTerm>URI</DescriptionListTerm>
+                                <DescriptionListDescription>
+                                    <code style={{ fontSize: '0.85em' }}>{uri}</code>
+                                </DescriptionListDescription>
+                            </DescriptionListGroup>
+                        </DescriptionList>
+                    </CardBody>
+                </Card>
+            )}
+
+            {/* Environment Info */}
+            <Card style={{ marginBottom: '20px' }}>
+                <CardTitle>Environment Information</CardTitle>
+                <CardBody>
+                    <DescriptionList>
+                        <DescriptionListGroup>
+                            <DescriptionListTerm>Current Theme</DescriptionListTerm>
+                            <DescriptionListDescription>
+                                {theme}
+                            </DescriptionListDescription>
+                        </DescriptionListGroup>
+                    </DescriptionList>
+                    <p style={{ marginTop: '10px', fontSize: '0.9em', color: 'var(--pf-v5-global--Color--200)' }}>
+                        Theme automatically syncs with VSCode. Try changing your VSCode theme!
+                    </p>
+                </CardBody>
+            </Card>
+
+            {/* Progress Checklist */}
+            <Card>
+                <CardTitle>Task 018 Progress</CardTitle>
+                <CardBody>
+                    <ul style={{ listStyle: 'none', padding: 0 }}>
+                        <li>✅ Vite + React + PatternFly setup</li>
+                        <li>✅ Environment abstraction layer (IEditorEnvironment)</li>
+                        <li>✅ Webview provider implementation</li>
+                        <li>✅ @apicurio/data-models integration</li>
+                        <li>⏳ Zustand state management</li>
+                        <li>⏳ Command pattern (undo/redo)</li>
+                    </ul>
+                </CardBody>
+            </Card>
         </div>
     );
 };

@@ -1,8 +1,8 @@
 import React from 'react';
 import { EditorLayout } from './components/layout/EditorLayout';
-import { PlaceholderContent } from './components/content/PlaceholderContent';
 import { NavigationTree } from './components/navigation/NavigationTree';
 import { ProblemDrawer } from './components/problems/ProblemDrawer';
+import { InfoForm } from './components/forms/InfoForm';
 
 /**
  * Main App component for Apicurio Visual Editor
@@ -20,7 +20,7 @@ const App: React.FC = () => {
     return (
         <EditorLayout
             navigationPanel={<NavigationTree />}
-            mainContent={<PlaceholderContent />}
+            mainContent={<InfoForm />}
             propertiesPanel={
                 <div>
                     <p>Properties Panel</p>

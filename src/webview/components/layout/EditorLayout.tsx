@@ -48,6 +48,8 @@ export interface EditorLayoutProps {
     mainContent: React.ReactNode;
     /** Properties panel content (right sidebar) */
     propertiesPanel?: React.ReactNode;
+    /** Problems panel content (bottom panel) */
+    problemsPanel?: React.ReactNode;
 }
 
 /**
@@ -67,7 +69,8 @@ export interface EditorLayoutProps {
 export const EditorLayout: React.FC<EditorLayoutProps> = ({
     navigationPanel,
     mainContent,
-    propertiesPanel
+    propertiesPanel,
+    problemsPanel
 }) => {
     const { documentType, isDirty } = useDocument();
     const { isValid, getErrorCount, getWarningCount } = useValidationStore();
@@ -225,14 +228,19 @@ export const EditorLayout: React.FC<EditorLayoutProps> = ({
 
     return (
         <Page masthead={masthead} sidebar={sidebar} isManagedSidebar>
-            <PageSection variant="light" padding={{ default: 'noPadding' }} style={{ height: '100%' }}>
+            <PageSection variant="light" padding={{ default: 'noPadding' }} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <Drawer isExpanded={isPropsPanelOpen} isInline>
                     <DrawerContent panelContent={propertiesDrawer}>
-                        <DrawerContentBody>
+                        <DrawerContentBody style={{ flex: 1, overflow: 'auto' }}>
                             {mainContent}
                         </DrawerContentBody>
                     </DrawerContent>
                 </Drawer>
+                {problemsPanel && (
+                    <div style={{ borderTop: '1px solid var(--pf-v5-global--BorderColor--100)', maxHeight: '300px', overflow: 'auto' }}>
+                        {problemsPanel}
+                    </div>
+                )}
             </PageSection>
         </Page>
     );

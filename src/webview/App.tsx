@@ -2,6 +2,7 @@ import React from 'react';
 import { EditorLayout } from './components/layout/EditorLayout';
 import { PlaceholderContent } from './components/content/PlaceholderContent';
 import { NavigationTree } from './components/navigation/NavigationTree';
+import { ProblemDrawer } from './components/problems/ProblemDrawer';
 
 /**
  * Main App component for Apicurio Visual Editor
@@ -9,10 +10,11 @@ import { NavigationTree } from './components/navigation/NavigationTree';
  * This is the entry point for the React-based visual editor
  * for OpenAPI/AsyncAPI specifications.
  *
- * The app uses a 3-column layout:
+ * The app uses a 3-column layout with bottom panel:
  * - Left: Navigation tree (hierarchical document structure)
  * - Center: Main content area (forms and editors)
  * - Right: Properties panel (will be implemented later)
+ * - Bottom: Problems panel (validation errors, warnings, info)
  */
 const App: React.FC = () => {
     return (
@@ -27,6 +29,7 @@ const App: React.FC = () => {
                     </p>
                 </div>
             }
+            problemsPanel={<ProblemDrawer />}
         />
     );
 };

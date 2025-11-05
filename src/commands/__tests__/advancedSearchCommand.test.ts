@@ -107,7 +107,9 @@ describe('Advanced Search Command', () => {
                 // Add Description criterion
                 .mockResolvedValueOnce({ label: 'Description', value: 'description' })
                 // Done - Search Now
-                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' });
+                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' })
+                // Results QuickPick
+                .mockResolvedValueOnce(undefined);
 
             // Input values
             mockShowInputBox
@@ -115,7 +117,7 @@ describe('Advanced Search Command', () => {
                 .mockResolvedValueOnce('user management'); // description
 
             mockRegistryService.searchArtifacts.mockResolvedValue([
-                { artifactId: 'user-api', name: 'User API', groupId: 'default' }
+                { artifactId: 'user-api', name: 'User API', groupId: 'default', artifactType: 'OPENAPI' }
             ] as any);
 
             await advancedSearchCommand(mockRegistryService, mockTreeProvider);
@@ -126,6 +128,19 @@ describe('Advanced Search Command', () => {
                     description: 'user management'
                 },
                 50 // default limit
+            );
+
+            // Verify QuickPick shown with results
+            expect(mockShowQuickPick).toHaveBeenCalledTimes(5);
+            expect(mockShowQuickPick).toHaveBeenNthCalledWith(5,
+                expect.arrayContaining([
+                    expect.objectContaining({
+                        label: expect.stringContaining('User API')
+                    })
+                ]),
+                expect.objectContaining({
+                    title: expect.stringContaining('1 match')
+                })
             );
         });
 

@@ -274,22 +274,11 @@ async function executeSearch(
                     }
                 });
             } else {
-                const pluralType = resultType + (results.length === 1 ? '' : 's');
                 const criteriaDesc = formatCriteriaDescription(criteria);
 
-                // For single-criterion artifact search, apply tree filter
-                if (mode === SearchMode.Artifact && Object.keys(criteria).length === 1) {
-                    const [key, value] = Object.entries(criteria)[0];
-                    treeProvider.applySearchFilter(key, value);
-
-                    vscode.window.showInformationMessage(
-                        `Found ${results.length} ${pluralType} matching: ${criteriaDesc}`,
-                        'OK'
-                    );
-                } else {
-                    // For multi-field or non-artifact searches, show results in QuickPick
-                    await displaySearchResults(results, mode, criteriaDesc);
-                }
+                // Advanced search ALWAYS shows results in QuickPick (consistent UX)
+                // This differs from basic search which filters the tree
+                await displaySearchResults(results, mode, criteriaDesc);
             }
 
         } catch (error) {
@@ -325,21 +314,26 @@ function formatCriteriaDescription(criteria: Record<string, string>): string {
 }
 
 /**
- * Display search results in a QuickPick dialog.
+ * Display search results in a QuickPick dialog with navigation.
  */
 async function displaySearchResults(
     results: any[],
     mode: SearchMode,
     criteriaDesc: string
 ): Promise<void> {
-    let items: vscode.QuickPickItem[];
+    interface ResultItem extends vscode.QuickPickItem {
+        data: any; // Store original result data
+    }
+
+    let items: ResultItem[];
 
     switch (mode) {
         case SearchMode.Artifact:
             items = results.map(artifact => ({
                 label: `$(file-code) ${artifact.name || artifact.artifactId}`,
                 description: artifact.groupId || 'default',
-                detail: `${artifact.artifactType || 'Unknown'} - ${artifact.description || 'No description'}`
+                detail: `${artifact.artifactType || 'Unknown'} - ${artifact.description || 'No description'}`,
+                data: artifact
             }));
             break;
 
@@ -347,7 +341,8 @@ async function displaySearchResults(
             items = results.map(version => ({
                 label: `$(tag) ${version.version}`,
                 description: `${version.groupId}/${version.artifactId}`,
-                detail: `Global ID: ${version.globalId} - State: ${version.state || 'Unknown'}`
+                detail: `Global ID: ${version.globalId} - State: ${version.state || 'Unknown'}`,
+                data: version
             }));
             break;
 
@@ -355,7 +350,8 @@ async function displaySearchResults(
             items = results.map(group => ({
                 label: `$(folder) ${group.groupId || 'default'}`,
                 description: `${group.artifactCount || 0} artifacts`,
-                detail: group.description || 'No description'
+                detail: group.description || 'No description',
+                data: group
             }));
             break;
 
@@ -363,9 +359,58 @@ async function displaySearchResults(
             items = [];
     }
 
-    await vscode.window.showQuickPick(items, {
+    const selected = await vscode.window.showQuickPick(items, {
         title: `Search Results: ${results.length} match${results.length === 1 ? '' : 'es'}`,
-        placeHolder: `Matching: ${criteriaDesc}`,
+        placeHolder: `Matching: ${criteriaDesc} (Select to open, Esc to cancel)`,
         canPickMany: false
     });
+
+    if (selected && selected.data) {
+        // Navigate to selected item
+        await navigateToResult(selected.data, mode);
+    }
+}
+
+/**
+ * Navigate to a search result by opening its content.
+ */
+async function navigateToResult(result: any, mode: SearchMode): Promise<void> {
+    try {
+        switch (mode) {
+            case SearchMode.Artifact:
+                // Open the latest version of the artifact
+                vscode.window.showInformationMessage(
+                    `Opening artifact: ${result.groupId || 'default'}/${result.artifactId}`,
+                    'OK'
+                );
+                // TODO: Trigger tree expansion and open latest version
+                // This would require treeProvider.reveal() or similar
+                break;
+
+            case SearchMode.Version:
+                // Open this specific version
+                await vscode.commands.executeCommand(
+                    'apicurioRegistry.openVersion',
+                    {
+                        groupId: result.groupId || 'default',
+                        artifactId: result.artifactId,
+                        version: result.version
+                    }
+                );
+                break;
+
+            case SearchMode.Group:
+                // Show group info
+                vscode.window.showInformationMessage(
+                    `Group: ${result.groupId || 'default'} (${result.artifactCount || 0} artifacts)`,
+                    'OK'
+                );
+                // TODO: Expand group in tree view
+                break;
+        }
+    } catch (error) {
+        vscode.window.showErrorMessage(
+            `Failed to open: ${error instanceof Error ? error.message : String(error)}`
+        );
+    }
 }

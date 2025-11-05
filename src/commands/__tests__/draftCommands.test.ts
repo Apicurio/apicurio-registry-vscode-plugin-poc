@@ -295,7 +295,7 @@ describe('Draft Commands', () => {
             );
         });
 
-        it('should use "latest" as version if versions array has no version property', async () => {
+        it('should skip content template if version has no version property', async () => {
             const mockNode = new RegistryItem(
                 'my-artifact',
                 RegistryItemType.Artifact,
@@ -309,21 +309,26 @@ describe('Draft Commands', () => {
                 { version: undefined }  // No version property
             ] as any);
 
-            mockService.getArtifactContent.mockResolvedValue({
-                content: 'content',
-                contentType: 'text/plain'
-            });
-
             mockShowInputBox
                 .mockResolvedValueOnce('')
                 .mockResolvedValueOnce('');
 
             await createDraftVersionCommand(mockService, mockRefresh, mockNode);
 
-            expect(mockService.getArtifactContent).toHaveBeenCalledWith(
+            // Should NOT call getArtifactContent when version is missing
+            expect(mockService.getArtifactContent).not.toHaveBeenCalled();
+
+            // Should still create draft with empty content (no template)
+            expect(mockService.createDraftVersion).toHaveBeenCalledWith(
                 'my-group',
                 'my-artifact',
-                'latest'
+                expect.objectContaining({
+                    content: expect.objectContaining({
+                        content: '',  // Empty content instead of template
+                        contentType: 'application/json'  // Default content type
+                    }),
+                    isDraft: true
+                })
             );
         });
 

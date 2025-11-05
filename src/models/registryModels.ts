@@ -251,3 +251,18 @@ export interface UIConfig {
         editorsUrl?: string;
     };
 }
+
+/**
+ * Registry system information, including version.
+ * Returned from GET /system/info endpoint.
+ */
+export interface RegistryInfo {
+    /** Registry name (e.g., "Apicurio Registry") */
+    name: string;
+    /** Registry description */
+    description: string;
+    /** Registry version (e.g., "3.1.1") */
+    version: string;
+    /** Build timestamp (ISO 8601 format) */
+    builtOn: string;
+}

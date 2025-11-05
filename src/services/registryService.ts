@@ -4,6 +4,7 @@ import {
     CreateArtifactResponse,
     CreateVersion,
     GroupMetaData,
+    RegistryInfo,
     UIConfig
 } from '../models/registryModels';
 
@@ -61,6 +62,7 @@ export class RegistryService {
     private client: AxiosInstance | null = null;
     private connection: RegistryConnection | null = null;
     private uiConfig: UIConfig | null = null;
+    private registryInfo: RegistryInfo | null = null;
 
     setConnection(connection: RegistryConnection): void {
         this.connection = connection;
@@ -87,6 +89,7 @@ export class RegistryService {
         this.client = null;
         this.connection = null;
         this.uiConfig = null;
+        this.registryInfo = null;
     }
 
     private ensureConnected(): void {
@@ -211,8 +214,18 @@ export class RegistryService {
         }
     }
 
+    /**
+     * @deprecated Use updateDraftContent() instead.
+     * This method may not work correctly with API v3.1 due to endpoint inconsistency.
+     * It uses PUT .../versions/{version} without /content suffix, which conflicts with
+     * the GET endpoint that requires /content. Status: untested, unused in codebase.
+     *
+     * @see updateDraftContent() for the correct v3.1-compatible method
+     */
     async updateArtifactContent(groupId: string, artifactId: string, version: string, content: ArtifactContent): Promise<void> {
         this.ensureConnected();
+
+        console.warn('updateArtifactContent() is deprecated. Use updateDraftContent() instead.');
 
         try {
             const encodedGroupId = encodeURIComponent(groupId);
@@ -484,6 +497,56 @@ export class RegistryService {
 
     getEditorsUrl(): string | undefined {
         return this.uiConfig?.ui?.editorsUrl;
+    }
+
+    /**
+     * Get registry system information, including version.
+     * Caches the result for the duration of the connection.
+     *
+     * @returns Registry information including version string
+     * @throws Error if not connected or if the endpoint fails
+     */
+    async getRegistryInfo(): Promise<RegistryInfo> {
+        this.ensureConnected();
+
+        // Return cached value if available
+        if (this.registryInfo !== null) {
+            return this.registryInfo;
+        }
+
+        try {
+            const response = await this.client!.get('/system/info');
+            const info: RegistryInfo = response.data;
+            this.registryInfo = info;
+            return info;
+        } catch (error) {
+            console.error('Error fetching registry info:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get the registry version string.
+     *
+     * @returns Version string (e.g., "3.1.1")
+     * @throws Error if not connected or if registry info cannot be fetched
+     */
+    async getVersion(): Promise<string> {
+        const info = await this.getRegistryInfo();
+        return info.version;
+    }
+
+    /**
+     * Check if the connected registry is version 3.1 or later.
+     * Used to determine API compatibility and feature availability.
+     *
+     * @returns true if registry version is 3.1.0 or higher
+     * @throws Error if not connected or if version cannot be determined
+     */
+    async isVersion31OrLater(): Promise<boolean> {
+        const version = await this.getVersion();
+        const [major, minor] = version.split('.').map(Number);
+        return major > 3 || (major === 3 && minor >= 1);
     }
 
     async createDraftVersion(

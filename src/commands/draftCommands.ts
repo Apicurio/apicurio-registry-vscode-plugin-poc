@@ -22,11 +22,23 @@ export async function createDraftVersionCommand(
     try {
         const versions = await registryService.getVersions(groupId, artifactId);
         if (versions.length > 0) {
-            // Get the latest version's content
-            const latestVersion = versions[0].version || 'latest';
-            const content = await registryService.getArtifactContent(groupId, artifactId, latestVersion);
-            latestContent = content.content;
-            contentType = content.contentType;
+            // Find latest version by highest globalId (v3.1 compatible)
+            const latestVersion = versions.reduce((prev, current) => {
+                return (current.globalId || 0) > (prev.globalId || 0) ? current : prev;
+            });
+
+            // Guard against missing version string
+            if (!latestVersion.version) {
+                console.warn('Latest version has no version string, cannot fetch content template');
+            } else {
+                const content = await registryService.getArtifactContent(
+                    groupId,
+                    artifactId,
+                    latestVersion.version
+                );
+                latestContent = content.content;
+                contentType = content.contentType;
+            }
         }
     } catch (error) {
         console.warn('Could not fetch latest version content:', error);

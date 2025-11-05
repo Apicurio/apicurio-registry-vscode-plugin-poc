@@ -10,6 +10,20 @@ A Visual Studio Code extension that provides integration with Apicurio Registry,
 - **Content Synchronization**: Sync changes between your local workspace and the registry
 - **Authentication Support**: Support for various authentication methods (basic auth, OIDC)
 
+## Supported Registry Versions
+
+This extension is compatible with **Apicurio Registry 3.1.x** and later.
+
+**Tested Versions:**
+- ✅ Apicurio Registry 3.1.1 (fully supported)
+- ✅ Apicurio Registry 3.1.0 (fully supported)
+
+**Key Features by Version:**
+- **v3.1+**: Draft version support, content/metadata endpoint separation
+- **v3.0**: Basic CRUD operations (limited draft support)
+
+**Note:** Some features require v3.1 or later. The extension automatically detects registry version and adjusts behavior accordingly. See [docs/API_COMPATIBILITY.md](docs/API_COMPATIBILITY.md) for detailed compatibility information.
+
 ## Installation
 
 1. Clone this repository

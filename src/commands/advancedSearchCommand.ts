@@ -378,13 +378,15 @@ async function navigateToResult(result: any, mode: SearchMode): Promise<void> {
     try {
         switch (mode) {
             case SearchMode.Artifact:
-                // Open the latest version of the artifact
-                vscode.window.showInformationMessage(
-                    `Opening artifact: ${result.groupId || 'default'}/${result.artifactId}`,
-                    'OK'
+                // Open the latest version of the artifact using "branch=latest"
+                await vscode.commands.executeCommand(
+                    'apicurioRegistry.openVersion',
+                    {
+                        groupId: result.groupId || 'default',
+                        artifactId: result.artifactId,
+                        version: 'branch=latest'  // API v3.1 pattern for latest version
+                    }
                 );
-                // TODO: Trigger tree expansion and open latest version
-                // This would require treeProvider.reveal() or similar
                 break;
 
             case SearchMode.Version:
@@ -400,12 +402,11 @@ async function navigateToResult(result: any, mode: SearchMode): Promise<void> {
                 break;
 
             case SearchMode.Group:
-                // Show group info
-                vscode.window.showInformationMessage(
-                    `Group: ${result.groupId || 'default'} (${result.artifactCount || 0} artifacts)`,
+                // Show group info (tree expansion requires tree provider API enhancement)
+                await vscode.window.showInformationMessage(
+                    `Group: ${result.groupId || 'default'} - ${result.artifactCount || 0} artifact(s)`,
                     'OK'
                 );
-                // TODO: Expand group in tree view
                 break;
         }
     } catch (error) {

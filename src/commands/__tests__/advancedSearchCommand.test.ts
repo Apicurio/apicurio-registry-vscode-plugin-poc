@@ -305,7 +305,7 @@ describe('Advanced Search Command', () => {
             );
         });
 
-        it('should display group results with artifact counts', async () => {
+        it('should display group results with modification date', async () => {
             mockShowQuickPick
                 .mockResolvedValueOnce({ label: 'Group Search', value: SearchMode.Group })
                 .mockResolvedValueOnce({ label: 'Description', value: 'description' })
@@ -317,7 +317,7 @@ describe('Advanced Search Command', () => {
             mockRegistryService.searchGroups.mockResolvedValue([
                 {
                     groupId: 'com.example.apis',
-                    artifactCount: 10,
+                    modifiedOn: '2025-10-28T08:45:57Z',
                     description: 'Example APIs'
                 }
             ] as any);
@@ -330,7 +330,7 @@ describe('Advanced Search Command', () => {
                 expect.arrayContaining([
                     expect.objectContaining({
                         label: expect.stringContaining('com.example.apis'),
-                        description: '10 artifacts'
+                        description: expect.stringContaining('Modified:')
                     })
                 ]),
                 expect.objectContaining({

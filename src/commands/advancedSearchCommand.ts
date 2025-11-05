@@ -349,7 +349,7 @@ async function displaySearchResults(
         case SearchMode.Group:
             items = results.map(group => ({
                 label: `$(folder) ${group.groupId || 'default'}`,
-                description: `${group.artifactCount || 0} artifacts`,
+                description: group.modifiedOn ? `Modified: ${new Date(group.modifiedOn).toLocaleDateString()}` : '',
                 detail: group.description || 'No description',
                 data: group
             }));
@@ -405,8 +405,9 @@ async function navigateToResult(result: any, mode: SearchMode): Promise<void> {
 
             case SearchMode.Group:
                 // Show group info (tree expansion requires tree provider API enhancement)
+                // Note: API doesn't return artifactCount in search results
                 await vscode.window.showInformationMessage(
-                    `Group: ${result.groupId || 'default'} - ${result.artifactCount || 0} artifact(s)`,
+                    `Group: ${result.groupId || 'default'}`,
                     'OK'
                 );
                 break;

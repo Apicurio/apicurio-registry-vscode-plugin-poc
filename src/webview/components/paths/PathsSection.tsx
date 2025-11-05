@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   Accordion,
+  Button,
   Card,
   CardBody,
   CardHeader,
@@ -30,12 +31,15 @@ import {
   ToolbarContent,
   ToolbarItem,
 } from "@patternfly/react-core";
+import { EditIcon } from '@patternfly/react-icons';
 import { useDocument } from '../../core/hooks/useDocument';
 import { AccordionSection } from '../common/AccordionSection';
 import { OperationLabel } from '../common/OperationLabel';
 import { StatusCodeLabel } from '../common/StatusCodeLabel';
 import { TagLabel } from '../common/TagLabel';
 import { Markdown } from '../common/Markdown';
+import { PathInfoSection } from './PathInfoSection';
+import { PathServersSection } from './PathServersSection';
 
 /**
  * PathsSection component for displaying API paths.
@@ -117,40 +121,73 @@ interface PathCardProps {
 }
 
 function PathCard({ path, pathObject }: PathCardProps) {
+  const [isEditing, setIsEditing] = useState(false);
   const operations = ['get', 'post', 'put', 'delete', 'patch', 'options', 'head', 'trace'];
   const pathOperations = operations.filter(op => pathObject[op]);
 
   return (
     <Card isCompact={true} isPlain={true}>
-      <CardHeader>
+      <CardHeader
+        actions={{
+          actions: (
+            <Button
+              variant="link"
+              icon={<EditIcon />}
+              onClick={() => setIsEditing(!isEditing)}
+            >
+              {isEditing ? 'Done' : 'Edit'}
+            </Button>
+          )
+        }}
+      >
         <CardTitle>
           <span style={{ fontFamily: 'monospace', fontSize: '1.1em' }}>
             {path}
           </span>
         </CardTitle>
       </CardHeader>
-      {pathObject.summary && (
+
+      {/* Path Info & Servers - Show editing forms when in edit mode */}
+      {isEditing && (
+        <CardBody>
+          <Accordion>
+            <AccordionSection id={`${path}-info`} title="Info" startExpanded={true}>
+              <PathInfoSection pathName={path} editing={isEditing} />
+            </AccordionSection>
+            <AccordionSection id={`${path}-servers`} title="Servers" count={pathObject.servers?.length}>
+              <PathServersSection pathName={path} editing={isEditing} />
+            </AccordionSection>
+          </Accordion>
+        </CardBody>
+      )}
+
+      {/* Show summary/description in view mode */}
+      {!isEditing && pathObject.summary && (
         <CardBody>
           <Markdown>{pathObject.summary}</Markdown>
         </CardBody>
       )}
-      {pathObject.description && (
+      {!isEditing && pathObject.description && (
         <CardBody>
           <Markdown>{pathObject.description}</Markdown>
         </CardBody>
       )}
-      <CardBody>
-        <DataList aria-label="Path operations">
-          {pathOperations.map(opName => (
-            <OperationRow
-              key={`${path}-${opName}`}
-              operation={pathObject[opName]}
-              operationName={opName as any}
-              path={path}
-            />
-          ))}
-        </DataList>
-      </CardBody>
+
+      {/* Operations list */}
+      {!isEditing && pathOperations.length > 0 && (
+        <CardBody>
+          <DataList aria-label="Path operations">
+            {pathOperations.map(opName => (
+              <OperationRow
+                key={`${path}-${opName}`}
+                operation={pathObject[opName]}
+                operationName={opName as any}
+                path={path}
+              />
+            ))}
+          </DataList>
+        </CardBody>
+      )}
     </Card>
   );
 }

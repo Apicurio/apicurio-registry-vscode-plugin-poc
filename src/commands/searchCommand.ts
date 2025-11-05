@@ -148,9 +148,13 @@ export async function searchArtifactsCommand(
             const searchParams: Record<string, string> = {};
             searchParams[selectedCriteria.value] = searchValue!;
 
+            // Get search limit from configuration
+            const config = vscode.workspace.getConfiguration('apicurioRegistry');
+            const defaultLimit = config.get<number>('search.defaultLimit', 50);
+
             try {
-                // Call search API
-                const results = await registryService.searchArtifacts(searchParams);
+                // Call search API with configured limit
+                const results = await registryService.searchArtifacts(searchParams, defaultLimit);
 
                 // Show results
                 if (results.length === 0) {

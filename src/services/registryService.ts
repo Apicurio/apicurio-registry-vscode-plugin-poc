@@ -247,13 +247,14 @@ export class RegistryService {
         }
     }
 
-    async searchArtifacts(searchParams: Record<string, string>): Promise<SearchedArtifact[]> {
+    async searchArtifacts(searchParams: Record<string, string>, limit?: number): Promise<SearchedArtifact[]> {
         this.ensureConnected();
 
         try {
             // Build query parameters for search
+            // Use provided limit or default to 100
             const params: Record<string, any> = {
-                limit: 100,
+                limit: limit || 100,
                 offset: 0
             };
 

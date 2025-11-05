@@ -214,7 +214,8 @@ describe('Advanced Search Command', () => {
             mockShowQuickPick
                 .mockResolvedValueOnce({ label: 'Version Search', value: SearchMode.Version })
                 .mockResolvedValueOnce({ label: 'Version', value: 'version' })
-                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' });
+                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' })
+                .mockResolvedValueOnce(undefined); // Results QuickPick
 
             mockShowInputBox.mockResolvedValueOnce('1.0.0');
 
@@ -228,13 +229,20 @@ describe('Advanced Search Command', () => {
                 }
             ] as any);
 
-            mockShowInformationMessage.mockResolvedValue(undefined);
-
             await advancedSearchCommand(mockRegistryService, mockTreeProvider);
 
-            expect(mockShowInformationMessage).toHaveBeenCalledWith(
-                expect.stringContaining('1 version'),
-                expect.any(String)
+            // Verify QuickPick called with results (4th call)
+            expect(mockShowQuickPick).toHaveBeenCalledTimes(4);
+            expect(mockShowQuickPick).toHaveBeenNthCalledWith(4,
+                expect.arrayContaining([
+                    expect.objectContaining({
+                        label: expect.stringContaining('1.0.0'),
+                        description: 'default/user-api'
+                    })
+                ]),
+                expect.objectContaining({
+                    title: expect.stringContaining('1 match')
+                })
             );
         });
 
@@ -286,7 +294,8 @@ describe('Advanced Search Command', () => {
             mockShowQuickPick
                 .mockResolvedValueOnce({ label: 'Group Search', value: SearchMode.Group })
                 .mockResolvedValueOnce({ label: 'Description', value: 'description' })
-                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' });
+                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' })
+                .mockResolvedValueOnce(undefined); // Results QuickPick
 
             mockShowInputBox.mockResolvedValueOnce('example');
 
@@ -298,13 +307,20 @@ describe('Advanced Search Command', () => {
                 }
             ] as any);
 
-            mockShowInformationMessage.mockResolvedValue(undefined);
-
             await advancedSearchCommand(mockRegistryService, mockTreeProvider);
 
-            expect(mockShowInformationMessage).toHaveBeenCalledWith(
-                expect.stringContaining('1 group'),
-                expect.any(String)
+            // Verify QuickPick called with results (4th call)
+            expect(mockShowQuickPick).toHaveBeenCalledTimes(4);
+            expect(mockShowQuickPick).toHaveBeenNthCalledWith(4,
+                expect.arrayContaining([
+                    expect.objectContaining({
+                        label: expect.stringContaining('com.example.apis'),
+                        description: '10 artifacts'
+                    })
+                ]),
+                expect.objectContaining({
+                    title: expect.stringContaining('1 match')
+                })
             );
         });
     });

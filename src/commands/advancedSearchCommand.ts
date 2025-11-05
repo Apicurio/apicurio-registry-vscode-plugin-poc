@@ -277,15 +277,18 @@ async function executeSearch(
                 const pluralType = resultType + (results.length === 1 ? '' : 's');
                 const criteriaDesc = formatCriteriaDescription(criteria);
 
-                vscode.window.showInformationMessage(
-                    `Found ${results.length} ${pluralType} matching: ${criteriaDesc}`,
-                    'OK'
-                );
-
-                // For artifact search, apply filter to tree view
+                // For single-criterion artifact search, apply tree filter
                 if (mode === SearchMode.Artifact && Object.keys(criteria).length === 1) {
                     const [key, value] = Object.entries(criteria)[0];
                     treeProvider.applySearchFilter(key, value);
+
+                    vscode.window.showInformationMessage(
+                        `Found ${results.length} ${pluralType} matching: ${criteriaDesc}`,
+                        'OK'
+                    );
+                } else {
+                    // For multi-field or non-artifact searches, show results in QuickPick
+                    await displaySearchResults(results, mode, criteriaDesc);
                 }
             }
 
@@ -319,4 +322,50 @@ function formatCriteriaDescription(criteria: Record<string, string>): string {
     return Object.entries(criteria)
         .map(([key, value]) => `${key}: "${value}"`)
         .join(', ');
+}
+
+/**
+ * Display search results in a QuickPick dialog.
+ */
+async function displaySearchResults(
+    results: any[],
+    mode: SearchMode,
+    criteriaDesc: string
+): Promise<void> {
+    let items: vscode.QuickPickItem[];
+
+    switch (mode) {
+        case SearchMode.Artifact:
+            items = results.map(artifact => ({
+                label: `$(file-code) ${artifact.name || artifact.artifactId}`,
+                description: artifact.groupId || 'default',
+                detail: `${artifact.artifactType || 'Unknown'} - ${artifact.description || 'No description'}`
+            }));
+            break;
+
+        case SearchMode.Version:
+            items = results.map(version => ({
+                label: `$(tag) ${version.version}`,
+                description: `${version.groupId}/${version.artifactId}`,
+                detail: `Global ID: ${version.globalId} - State: ${version.state || 'Unknown'}`
+            }));
+            break;
+
+        case SearchMode.Group:
+            items = results.map(group => ({
+                label: `$(folder) ${group.groupId || 'default'}`,
+                description: `${group.artifactCount || 0} artifacts`,
+                detail: group.description || 'No description'
+            }));
+            break;
+
+        default:
+            items = [];
+    }
+
+    await vscode.window.showQuickPick(items, {
+        title: `Search Results: ${results.length} match${results.length === 1 ? '' : 'es'}`,
+        placeHolder: `Matching: ${criteriaDesc}`,
+        canPickMany: false
+    });
 }

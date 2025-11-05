@@ -444,6 +444,15 @@ export function activate(context: vscode.ExtensionContext) {
         mcpSetup
     );
 
+    // Listen for configuration changes and refresh tree view
+    const configChangeListener = vscode.workspace.onDidChangeConfiguration(e => {
+        if (e.affectsConfiguration('apicurioRegistry.display')) {
+            // Refresh tree when display settings change
+            registryTreeProvider.refresh();
+        }
+    });
+    context.subscriptions.push(configChangeListener);
+
     // Set context to enable tree view
     vscode.commands.executeCommand('setContext', 'apicurioRegistryEnabled', true);
 }

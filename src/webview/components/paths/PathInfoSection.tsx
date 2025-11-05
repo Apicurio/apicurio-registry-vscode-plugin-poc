@@ -34,19 +34,28 @@ export function PathInfoSection({
   const description = pathItem.description || '';
 
   const updateField = (field: 'summary' | 'description', value: string) => {
+    // Capture old value for undo
     const oldValue = pathItem[field];
+
     executeCommand({
       execute: () => {
-        pathItem[field] = value;
-        updateDocument(document);
+        // Look up pathItem fresh each time to avoid stale references
+        const currentPaths = (document as any).paths;
+        if (currentPaths && currentPaths[pathName]) {
+          currentPaths[pathName][field] = value;
+          updateDocument(document);
+        }
       },
       undo: () => {
-        if (oldValue === undefined) {
-          delete pathItem[field];
-        } else {
-          pathItem[field] = oldValue;
+        const currentPaths = (document as any).paths;
+        if (currentPaths && currentPaths[pathName]) {
+          if (oldValue === undefined) {
+            delete currentPaths[pathName][field];
+          } else {
+            currentPaths[pathName][field] = oldValue;
+          }
+          updateDocument(document);
         }
-        updateDocument(document);
       },
       getDescription: () => `Update path ${field}: ${value}`,
     });

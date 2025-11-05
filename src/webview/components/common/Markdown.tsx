@@ -92,6 +92,9 @@ export function Markdown({
             isDarkTheme={darkMode}
             code={children}
             onChange={onChange ?? (() => {})}
+            options={{
+              ariaLabel: label || 'Markdown editor'
+            }}
           />
         ) : (
           <Button variant={"tertiary"}>Add a {label}</Button>

@@ -20,6 +20,8 @@ export interface DocumentState {
     error: string | null;
     /** Has document been modified? */
     isDirty: boolean;
+    /** Version counter - incremented on each update to force re-renders */
+    version: number;
 }
 
 /**
@@ -65,7 +67,8 @@ const initialState: DocumentState = {
     documentType: null,
     isLoading: false,
     error: null,
-    isDirty: false
+    isDirty: false,
+    version: 0
 };
 
 /**
@@ -109,6 +112,7 @@ export const useDocumentStore = create<DocumentStore>()(
             set((state) => {
                 state.document = document;
                 state.isDirty = true;
+                state.version += 1; // Increment to force re-renders
             }),
 
         setLoading: (isLoading) =>

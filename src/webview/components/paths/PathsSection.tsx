@@ -76,6 +76,10 @@ export const PathsSection: React.FC = () => {
     return null;
   }
 
+  // Force re-render by accessing document properties directly
+  // This ensures React sees changes when paths are added/removed
+  const pathsObj = (document as any)?.paths;
+
   // Get paths from document
   const paths: Record<string, any> = (document as any)?.paths || {};
   const pathItems: PathItem[] = Object.keys(paths)

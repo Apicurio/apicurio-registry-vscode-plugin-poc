@@ -1,35 +1,83 @@
 # Apicurio VSCode Plugin - Master Implementation Plan
 
-**Last Updated:** 2025-11-03
-**Status:** MCP Integration Complete - Blocked by Claude Code Bug
-**Next:** Resume Phase 3 (Editors) OR Complete UX Medium Priority
+**Last Updated:** 2025-11-05
+**Status:** Feature Parity Roadmap - Phase 1 (Core Operations)
+**Next:** Phase 1.1 - Advanced Search (2-3h)
 
 ---
 
 ## Overview
 
-This master plan integrates three planning documents into a unified roadmap:
+This master plan integrates planning documents into a unified roadmap prioritizing feature parity with the Apicurio Registry Web UI:
 
-1. **Original 4-Phase Plan** ([VSCODE_PLUGIN_PLAN.md](VSCODE_PLUGIN_PLAN.md)) - Core feature development
-2. **UX Improvements** ([UX_COMPARISON.md](UX_COMPARISON.md)) - Reference plugin analysis findings
-3. **Current TODO** ([TODO.md](TODO.md)) - Active task tracking
+1. **Feature Parity Roadmap** ([FEATURE_ROADMAP.md](FEATURE_ROADMAP.md)) - Primary roadmap (NEW - 2025-11-05)
+2. **Feature Gap Analysis** ([FEATURE_GAP_ANALYSIS.md](FEATURE_GAP_ANALYSIS.md)) - Web UI comparison (NEW - 2025-11-05)
+3. **Original 4-Phase Plan** ([VSCODE_PLUGIN_PLAN.md](VSCODE_PLUGIN_PLAN.md)) - Initial vision
+4. **UX Improvements** ([UX_COMPARISON.md](UX_COMPARISON.md)) - Reference plugin analysis
+5. **Current TODO** ([TODO.md](TODO.md)) - Active task tracking
+
+## Strategic Decision (2025-11-05)
+
+**Visual Editor work deferred to final phase** per explicit user directive. Focus shifted to:
+- ✅ **Phase 1:** Core Operations (Advanced Search, Labels, Version Creation)
+- ✅ **Phase 2:** Advanced Features (Rules, Branching)
+- ✅ **Phase 3:** Admin & Utility (Import/Export)
+- ⏸️ **Phase 4:** Visual Editor (DEFERRED - React-based editors)
+
+**Rationale:** Deliver high-value core features (15-20h) before investing in visual editor (35-45h)
 
 ## Current Status Summary
 
 | Area | Status | Progress | Next Step |
 |------|--------|----------|-----------|
-| **Phase 1** (Foundation) | ✅ Complete | 100% | - |
-| **Phase 2** (Tree View) | ✅ Complete | 100% | - |
-| **UX Improvements** | 🚧 In Progress | 40% (4/10) | Deferred |
-| **🎉 MCP Integration** | ⚠️ **COMPLETE (Blocked)** | **100% (4/4)** | **Blocked by Claude Code bug** |
-| **Phase 3** (Editors) | 🚧 In Progress | 25% (7/14) | Phase 3.1 Complete! → 3.2 React (200-260h) |
-| **Phase 4** (Advanced) | 📋 Planned | 0% | Future |
+| **Foundation & Tree** (Phase 1-2) | ✅ Complete | 100% | - |
+| **UX High Priority** | ✅ Complete | 100% (4/4) | - |
+| **UX Medium Priority** | 🚧 In Progress | 67% (2/3) | Task 005 remaining |
+| **Draft Infrastructure** (Phase 3.0) | ✅ Complete | 100% (4/4) | - |
+| **Text Editor** (Phase 3.1) | ✅ Complete | 100% (3/3) | - |
+| **MCP Integration** | ⚠️ Complete (Blocked) | 100% (4/4) | Blocked by Claude Code bug |
+| **🔥 FEATURE PARITY Phase 1** | 🚧 **CURRENT** | 0% (0/4) | **Advanced Search** |
+| **FEATURE PARITY Phase 2** | 📋 Planned | 0% (0/4) | After Phase 1 |
+| **FEATURE PARITY Phase 3** | 📋 Planned | 0% (0/4) | After Phase 2 |
+| **Visual Editor** (Phase 4) | ⏸️ **DEFERRED** | 50% (2/4) | **Moved to end** |
 
 ---
 
-## Integration Strategy
+## Feature Parity Roadmap (NEW - 2025-11-05)
 
-### NEW PRIORITY: MCP Integration (2025-11-02)
+**See [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md) for detailed implementation plan.**
+
+This is now the **primary roadmap** for the extension. Based on comprehensive analysis of the Apicurio Registry Web UI ([FEATURE_GAP_ANALYSIS.md](FEATURE_GAP_ANALYSIS.md)), we've identified 15 critical gaps organized into 4 phases.
+
+### Quick Reference
+
+**Phase 1: Core Operations (CURRENT - 15-20h)**
+- Task 025: Advanced Search (2-3h) 🔴 HIGH
+- Task 026: Label Management (4-6h) 🔴 HIGH
+- Task 027: Version Creation UI (3-4h) 🔴 HIGH
+- Task 028-030: Metadata Editing (6-9h) 🟡 MEDIUM
+
+**Phase 2: Advanced Features (18-26h)**
+- Rules Configuration (6-8h)
+- Group Management (2-3h)
+- Branching Support (8-10h)
+- Enhanced Tree View (2-5h)
+
+**Phase 3: Admin & Utility (12-20h)**
+- Import/Export (4-6h)
+- Role Management (4-6h)
+- Settings/Configuration (6-8h)
+
+**Phase 4: Visual Editor (DEFERRED - 35-45h)**
+- OpenAPI Visual Editor (15-20h)
+- AsyncAPI Visual Editor (15-20h)
+- Editor Integration & Polish (5-10h)
+
+---
+
+## Previous Work: Integration Strategy
+
+### COMPLETED: MCP Integration (2025-11-02 - 2025-11-03)
 
 **Rationale:**
 1. **Critical Bug Fix** - Current MCP configuration code doesn't work (tries VSCode settings, but Claude CLI uses ~/.claude.json)
@@ -838,83 +886,106 @@ Comparison with reference plugin features:
 
 ## Next Actions
 
-### Immediate (This Week - Oct 28-31)
+### Immediate (This Week - Nov 5-11) - FEATURE PARITY PHASE 1
 
-1. **Complete Sprint 2** ✅
-   - ✅ Finish context menus
-   - ✅ Add delete operations
-   - ✅ Test all CRUD workflows
-   - ✅ Update documentation
+**🔥 Current Priority: Advanced Search (Task 025)**
 
-2. **Plan Sprint 3**
-   - Review API v3.1 compatibility spec
-   - Review user preferences spec
-   - Prepare SVG icon migration
-   - Final UX polish checklist
+1. **Start Task 025: Advanced Search** (2-3h)
+   - Create task spec in `tasks/todo/high-priority/025-advanced-search.md`
+   - Implement multi-field search UI
+   - Add label filtering support
+   - Support version and group search
+   - Test with various criteria combinations
+   - Update documentation
 
-### Week 3 (Nov 1-7) - Sprint 3
+2. **Create Task Specs for Phase 1**
+   - Task 026: Label Management (4-6h)
+   - Task 027: Version Creation UI (3-4h)
+   - Task 028: Edit Artifact Metadata (2-3h)
+   - Task 029: Edit Version Metadata (2-3h)
+   - Task 030: Edit Group Metadata (2-3h)
 
-1. **Complete UX Improvements**
-   - Task 008: API v3.1 Compatibility (2-3h)
-   - Task 006: User Preferences (2-3h)
-   - Task 005: Custom SVG Icons (2-3h)
-   - Comprehensive testing
-   - Update all documentation
+### Week 2 (Nov 12-18) - Continue Phase 1
 
-2. **UX Improvements Retrospective**
-   - Review all completed features
-   - Identify lessons learned
-   - Document best practices
-   - Prepare Phase 3 kickoff
+1. **Task 026: Label Management** (4-6h)
+   - Display labels in tree view tooltips
+   - Add/edit/remove labels (key-value pairs)
+   - Label validation
+   - Click label to filter
 
-### Week 4+ (Nov 8+)
+2. **Task 027: Version Creation UI** (3-4h)
+   - Multi-step wizard
+   - Content upload (file/URL/text)
+   - Content validation
 
-1. **Prepare Phase 3**
-   - Research Apicurio Studio architecture
-   - Design editor integration
-   - POC for custom text editor
-   - Define sync strategy
+### Week 3-4 (Nov 19 - Dec 2) - Complete Phase 1
+
+1. **Tasks 028-030: Metadata Editing** (6-9h)
+   - Edit artifact metadata
+   - Edit version metadata
+   - Edit group metadata
+   - Inline editing UI
+
+2. **Phase 1 Retrospective**
+   - Review completed features
+   - Update progress tracking
+   - Plan Phase 2 kickoff
 
 ---
 
 ## Conclusion
 
-This master plan integrates three planning streams into a coherent roadmap:
+This master plan now centers on **Feature Parity with Apicurio Registry Web UI** as the primary goal:
 
-1. **Original 4-phase plan provides structure** - Clear milestones and objectives
-2. **UX improvements add critical features** - Learned from reference plugin
-3. **Current TODO enables execution** - Detailed specs for immediate work
+1. **Feature Parity Roadmap** - Primary planning document (NEW - 2025-11-05)
+2. **Feature Gap Analysis** - Comprehensive Web UI comparison (NEW - 2025-11-05)
+3. **Original plans preserved** - Historical context and completed work
 
-**Key Decision:** Complete UX improvements before Phase 3 to ensure solid foundation for editing features.
+**Key Decision (2025-11-05):** Defer Visual Editor to final phase. Focus on high-value core features first.
 
-**Current Focus:** Sprint 3 - Polish and preferences
+**Current Focus:** Phase 1 - Core Operations (Advanced Search, Labels, Version Creation)
 
 **Success Path:**
 ```
-Sprint 1 ✅ → Sprint 2 ✅ → Sprint 3 🚧 → Phase 3 → Phase 4 → Release
+Foundation ✅ → UX High ✅ → Draft/Text Editor ✅ → MCP ✅ (blocked) →
+Phase 1 🔥 → Phase 2 → Phase 3 → Phase 4 (Visual Editor) → Release
 ```
 
-This phased, sprint-based approach ensures:
-- ✅ Incremental value delivery
-- ✅ Risk management through iteration
-- ✅ User feedback integration
-- ✅ Reference plugin parity
-- ✅ Superior architecture and UX
+**New Timeline:**
+- Phase 1: 2-3 weeks (15-20h)
+- Phase 2: 3-4 weeks (18-26h)
+- Phase 3: 2-3 weeks (12-20h)
+- Phase 4: 5-7 weeks (35-45h)
+- **Total:** 12-17 weeks remaining
+
+This refocused approach ensures:
+- ✅ Faster delivery of high-value features
+- ✅ Better ROI (core features = 45-66h, visual editor = 35-45h)
+- ✅ Web UI feature parity achieved incrementally
+- ✅ Visual editor built last when foundation is solid
+- ✅ Alignment with user's strategic priorities
 
 ---
 
-**Document Version:** 1.2
-**Last Updated:** 2025-11-03
-**Next Review:** 2025-11-10 (After Task 018 Week 1)
+**Document Version:** 2.0
+**Last Updated:** 2025-11-05
+**Next Review:** 2025-11-12 (After Phase 1 Week 1)
 **Owner:** Development Team
 
 **Changelog:**
+- **v2.0 (2025-11-05):** MAJOR REVISION - Feature Parity Roadmap adopted as primary plan
+  - Visual Editor work deferred to Phase 4 (end)
+  - Added Phase 1-3 from FEATURE_ROADMAP.md
+  - Updated all sections to reflect new priorities
+  - Created comprehensive Web UI gap analysis
 - **v1.2 (2025-11-03):** Phase 3.2 revised - React rewrite approach (200-260h) due to CSP constraint
 - **v1.1 (2025-10-28):** MCP integration complete, Phase 3.1 complete
 - **v1.0 (2025-10-24):** Initial integrated master plan
 
 **Related Documents:**
-- [VSCODE_PLUGIN_PLAN.md](VSCODE_PLUGIN_PLAN.md) - Original 4-phase plan
+- **[FEATURE_ROADMAP.md](FEATURE_ROADMAP.md)** - PRIMARY roadmap (NEW - 2025-11-05)
+- **[FEATURE_GAP_ANALYSIS.md](FEATURE_GAP_ANALYSIS.md)** - Web UI comparison (NEW - 2025-11-05)
+- [TODO.md](TODO.md) - Current task tracking (updated daily)
+- [VSCODE_PLUGIN_PLAN.md](VSCODE_PLUGIN_PLAN.md) - Original 4-phase plan (historical)
 - [UX_COMPARISON.md](UX_COMPARISON.md) - Reference plugin analysis
-- [TODO.md](TODO.md) - Current task tracking
 - [tasks/](tasks/) - Detailed task specifications

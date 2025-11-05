@@ -167,8 +167,8 @@ export async function searchArtifactsCommand(
                         }
                     });
                 } else {
-                    // Apply search filter to tree provider
-                    treeProvider.applySearchFilter(selectedCriteria.value, searchValue!);
+                    // Apply search filter to tree provider (using legacy method for backward compatibility)
+                    treeProvider.applySearchFilterLegacy(selectedCriteria.value, searchValue!);
 
                     vscode.window.showInformationMessage(
                         `Found ${results.length} artifact${results.length === 1 ? '' : 's'} matching ${selectedCriteria.label}: "${searchValue}"`,

@@ -220,7 +220,7 @@ function getPlaceholderForCriterion(criterion: string): string {
 }
 
 /**
- * Execute the search and display results.
+ * Execute the search and filter the tree view.
  */
 async function executeSearch(
     registryService: RegistryService,
@@ -228,80 +228,33 @@ async function executeSearch(
     mode: SearchMode,
     criteria: Record<string, string>
 ): Promise<void> {
-    await vscode.window.withProgress({
-        location: vscode.ProgressLocation.Notification,
-        title: `Searching ${mode}s...`,
-        cancellable: false
-    }, async (progress) => {
-        progress.report({ message: buildProgressMessage(criteria) });
+    try {
+        // Apply search filter to tree provider
+        // This will trigger tree refresh with filtered results
+        treeProvider.applySearchFilter(mode, criteria);
 
-        try {
-            // Get search limit from configuration
-            const config = vscode.workspace.getConfiguration('apicurioRegistry');
-            const defaultLimit = config.get<number>('search.defaultLimit', 50);
+        const criteriaDesc = formatCriteriaDescription(criteria);
 
-            let results: any[];
-            let resultType: string;
-
-            switch (mode) {
-                case SearchMode.Artifact:
-                    results = await registryService.searchArtifacts(criteria, defaultLimit);
-                    resultType = 'artifact';
-                    break;
-
-                case SearchMode.Version:
-                    results = await registryService.searchVersions(criteria, defaultLimit);
-                    resultType = 'version';
-                    break;
-
-                case SearchMode.Group:
-                    results = await registryService.searchGroups(criteria, defaultLimit);
-                    resultType = 'group';
-                    break;
-
-                default:
-                    throw new Error(`Unknown search mode: ${mode}`);
+        // Show success message with option to clear filter
+        vscode.window.showInformationMessage(
+            `Filtering ${mode}s by: ${criteriaDesc}`,
+            'Clear Filter'
+        ).then(selection => {
+            if (selection === 'Clear Filter') {
+                treeProvider.clearSearchFilter();
             }
+        });
 
-            // Display results
-            if (results.length === 0) {
-                vscode.window.showInformationMessage(
-                    `No ${resultType}s found matching the specified criteria.`,
-                    'Try Again'
-                ).then(selection => {
-                    if (selection === 'Try Again') {
-                        advancedSearchCommand(registryService, treeProvider);
-                    }
-                });
-            } else {
-                const criteriaDesc = formatCriteriaDescription(criteria);
-
-                // Advanced search ALWAYS shows results in QuickPick (consistent UX)
-                // This differs from basic search which filters the tree
-                await displaySearchResults(results, mode, criteriaDesc);
+    } catch (error) {
+        vscode.window.showErrorMessage(
+            `Search failed: ${error instanceof Error ? error.message : String(error)}`,
+            'Try Again'
+        ).then(selection => {
+            if (selection === 'Try Again') {
+                advancedSearchCommand(registryService, treeProvider);
             }
-
-        } catch (error) {
-            vscode.window.showErrorMessage(
-                `Search failed: ${error instanceof Error ? error.message : String(error)}`,
-                'Try Again'
-            ).then(selection => {
-                if (selection === 'Try Again') {
-                    advancedSearchCommand(registryService, treeProvider);
-                }
-            });
-        }
-    });
-}
-
-/**
- * Build progress message showing active criteria.
- */
-function buildProgressMessage(criteria: Record<string, string>): string {
-    const criteriaList = Object.entries(criteria)
-        .map(([key, value]) => `${key}="${value}"`)
-        .join(', ');
-    return `Searching with: ${criteriaList}`;
+        });
+    }
 }
 
 /**
@@ -313,108 +266,3 @@ function formatCriteriaDescription(criteria: Record<string, string>): string {
         .join(', ');
 }
 
-/**
- * Display search results in a QuickPick dialog with navigation.
- */
-async function displaySearchResults(
-    results: any[],
-    mode: SearchMode,
-    criteriaDesc: string
-): Promise<void> {
-    interface ResultItem extends vscode.QuickPickItem {
-        data: any; // Store original result data
-    }
-
-    let items: ResultItem[];
-
-    switch (mode) {
-        case SearchMode.Artifact:
-            items = results.map(artifact => ({
-                label: `$(file-code) ${artifact.name || artifact.artifactId}`,
-                description: artifact.groupId || 'default',
-                detail: `${artifact.artifactType || 'Unknown'} - ${artifact.description || 'No description'}`,
-                data: artifact
-            }));
-            break;
-
-        case SearchMode.Version:
-            items = results.map(version => ({
-                label: `$(tag) ${version.version}`,
-                description: `${version.groupId}/${version.artifactId}`,
-                detail: `Global ID: ${version.globalId} - State: ${version.state || 'Unknown'}`,
-                data: version
-            }));
-            break;
-
-        case SearchMode.Group:
-            items = results.map(group => ({
-                label: `$(folder) ${group.groupId || 'default'}`,
-                description: group.modifiedOn ? `Modified: ${new Date(group.modifiedOn).toLocaleDateString()}` : '',
-                detail: group.description || 'No description',
-                data: group
-            }));
-            break;
-
-        default:
-            items = [];
-    }
-
-    const selected = await vscode.window.showQuickPick(items, {
-        title: `Search Results: ${results.length} match${results.length === 1 ? '' : 'es'}`,
-        placeHolder: `Matching: ${criteriaDesc} (Select to open, Esc to cancel)`,
-        canPickMany: false
-    });
-
-    if (selected && selected.data) {
-        // Navigate to selected item
-        await navigateToResult(selected.data, mode);
-    }
-}
-
-/**
- * Navigate to a search result by opening its content.
- */
-async function navigateToResult(result: any, mode: SearchMode): Promise<void> {
-    try {
-        switch (mode) {
-            case SearchMode.Artifact:
-                // Open the latest version of the artifact using "branch=latest"
-                // Note: openVersionCommand expects RegistryItem format (parentId=artifactId, id=version)
-                await vscode.commands.executeCommand(
-                    'apicurioRegistry.openVersion',
-                    {
-                        groupId: result.groupId || 'default',
-                        parentId: result.artifactId,  // artifactId goes in parentId
-                        id: 'branch=latest'  // version goes in id (API v3.1 pattern)
-                    }
-                );
-                break;
-
-            case SearchMode.Version:
-                // Open this specific version
-                // Note: openVersionCommand expects RegistryItem format (parentId=artifactId, id=version)
-                await vscode.commands.executeCommand(
-                    'apicurioRegistry.openVersion',
-                    {
-                        groupId: result.groupId || 'default',
-                        parentId: result.artifactId,  // artifactId goes in parentId
-                        id: result.version  // version goes in id
-                    }
-                );
-                break;
-
-            case SearchMode.Group:
-                // Show group info (tree expansion requires tree provider API enhancement)
-                // Note: API doesn't return artifactCount in search results
-                await vscode.window.showInformationMessage(
-                    `Group: ${result.groupId || 'default'}`,
-                    'OK'
-                );
-                break;
-        }
-    } catch (error) {
-        vscode.window.showErrorMessage(
-            `Failed to open: ${error instanceof Error ? error.message : String(error)}`
-        );
-    }
-}

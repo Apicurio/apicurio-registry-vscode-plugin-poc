@@ -11,7 +11,10 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
     private isConnected: boolean = false;
 
     // Search filter state
-    private searchFilter: { criterion: string; value: string } | null = null;
+    private searchFilter: {
+        mode: 'artifact' | 'version' | 'group';
+        criteria: Record<string, string>;
+    } | null = null;
 
     constructor(private registryService: RegistryService) {}
 
@@ -42,10 +45,22 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
 
     /**
      * Apply a search filter to the tree view.
-     * This will show only artifacts matching the search criteria.
+     * Supports multi-field filtering and different search modes.
      */
-    applySearchFilter(criterion: string, value: string): void {
-        this.searchFilter = { criterion, value };
+    applySearchFilter(mode: 'artifact' | 'version' | 'group', criteria: Record<string, string>): void {
+        this.searchFilter = { mode, criteria };
+        this.refresh();
+    }
+
+    /**
+     * Legacy method for backward compatibility with basic search.
+     * Converts single-field search to new format.
+     */
+    applySearchFilterLegacy(criterion: string, value: string): void {
+        this.searchFilter = {
+            mode: 'artifact',
+            criteria: { [criterion]: value }
+        };
         this.refresh();
     }
 
@@ -71,7 +86,10 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
         if (!this.searchFilter) {
             return null;
         }
-        return `Filtered by ${this.searchFilter.criterion}: "${this.searchFilter.value}"`;
+        const criteriaDesc = Object.entries(this.searchFilter.criteria)
+            .map(([key, value]) => `${key}="${value}"`)
+            .join(', ');
+        return `Filtered by ${criteriaDesc}`;
     }
 
     getTreeItem(element: RegistryItem): vscode.TreeItem {
@@ -334,11 +352,33 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
             return [];
         }
 
-        // Build search params
-        const searchParams: Record<string, string> = {};
-        searchParams[this.searchFilter.criterion] = this.searchFilter.value;
+        const { mode, criteria } = this.searchFilter;
 
-        const artifacts = await this.registryService.searchArtifacts(searchParams);
+        try {
+            switch (mode) {
+                case 'artifact':
+                    return await this.getFilteredArtifactResults(criteria);
+                case 'version':
+                    return await this.getFilteredVersionResults(criteria);
+                case 'group':
+                    return await this.getFilteredGroupResults(criteria);
+                default:
+                    return [];
+            }
+        } catch (error) {
+            return [
+                new RegistryItem(
+                    'Search Error',
+                    RegistryItemType.Connection,
+                    undefined,
+                    { description: `Error: ${error instanceof Error ? error.message : String(error)}` }
+                )
+            ];
+        }
+    }
+
+    private async getFilteredArtifactResults(criteria: Record<string, string>): Promise<RegistryItem[]> {
+        const artifacts = await this.registryService.searchArtifacts(criteria);
 
         if (artifacts.length === 0) {
             return [
@@ -346,24 +386,114 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                     'No matching artifacts',
                     RegistryItemType.Connection,
                     undefined,
-                    { description: `No artifacts found matching ${this.searchFilter.criterion}: "${this.searchFilter.value}"` }
+                    { description: `No artifacts found matching criteria` }
                 )
             ];
         }
 
-        // Map artifacts to tree items with group prefix
-        return artifacts.map(artifact => new RegistryItem(
-            `${artifact.groupId}/${artifact.artifactId}`,
-            RegistryItemType.Artifact,
-            artifact.artifactId,
-            {
-                artifactType: artifact.artifactType,
-                state: artifact.state,
-                description: artifact.description,
-                modifiedOn: artifact.modifiedOn
-            },
-            artifact.groupId,  // parentId
-            artifact.groupId   // groupId (needed for commands)
+        // Group artifacts by groupId to maintain hierarchy
+        const groupedArtifacts = new Map<string, typeof artifacts>();
+        for (const artifact of artifacts) {
+            const groupId = artifact.groupId || 'default';
+            if (!groupedArtifacts.has(groupId)) {
+                groupedArtifacts.set(groupId, []);
+            }
+            groupedArtifacts.get(groupId)!.push(artifact);
+        }
+
+        // Create group items with matching artifacts
+        const groupItems: RegistryItem[] = [];
+        for (const [groupId, groupArtifacts] of groupedArtifacts.entries()) {
+            const groupItem = new RegistryItem(
+                groupId,
+                RegistryItemType.Group,
+                groupId,
+                { artifactCount: groupArtifacts.length }
+            );
+            groupItems.push(groupItem);
+        }
+
+        return groupItems;
+    }
+
+    private async getFilteredVersionResults(criteria: Record<string, string>): Promise<RegistryItem[]> {
+        const versions = await this.registryService.searchVersions(criteria);
+
+        if (versions.length === 0) {
+            return [
+                new RegistryItem(
+                    'No matching versions',
+                    RegistryItemType.Connection,
+                    undefined,
+                    { description: `No versions found matching criteria` }
+                )
+            ];
+        }
+
+        // Group versions by artifact
+        const groupedVersions = new Map<string, typeof versions>();
+        for (const version of versions) {
+            const key = `${version.groupId || 'default'}/${version.artifactId}`;
+            if (!groupedVersions.has(key)) {
+                groupedVersions.set(key, []);
+            }
+            groupedVersions.get(key)!.push(version);
+        }
+
+        // Create group → artifact hierarchy
+        const groupMap = new Map<string, RegistryItem[]>();
+        for (const [key, artifactVersions] of groupedVersions.entries()) {
+            const [groupId, artifactId] = key.split('/');
+
+            if (!groupMap.has(groupId)) {
+                groupMap.set(groupId, []);
+            }
+
+            const artifactItem = new RegistryItem(
+                artifactId,
+                RegistryItemType.Artifact,
+                artifactId,
+                { versionCount: artifactVersions.length },
+                groupId,
+                groupId
+            );
+            groupMap.get(groupId)!.push(artifactItem);
+        }
+
+        // Create group items
+        const groupItems: RegistryItem[] = [];
+        for (const [groupId, artifacts] of groupMap.entries()) {
+            const groupItem = new RegistryItem(
+                groupId,
+                RegistryItemType.Group,
+                groupId,
+                { artifactCount: artifacts.length }
+            );
+            groupItems.push(groupItem);
+        }
+
+        return groupItems;
+    }
+
+    private async getFilteredGroupResults(criteria: Record<string, string>): Promise<RegistryItem[]> {
+        const groups = await this.registryService.searchGroups(criteria);
+
+        if (groups.length === 0) {
+            return [
+                new RegistryItem(
+                    'No matching groups',
+                    RegistryItemType.Connection,
+                    undefined,
+                    { description: `No groups found matching criteria` }
+                )
+            ];
+        }
+
+        return groups.map(group => new RegistryItem(
+            group.groupId || 'default',
+            RegistryItemType.Group,
+            group.groupId,
+            { description: group.description }
         ));
     }
 }

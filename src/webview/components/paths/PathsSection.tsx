@@ -68,10 +68,12 @@ export const PathsSection: React.FC = () => {
 
   // Get paths from document
   const paths: Record<string, any> = (document as any)?.paths || {};
-  const pathItems: PathItem[] = Object.keys(paths).map(path => ({
-    path,
-    pathObject: paths[path]
-  }));
+  const pathItems: PathItem[] = Object.keys(paths)
+    .filter(path => paths[path] != null) // Filter out null/undefined paths
+    .map(path => ({
+      path,
+      pathObject: paths[path]
+    }));
 
   // Filter paths
   const filteredPaths = pathItems.filter(item => {
@@ -219,6 +221,12 @@ interface PathCardProps {
 
 function PathCard({ path, pathObject, onDelete, onClone }: PathCardProps) {
   const [isEditing, setIsEditing] = useState(false);
+
+  // Defensive check - should not happen due to filtering, but just in case
+  if (!pathObject) {
+    return null;
+  }
+
   const operations = ['get', 'post', 'put', 'delete', 'patch', 'options', 'head', 'trace'];
   const pathOperations = operations.filter(op => pathObject[op]);
 

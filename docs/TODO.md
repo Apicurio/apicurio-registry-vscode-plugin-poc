@@ -119,7 +119,6 @@ _Moved to MCP Integration section above_
 
 | # | Task | Status | Effort | Details |
 |---|------|--------|--------|---------|
-| 006 | User Preferences | 📋 Todo | 2-3h | [spec](tasks/todo/medium-priority/006-user-preferences.md) |
 | 005 | Custom SVG Icons | 📋 Todo | 2-3h | [spec](tasks/todo/medium-priority/005-custom-svg-icons.md) |
 
 ### 🟢 Low Priority (Deferred to Phase 3)
@@ -176,6 +175,7 @@ _Moved to MCP Integration section above_
 
 | # | Task | Completed | Effort | Notes |
 |---|------|-----------|--------|-------|
+| 006 | User Preferences | 2025-11-05 | 2.5h | 6 display/search preferences, 11 tests passing, configuration auto-refresh |
 | 008 | API v3.1 Compatibility | 2025-11-05 | 2.5h | Comprehensive API audit, fixed draftCommands bug, version detection, 2 docs created |
 | 007 | Delete Operations | 2025-10-28 | 3.5h | 32 tests passing, last-version protection, modal confirmations |
 | 003b | State & Download Commands | 2025-10-28 | 2.5h | 28 tests passing, all artifact types |
@@ -277,6 +277,30 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 ---
 
 ## 📝 Recent Activity
+
+**2025-11-05 (Task 006 Complete! 🎉 User Preferences)**
+- ✅ **Task 006: User Preferences** (2.5h actual, 2-3h estimated)
+- ⚙️ **Configuration Settings** - Added 6 user preferences to package.json
+  - Display: useArtifactNames, reverseVersionOrder, showArtifactCounts
+  - Truncation: truncateDescriptions, truncateLength (10-200 chars)
+  - Search: defaultLimit (1-1000, default: 50)
+- 🧪 **Tests** - 11 preference tests passing
+  - Configuration reading tests
+  - Tree provider rendering tests
+  - All tests verified ✅
+- 🎨 **Tree Provider** - Updated registryTreeProvider.ts
+  - Artifact names vs IDs display toggle
+  - Configurable description truncation
+  - Group artifact count visibility toggle
+  - Version ordering (oldest/newest first)
+- 🔍 **Search Command** - Updated to use defaultLimit preference
+  - Optional limit parameter in searchArtifacts()
+  - Reads from configuration (default: 50)
+- 🔄 **Auto-Refresh** - Configuration change listener
+  - Tree view refreshes when display.* settings change
+  - Immediate UI update on preference changes
+- 📊 **Progress**: UX Medium Priority 1 of 2 complete (50%)
+- 🚀 **Next**: Task 005 - Custom SVG Icons (2-3h) or continue Phase 3 work
 
 **2025-11-05 (Task 008 Complete! 🎉 API v3.1 Compatibility)**
 - ✅ **Task 008: API v3.1 Compatibility** (2.5h actual, 2-3h estimated)

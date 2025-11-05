@@ -33,6 +33,7 @@ import {
 } from "@patternfly/react-core";
 import { EditIcon } from '@patternfly/react-icons';
 import { useDocument } from '../../core/hooks/useDocument';
+import { useCommandHistoryStore } from '../../core/stores/commandHistoryStore';
 import { AccordionSection } from '../common/AccordionSection';
 import { OperationLabel } from '../common/OperationLabel';
 import { StatusCodeLabel } from '../common/StatusCodeLabel';
@@ -56,7 +57,8 @@ interface PathItem {
 }
 
 export const PathsSection: React.FC = () => {
-  const { document } = useDocument();
+  const { document, updateDocument } = useDocument();
+  const { executeCommand } = useCommandHistoryStore();
   const [filter, setFilter] = useState('');
 
   // Handle missing document
@@ -80,6 +82,88 @@ export const PathsSection: React.FC = () => {
     return pathMatch || summaryMatch;
   });
 
+  const handleAddPath = () => {
+    const pathName = window.prompt('Enter path name (e.g., /users):');
+    if (!pathName || pathName.trim() === '') {
+      return;
+    }
+
+    const trimmedPath = pathName.trim();
+
+    // Check if path already exists
+    if (paths[trimmedPath]) {
+      window.alert(`Path "${trimmedPath}" already exists.`);
+      return;
+    }
+
+    executeCommand({
+      execute: () => {
+        if (!(document as any).paths) {
+          (document as any).paths = {};
+        }
+        (document as any).paths[trimmedPath] = {};
+        updateDocument(document);
+      },
+      undo: () => {
+        delete (document as any).paths[trimmedPath];
+        updateDocument(document);
+      },
+      getDescription: () => `Add path: ${trimmedPath}`,
+    });
+  };
+
+  const handleDeletePath = (pathName: string) => {
+    if (!window.confirm(`Are you sure you want to delete path "${pathName}"?`)) {
+      return;
+    }
+
+    const deletedPath = { ...paths[pathName] };
+    executeCommand({
+      execute: () => {
+        delete (document as any).paths[pathName];
+        updateDocument(document);
+      },
+      undo: () => {
+        (document as any).paths[pathName] = deletedPath;
+        updateDocument(document);
+      },
+      getDescription: () => `Delete path: ${pathName}`,
+    });
+  };
+
+  const handleClonePath = (sourcePath: string, sourceObject: any) => {
+    const newPathName = window.prompt(`Clone "${sourcePath}" as:`, `${sourcePath}-copy`);
+    if (!newPathName || newPathName.trim() === '') {
+      return;
+    }
+
+    const trimmedPath = newPathName.trim();
+
+    // Check if path already exists
+    if (paths[trimmedPath]) {
+      window.alert(`Path "${trimmedPath}" already exists.`);
+      return;
+    }
+
+    // Deep clone the path object
+    const clonedPath = JSON.parse(JSON.stringify(sourceObject));
+
+    executeCommand({
+      execute: () => {
+        if (!(document as any).paths) {
+          (document as any).paths = {};
+        }
+        (document as any).paths[trimmedPath] = clonedPath;
+        updateDocument(document);
+      },
+      undo: () => {
+        delete (document as any).paths[trimmedPath];
+        updateDocument(document);
+      },
+      getDescription: () => `Clone path: ${sourcePath} → ${trimmedPath}`,
+    });
+  };
+
   return (
     <Stack hasGutter={true}>
       <Toolbar>
@@ -91,6 +175,11 @@ export const PathsSection: React.FC = () => {
               value={filter}
               placeholder={"Search paths..."}
             />
+          </ToolbarItem>
+          <ToolbarItem>
+            <Button variant="primary" onClick={handleAddPath}>
+              Add Path
+            </Button>
           </ToolbarItem>
         </ToolbarContent>
       </Toolbar>
@@ -106,7 +195,13 @@ export const PathsSection: React.FC = () => {
       )}
 
       {filteredPaths.map(({ path, pathObject }) => (
-        <PathCard key={path} path={path} pathObject={pathObject} />
+        <PathCard
+          key={path}
+          path={path}
+          pathObject={pathObject}
+          onDelete={() => handleDeletePath(path)}
+          onClone={() => handleClonePath(path, pathObject)}
+        />
       ))}
     </Stack>
   );
@@ -118,9 +213,11 @@ export const PathsSection: React.FC = () => {
 interface PathCardProps {
   path: string;
   pathObject: any;
+  onDelete: () => void;
+  onClone: () => void;
 }
 
-function PathCard({ path, pathObject }: PathCardProps) {
+function PathCard({ path, pathObject, onDelete, onClone }: PathCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const operations = ['get', 'post', 'put', 'delete', 'patch', 'options', 'head', 'trace'];
   const pathOperations = operations.filter(op => pathObject[op]);
@@ -130,13 +227,21 @@ function PathCard({ path, pathObject }: PathCardProps) {
       <CardHeader
         actions={{
           actions: (
-            <Button
-              variant="link"
-              icon={<EditIcon />}
-              onClick={() => setIsEditing(!isEditing)}
-            >
-              {isEditing ? 'Done' : 'Edit'}
-            </Button>
+            <>
+              <Button
+                variant="link"
+                icon={<EditIcon />}
+                onClick={() => setIsEditing(!isEditing)}
+              >
+                {isEditing ? 'Done' : 'Edit'}
+              </Button>
+              <Button variant="link" onClick={onClone}>
+                Clone
+              </Button>
+              <Button variant="link" isDanger onClick={onDelete}>
+                Delete
+              </Button>
+            </>
           )
         }}
       >

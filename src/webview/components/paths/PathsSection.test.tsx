@@ -22,6 +22,12 @@ jest.mock('../common/StatusCodeLabel', () => ({
 jest.mock('../common/TagLabel', () => ({
     TagLabel: ({ name }: any) => <span>{name}</span>
 }));
+jest.mock('./PathInfoSection', () => ({
+    PathInfoSection: () => <div data-testid="path-info-section">PathInfoSection</div>
+}));
+jest.mock('./PathServersSection', () => ({
+    PathServersSection: () => <div data-testid="path-servers-section">PathServersSection</div>
+}));
 
 describe('PathsSection', () => {
     const mockExecuteCommand = jest.fn();

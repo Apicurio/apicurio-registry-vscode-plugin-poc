@@ -98,15 +98,24 @@ export class RegistryService {
         }
     }
 
-    async searchGroups(filters: any[] = []): Promise<SearchedGroup[]> {
+    async searchGroups(searchParams: Record<string, string> = {}, limit?: number): Promise<SearchedGroup[]> {
         this.ensureConnected();
 
         try {
-            const response = await this.client!.get('/groups', {
-                params: {
-                    limit: 100,
-                    offset: 0
+            const params: Record<string, any> = {
+                limit: limit || 100,
+                offset: 0
+            };
+
+            // Add search parameters
+            Object.keys(searchParams).forEach(key => {
+                if (searchParams[key]) {
+                    params[key] = searchParams[key];
                 }
+            });
+
+            const response = await this.client!.get('/search/groups', {
+                params
             });
 
             return response.data.groups || [];
@@ -273,6 +282,32 @@ export class RegistryService {
         } catch (error) {
             console.error('Error searching artifacts:', error);
             throw new Error(`Failed to search artifacts: ${error}`);
+        }
+    }
+
+    async searchVersions(searchParams: Record<string, string>, limit?: number): Promise<SearchedVersion[]> {
+        this.ensureConnected();
+
+        try {
+            const params: Record<string, any> = {
+                limit: limit || 100,
+                offset: 0
+            };
+
+            Object.keys(searchParams).forEach(key => {
+                if (searchParams[key]) {
+                    params[key] = searchParams[key];
+                }
+            });
+
+            const response = await this.client!.get('/search/versions', {
+                params
+            });
+
+            return response.data.versions || [];
+        } catch (error) {
+            console.error('Error searching versions:', error);
+            throw new Error(`Failed to search versions: ${error}`);
         }
     }
 

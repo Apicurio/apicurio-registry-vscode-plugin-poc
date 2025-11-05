@@ -379,24 +379,26 @@ async function navigateToResult(result: any, mode: SearchMode): Promise<void> {
         switch (mode) {
             case SearchMode.Artifact:
                 // Open the latest version of the artifact using "branch=latest"
+                // Note: openVersionCommand expects RegistryItem format (parentId=artifactId, id=version)
                 await vscode.commands.executeCommand(
                     'apicurioRegistry.openVersion',
                     {
                         groupId: result.groupId || 'default',
-                        artifactId: result.artifactId,
-                        version: 'branch=latest'  // API v3.1 pattern for latest version
+                        parentId: result.artifactId,  // artifactId goes in parentId
+                        id: 'branch=latest'  // version goes in id (API v3.1 pattern)
                     }
                 );
                 break;
 
             case SearchMode.Version:
                 // Open this specific version
+                // Note: openVersionCommand expects RegistryItem format (parentId=artifactId, id=version)
                 await vscode.commands.executeCommand(
                     'apicurioRegistry.openVersion',
                     {
                         groupId: result.groupId || 'default',
-                        artifactId: result.artifactId,
-                        version: result.version
+                        parentId: result.artifactId,  // artifactId goes in parentId
+                        id: result.version  // version goes in id
                     }
                 );
                 break;

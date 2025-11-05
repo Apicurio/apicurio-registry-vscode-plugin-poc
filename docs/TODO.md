@@ -119,7 +119,6 @@ _Moved to MCP Integration section above_
 
 | # | Task | Status | Effort | Details |
 |---|------|--------|--------|---------|
-| 008 | API v3.1 Compatibility | 📋 Todo | 2-3h | [spec](tasks/todo/medium-priority/008-api-v31-compatibility.md) |
 | 006 | User Preferences | 📋 Todo | 2-3h | [spec](tasks/todo/medium-priority/006-user-preferences.md) |
 | 005 | Custom SVG Icons | 📋 Todo | 2-3h | [spec](tasks/todo/medium-priority/005-custom-svg-icons.md) |
 
@@ -177,6 +176,7 @@ _Moved to MCP Integration section above_
 
 | # | Task | Completed | Effort | Notes |
 |---|------|-----------|--------|-------|
+| 008 | API v3.1 Compatibility | 2025-11-05 | 2.5h | Comprehensive API audit, fixed draftCommands bug, version detection, 2 docs created |
 | 007 | Delete Operations | 2025-10-28 | 3.5h | 32 tests passing, last-version protection, modal confirmations |
 | 003b | State & Download Commands | 2025-10-28 | 2.5h | 28 tests passing, all artifact types |
 | 003 | Context Menus (Copy + Open) | 2025-10-28 | 6h | Fixed 2 API v3.1 bugs, 27 tests passing |
@@ -277,6 +277,29 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 ---
 
 ## 📝 Recent Activity
+
+**2025-11-05 (Task 008 Complete! 🎉 API v3.1 Compatibility)**
+- ✅ **Task 008: API v3.1 Compatibility** (2.5h actual, 2-3h estimated)
+- 📚 **Phase 1: Research** - Created comprehensive API_COMPATIBILITY.md
+  - Documented all 17 API endpoints used in the extension
+  - Compared v3.0 vs v3.1 differences
+  - Migration guide and best practices
+  - Identified 2 critical issues, 1 inconsistency
+- 🔍 **Phase 2: Code Audit** - Created CODE_AUDIT_TASK008.md
+  - **CRITICAL BUG FIX:** Fixed draftCommands.ts:26 ("latest" fallback issue)
+  - Applied same fix as openCommands.ts (sort by globalId)
+  - Updated test expectations to match actual API
+  - **DEPRECATED:** Marked updateArtifactContent() as deprecated
+- 🔧 **Phase 3: Version Detection**
+  - Added RegistryInfo interface
+  - Implemented getRegistryInfo(), getVersion(), isVersion31OrLater()
+  - Caches registry info for connection lifetime
+- 📖 **Phase 4: Documentation**
+  - Updated README.md with "Supported Registry Versions" section
+  - All tests passing (12/12 draftCommands)
+  - TypeScript compilation successful
+- 🎉 **UX Medium Priority**: 1 of 3 complete (33%)
+- 📊 **Next**: Task 006 - User Preferences (2-3h)
 
 **2025-11-04 (InfoForm Refactor Complete! 🎉 Apicurio-Editors Integration)**
 - 🎯 **Integrated apicurio-editors components** (20 files, 1,191 lines)

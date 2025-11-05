@@ -1,7 +1,7 @@
 # Apicurio VSCode Plugin - TODO
 
 **Last Updated:** 2025-11-05
-**Status:** Feature Parity Phase 1 - Starting Task 025 (Advanced Search)
+**Status:** Feature Parity Phase 1 - Task 025 Complete, Starting Task 026 (Label Management)
 
 > 📘 For detailed strategy and roadmap → see [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md) and [MASTER_PLAN.md](MASTER_PLAN.md)
 
@@ -15,28 +15,29 @@
 
 ## 🎯 What to Work on TODAY
 
-**🔥 FEATURE PARITY PHASE 1 - Task 025: Advanced Search (2-3h)**
+**🔥 FEATURE PARITY PHASE 1 - Task 026: Label Management (4-6h)**
 
-**Strategic Decision (2025-11-05):**
+**Strategic Focus:**
 - Visual Editor work deferred to Phase 4 (final phase)
 - Focus on high-value core features first
 - See [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md) for full plan
 
-**Current Focus:** Task 025 - Advanced Search (2-3h) 🔴 HIGH PRIORITY
-- Create task spec in `tasks/todo/high-priority/025-advanced-search.md`
-- Implement multi-field search UI (QuickPick with multiple inputs)
-- Add label filtering support (key:value format)
-- Support version search (not just artifacts)
-- Add group search capability
-- Test with various criteria combinations
+**Current Focus:** Task 026 - Label Management (4-6h) 🔴 HIGH PRIORITY
+- Create task spec in `tasks/todo/high-priority/026-label-management.md`
+- Implement label add/edit/remove UI
+- Support bulk label operations
+- Add label display in tree view (tooltips/badges)
+- Integrate with advanced search label filtering (Task 025)
+- Test with artifact, version, and group labels
 - Update documentation
 
-**Next Phase 1 Tasks:**
-- Task 026: Label Management (4-6h) 🔴 HIGH
+**Remaining Phase 1 Tasks:**
 - Task 027: Version Creation UI (3-4h) 🔴 HIGH
 - Task 028: Edit Artifact Metadata (2-3h) 🟡 MEDIUM
 - Task 029: Edit Version Metadata (2-3h) 🟡 MEDIUM
 - Task 030: Edit Group Metadata (2-3h) 🟡 MEDIUM
+
+**Phase 1 Progress:** 1 of 4 high-priority tasks complete (25%)
 
 **See:**
 - [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md) - Complete 4-phase plan
@@ -90,8 +91,8 @@
 
 | # | Task | Status | Effort | Details |
 |---|------|--------|--------|---------|
-| 025 | Advanced Search | 🚧 **CURRENT** | 2-3h | Multi-field search, label filtering, version/group search |
-| 026 | Label Management | 📋 Todo | 4-6h | Add/edit/remove labels, label display, filtering |
+| 025 | Advanced Search | ✅ Done | 2.5h | [spec](tasks/completed/025-advanced-search.md) - 15 tests passing |
+| 026 | Label Management | 🚧 **CURRENT** | 4-6h | Add/edit/remove labels, label display, filtering |
 | 027 | Version Creation UI | 📋 Todo | 3-4h | Wizard, content upload, validation |
 
 ### 🟡 Medium Priority - FEATURE PARITY PHASE 1
@@ -147,6 +148,12 @@
 
 ## ✅ Completed Tasks
 
+### Feature Parity Phase 1
+
+| # | Task | Completed | Effort | Notes |
+|---|------|-----------|--------|-------|
+| 025 | Advanced Search | 2025-11-05 | 2.5h | Multi-field search, version/group search, label filtering, 15 tests passing |
+
 ### UX Improvements Phase
 
 | # | Task | Completed | Effort | Notes |
@@ -171,14 +178,14 @@
 ## 📊 Progress Overview
 
 ```
-Overall Project Progress: █████████░░░░░░░░░░░ 45%
+Overall Project Progress: ██████████░░░░░░░░░░ 47%
 
 Foundation & Tree          [████████████████████] 100% ✅
 UX High Priority           [████████████████████] 100% ✅
 Draft Infrastructure       [████████████████████] 100% ✅
 Text Editor Integration    [████████████████████] 100% ✅
 MCP Integration            [████████████████████] 100% ✅ (blocked)
-FEATURE PARITY Phase 1     [░░░░░░░░░░░░░░░░░░░░]   0% 🔥 CURRENT
+FEATURE PARITY Phase 1     [█████░░░░░░░░░░░░░░░]  25% 🔥 CURRENT
 FEATURE PARITY Phase 2     [░░░░░░░░░░░░░░░░░░░░]   0% 📋
 FEATURE PARITY Phase 3     [░░░░░░░░░░░░░░░░░░░░]   0% 📋
 Visual Editor (Phase 4)    [██████░░░░░░░░░░░░░░]  50% ⏸️ DEFERRED
@@ -192,14 +199,14 @@ Visual Editor (Phase 4)    [██████░░░░░░░░░░░�
 - ✅ MCP Integration (4/4 tasks - 100%, blocked by Claude Code bug)
 - ✅ UX Medium Priority (2/3 tasks - 67%)
 
-**Feature Parity Roadmap (NEW - 2025-11-05):**
-- 🔥 Phase 1: Core Operations (0/4 tasks - 0%) - **CURRENT**
+**Feature Parity Roadmap:**
+- 🔥 Phase 1: Core Operations (1/4 tasks - 25%) - **CURRENT**
 - 📋 Phase 2: Advanced Features (0/4 tasks - 0%)
 - 📋 Phase 3: Admin & Utility (0/4 tasks - 0%)
 - ⏸️ Phase 4: Visual Editor (2/4 tasks - 50%) - **DEFERRED**
 
 **Estimated Remaining Effort:**
-- Phase 1: 15-20h
+- Phase 1: 12.5-17.5h (reduced from 15-20h)
 - Phase 2: 18-26h
 - Phase 3: 12-20h
 - Phase 4 (deferred): 80-130h
@@ -258,6 +265,34 @@ Visual Editor (Phase 4)    [██████░░░░░░░░░░░�
 ---
 
 ## 📝 Recent Activity
+
+**2025-11-05 (Task 025 Complete! 🎉 Advanced Search)**
+- ✅ **Task 025: Advanced Search** (2.5h actual, 2-3h estimated)
+- 🔍 **Multi-Field Search** - Implemented wizard-based search UI
+  - Search Mode Selection: Artifact, Version, or Group
+  - Multi-criterion collection: Name, Description, Labels, Type, State, etc.
+  - Label validation: key:value or key=value format
+  - Configuration integration: Uses `search.defaultLimit` preference
+- 📊 **Search Capabilities**:
+  - **Artifact Search**: Multi-field filtering (name, description, labels, type, state, group)
+  - **Version Search**: Search versions across all artifacts with full context
+  - **Group Search**: Find groups by ID, description, labels with artifact counts
+- 🔧 **Registry Service** - Enhanced search methods
+  - Added `searchVersions()` method for version search
+  - Modified `searchGroups()` to support searchParams (replaced old implementation)
+  - All methods support configurable limit parameter
+- 🧪 **Tests** - 15 comprehensive tests passing
+  - Search mode selection and cancellation
+  - Multi-field criteria collection
+  - Label format validation
+  - Version and group search
+  - Error handling and configuration
+- 📝 **Command Registration** - Added to extension.ts and package.json
+  - Command: `apicurioRegistry.advancedSearch`
+  - Icon: `$(search-view-icon)`
+  - Appears in tree view navigation
+- 🎯 **Phase 1 Progress**: 1 of 4 tasks complete (25%)
+- 🚀 **Next**: Task 026 - Label Management (4-6h)
 
 **2025-11-05 (🔄 ROADMAP CONSOLIDATION - Feature Parity Focus)**
 - 📋 **Strategic Decision**: Deferred Visual Editor to Phase 4 (final phase)

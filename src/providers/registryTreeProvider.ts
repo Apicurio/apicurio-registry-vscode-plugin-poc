@@ -15,6 +15,13 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
 
     constructor(private registryService: RegistryService) {}
 
+    /**
+     * Get user configuration for the extension.
+     */
+    private getConfig() {
+        return vscode.workspace.getConfiguration('apicurioRegistry');
+    }
+
     async connect(connection: any): Promise<void> {
         this.connection = connection;
         this.registryService.setConnection(connection);
@@ -68,7 +75,18 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
     }
 
     getTreeItem(element: RegistryItem): vscode.TreeItem {
-        const treeItem = new vscode.TreeItem(element.label);
+        const config = this.getConfig();
+
+        // Determine label based on preferences
+        let label = element.label;
+        if (element.type === RegistryItemType.Artifact) {
+            const useArtifactNames = config.get<boolean>('display.useArtifactNames', false);
+            if (useArtifactNames && element.metadata?.name) {
+                label = element.metadata.name;
+            }
+        }
+
+        const treeItem = new vscode.TreeItem(label);
 
         switch (element.type) {
             case RegistryItemType.Group:
@@ -80,8 +98,9 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 const artifactCount = element.metadata?.artifactCount || 0;
                 treeItem.tooltip = `Group: ${element.label}\nArtifacts: ${artifactCount}`;
 
-                // Add artifact count to description
-                if (artifactCount > 0) {
+                // Add artifact count to description (respects preference)
+                const showArtifactCounts = config.get<boolean>('display.showArtifactCounts', true);
+                if (showArtifactCounts && artifactCount > 0) {
                     treeItem.description = `(${artifactCount})`;
                 }
                 break;
@@ -118,9 +137,16 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                     description += `${stateEmoji} `;
                 }
                 if (element.metadata?.description) {
-                    // Show first 30 chars of description
-                    const truncated = element.metadata.description.substring(0, 30);
-                    description += truncated + (element.metadata.description.length > 30 ? '...' : '');
+                    // Apply description truncation preference
+                    const truncateDescriptions = config.get<boolean>('display.truncateDescriptions', true);
+                    const truncateLength = config.get<number>('display.truncateLength', 50);
+
+                    if (truncateDescriptions && element.metadata.description.length > truncateLength) {
+                        const truncated = element.metadata.description.substring(0, truncateLength);
+                        description += truncated + '...';
+                    } else {
+                        description += element.metadata.description;
+                    }
                 }
                 if (description) {
                     treeItem.description = description;
@@ -273,7 +299,16 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
     }
 
     private async getVersions(groupId: string, artifactId: string, artifactType?: string): Promise<RegistryItem[]> {
-        const versions = await this.registryService.getVersions(groupId, artifactId);
+        const config = this.getConfig();
+        const reverseVersionOrder = config.get<boolean>('display.reverseVersionOrder', false);
+
+        let versions = await this.registryService.getVersions(groupId, artifactId);
+
+        // Apply version ordering preference
+        if (reverseVersionOrder) {
+            versions = versions.reverse();
+        }
+
         return versions.map(version => new RegistryItem(
             version.version || 'unknown',
             RegistryItemType.Version,

@@ -1,7 +1,7 @@
 # Apicurio VSCode Plugin - TODO
 
-**Last Updated:** 2025-11-04
-**Status:** Task 019 Complete - Core UI & Navigation (76 tests ✅)
+**Last Updated:** 2025-11-05
+**Status:** Task 020 Started - Forms & Detail Editors (0 of 9 subtasks)
 
 > 📘 For detailed analysis, strategy, and context → see [MASTER_PLAN.md](MASTER_PLAN.md)
 
@@ -9,13 +9,23 @@
 
 ## 🚧 In Progress
 
-**No active tasks** - Ready for next assignment!
+**Task 020 - Forms & Detail Editors** (30-40h estimated)
+- 🚧 Subtask 1: Contact & License Components (2-3h) - STARTING
+- Branch: `task/020-forms-detail-editors`
+- Status: Just started, working on Contact & License sections
 
 ---
 
-## 🎯 What to Work on NEXT
+## 🎯 What to Work on TODAY
 
-**🎉 Task 019 COMPLETE!** Core UI & Navigation done! 🎊
+**🚀 Task 020 STARTED!** Forms & Detail Editors (Week 1 - Day 1)
+
+**Current Focus:** Subtask 1 - Contact & License Components (2-3h)
+- Copy Contact.tsx from apicurio-editors → ContactSection.tsx
+- Copy License.tsx from apicurio-editors → LicenseSection.tsx
+- Adapt XState → Zustand state management
+- Integrate into InfoForm as collapsible sections
+- Test edit/save/undo operations
 
 **Task 019 - Core UI & Navigation: ✅ COMPLETE (6 of 6 subtasks - 100%)**
 - ✅ Subtask 1: Master Layout Component (8-10h) - COMPLETE!

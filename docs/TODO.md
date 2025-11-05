@@ -1,72 +1,47 @@
 # Apicurio VSCode Plugin - TODO
 
 **Last Updated:** 2025-11-05
-**Status:** Task 020 Started - Forms & Detail Editors (0 of 9 subtasks)
+**Status:** Feature Parity Phase 1 - Starting Task 025 (Advanced Search)
 
-> 📘 For detailed analysis, strategy, and context → see [MASTER_PLAN.md](MASTER_PLAN.md)
+> 📘 For detailed strategy and roadmap → see [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md) and [MASTER_PLAN.md](MASTER_PLAN.md)
 
 ---
 
 ## 🚧 In Progress
 
-**Task 020 - Forms & Detail Editors** (30-40h estimated)
-- 🚧 Subtask 1: Contact & License Components (2-3h) - STARTING
-- Branch: `task/020-forms-detail-editors`
-- Status: Just started, working on Contact & License sections
+**None** - Starting new phase
 
 ---
 
 ## 🎯 What to Work on TODAY
 
-**🚀 Task 020 STARTED!** Forms & Detail Editors (Week 1 - Day 1)
+**🔥 FEATURE PARITY PHASE 1 - Task 025: Advanced Search (2-3h)**
 
-**Current Focus:** Subtask 1 - Contact & License Components (2-3h)
-- Copy Contact.tsx from apicurio-editors → ContactSection.tsx
-- Copy License.tsx from apicurio-editors → LicenseSection.tsx
-- Adapt XState → Zustand state management
-- Integrate into InfoForm as collapsible sections
-- Test edit/save/undo operations
+**Strategic Decision (2025-11-05):**
+- Visual Editor work deferred to Phase 4 (final phase)
+- Focus on high-value core features first
+- See [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md) for full plan
 
-**Task 019 - Core UI & Navigation: ✅ COMPLETE (6 of 6 subtasks - 100%)**
-- ✅ Subtask 1: Master Layout Component (8-10h) - COMPLETE!
-  - Clean custom flexbox layout (EditorLayout.tsx)
-  - Fixed React hooks violation in InfoForm
-  - VSCode theme integration for toolbar icons
-  - 3-column layout with collapsible panels
-- ✅ Subtask 2: Navigation Tree Component (12-15h) - COMPLETE!
-  - Hierarchical tree view with PatternFly Tree
-  - OpenAPI 2.0/3.0/3.1 support (Info, Servers, Paths, Components, Security, Tags)
-  - AsyncAPI 2.x support (Info, Servers, Channels, Components)
-  - 15 tests passing ✅
-- ✅ Subtask 3: Problem Drawer Component (6-8h) - COMPLETE!
-  - Bottom panel for validation problems
-  - Integration with validationStore
-- ✅ Subtask 4: Info Form (10-12h) - COMPLETE!
-  - Title, version, description, contact, license, terms of service
-  - react-hook-form + zod validation
-  - Integration with @apicurio/data-models
-- ✅ Subtask 5: Server Form (8-10h) - COMPLETE!
-  - Server URL, description, variables
-  - OpenAPI 3.x and AsyncAPI support
-- ✅ Subtask 6: Common Components Library (11-15h) - COMPLETE!
-  - FormField, ValidatedTextInput, ValidatedTextArea, FormSection
-  - 30 tests passing ✅
+**Current Focus:** Task 025 - Advanced Search (2-3h) 🔴 HIGH PRIORITY
+- Create task spec in `tasks/todo/high-priority/025-advanced-search.md`
+- Implement multi-field search UI (QuickPick with multiple inputs)
+- Add label filtering support (key:value format)
+- Support version search (not just artifacts)
+- Add group search capability
+- Test with various criteria combinations
+- Update documentation
 
-**Total Task 019 Tests: 76 tests passing** ✅
-
-**Next Actions:**
-- **Start Task 020 - Forms & Detail Editors** (30-40h - REVISED! ⚡)
-  - **Week 1:** Contact/License, Tags, Path Explorer (copy from apicurio-editors)
-  - **Week 2:** Operation Forms (build ourselves), Schema Editor start (copy)
-  - **Week 3:** Schema/Response/Security editors (copy), AsyncAPI forms (build)
-  - **Strategy:** Copy 60-70% from apicurio-editors, build 30-40% ourselves
-  - **Time Savings:** 25-40 hours (40% reduction!)
-
-**Recommended:** Start Task 020 immediately - we have all the code to copy! 🚀
+**Next Phase 1 Tasks:**
+- Task 026: Label Management (4-6h) 🔴 HIGH
+- Task 027: Version Creation UI (3-4h) 🔴 HIGH
+- Task 028: Edit Artifact Metadata (2-3h) 🟡 MEDIUM
+- Task 029: Edit Version Metadata (2-3h) 🟡 MEDIUM
+- Task 030: Edit Group Metadata (2-3h) 🟡 MEDIUM
 
 **See:**
-- [Task 020 REVISED Spec](tasks/in-progress/020-forms-detail-editors-REVISED.md)
-- [Apicurio Editors Integration Strategy](APICURIO_EDITORS_INTEGRATION_STRATEGY.md)
+- [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md) - Complete 4-phase plan
+- [FEATURE_GAP_ANALYSIS.md](FEATURE_GAP_ANALYSIS.md) - Web UI comparison
+- [MASTER_PLAN.md](MASTER_PLAN.md) - Updated strategic plan
 
 ---
 
@@ -111,17 +86,24 @@
 
 ## 📋 Task List by Priority
 
-### 🔴 High Priority
-
-_Moved to MCP Integration section above_
-
-### 🟡 Medium Priority
+### 🔴 High Priority - FEATURE PARITY PHASE 1
 
 | # | Task | Status | Effort | Details |
 |---|------|--------|--------|---------|
+| 025 | Advanced Search | 🚧 **CURRENT** | 2-3h | Multi-field search, label filtering, version/group search |
+| 026 | Label Management | 📋 Todo | 4-6h | Add/edit/remove labels, label display, filtering |
+| 027 | Version Creation UI | 📋 Todo | 3-4h | Wizard, content upload, validation |
+
+### 🟡 Medium Priority - FEATURE PARITY PHASE 1
+
+| # | Task | Status | Effort | Details |
+|---|------|--------|--------|---------|
+| 028 | Edit Artifact Metadata | 📋 Todo | 2-3h | Name, description, labels editing |
+| 029 | Edit Version Metadata | 📋 Todo | 2-3h | Version metadata editing |
+| 030 | Edit Group Metadata | 📋 Todo | 2-3h | Group metadata editing |
 | 005 | Custom SVG Icons | 📋 Todo | 2-3h | [spec](tasks/todo/medium-priority/005-custom-svg-icons.md) |
 
-### 🟢 Low Priority (Deferred to Phase 3)
+### 🟢 Low Priority (Deferred)
 
 | # | Task | Status | Effort | Details |
 |---|------|--------|--------|---------|
@@ -129,43 +111,37 @@ _Moved to MCP Integration section above_
 | 008 | Details Panel | ⏸️ Deferred | 6-8h | [spec](tasks/todo/low-priority/008-details-panel.md) |
 | 009 | Reverse Version Order | ⏸️ Deferred | 1-2h | [spec](tasks/todo/low-priority/009-reverse-version-order.md) |
 
-### 🔵 Phase 3: Draft Editing & Apicurio Studio Integration
+### ✅ Completed Infrastructure
 
-**Phase 3.0: Draft Infrastructure (Week 1, 30-40h)**
+**Phase 3.0: Draft Infrastructure**
 
-| # | Task | Status | Effort | Details |
-|---|------|--------|--------|---------|
+| # | Task | Status | Effort | Completed |
+|---|------|--------|--------|-----------|
 | 011 | Draft Feature Detection | ✅ Done | 7h | [spec](tasks/completed/011-draft-feature-detection.md) - 22 tests ✅ |
 | 012 | Draft Creation Workflow | ✅ Done | 11.5h | [spec](tasks/completed/012-draft-creation-workflow.md) - 24 tests ✅ |
 | 013 | Draft Management Commands | ✅ Done | 9h | [spec](tasks/completed/013-draft-management-commands.md) - 38 tests ✅ |
 | 014 | Draft List View | ✅ Done | 5h | [spec](tasks/completed/014-draft-list-view.md) - Visual indicators ✅ |
 
-**Phase 3.1: Text Editor Integration (Week 2, 30-40h)**
+**Phase 3.1: Text Editor Integration**
 
-| # | Task | Status | Effort | Details |
-|---|------|--------|--------|---------|
+| # | Task | Status | Effort | Completed |
+|---|------|--------|--------|-----------|
 | 015 | Custom Text Document Provider | ✅ Done | 12-15h | [spec](tasks/completed/015-custom-text-document-provider.md) - 52 tests ✅ |
-| 016 | Save & Auto-Save | ✅ Done | 10-12h | [spec](tasks/completed/016-save-auto-save.md) - Optional auto-save (disabled by default) ✅ |
-| 017 | Conflict Detection | ✅ Done | 8h | [spec](tasks/completed/017-conflict-detection.md) - 46 tests (17+18+11) ✅ |
+| 016 | Save & Auto-Save | ✅ Done | 10-12h | [spec](tasks/completed/016-save-auto-save.md) - Optional auto-save ✅ |
+| 017 | Conflict Detection | ✅ Done | 8h | [spec](tasks/completed/017-conflict-detection.md) - 46 tests ✅ |
 
-**Phase 3.2: React Visual Editor (Weeks 3-9, 200-260h)**
+### ⏸️ DEFERRED TO PHASE 4 (Visual Editor)
 
-**⚠️ Critical Decision:** React rewrite chosen over Angular iframe embedding due to VSCode CSP constraint (no unsafe-eval allowed). See [Tasks 018-021 spec](tasks/todo/018-021-react-visual-editor.md) for detailed rationale.
+**React Visual Editor (Tasks 018-021) - DEFERRED per user directive**
 
-| # | Task | Status | Effort | Details |
-|---|------|--------|--------|---------|
-| 018 | React Foundation & Setup | ✅ Done | 35-45h | [completed](tasks/completed/018-react-foundation.md) - Webview provider, state management, @apicurio/data-models ✅ |
-| 019 | Core UI & Navigation | ✅ Done | 55-70h | Layout, navigation tree, problem drawer, info/server forms, common components - 76 tests ✅ |
-| 020 | Forms & Detail Editors | 📋 Todo | **30-40h** ⚡ | **REVISED:** Copy apicurio-editors components, 40% time savings! See [020-REVISED spec](tasks/in-progress/020-forms-detail-editors-REVISED.md) |
-| 021 | Integration & Polish | 📋 Todo | 50-65h | Dialogs, VSCode integration, testing, bug fixes |
-
-**Phase 3.3: Draft Workflow & UX (Concurrent, 20-30h)**
+**Strategic Decision (2025-11-05):** Visual Editor work moved to final phase. Focus on core features first.
 
 | # | Task | Status | Effort | Details |
 |---|------|--------|--------|---------|
-| 022 | Draft Finalization | 📋 Todo | 8-10h | Publish draft workflow |
-| 023 | Visual Indicators | 📋 Todo | 6-8h | Draft badges, colors, icons |
-| 024 | User Preferences | 📋 Todo | 6-8h | Settings for draft features |
+| 018 | React Foundation & Setup | ✅ Done | 35-45h | [completed](tasks/completed/018-react-foundation.md) ✅ |
+| 019 | Core UI & Navigation | ✅ Done | 55-70h | [completed](tasks/completed/019-core-ui-navigation.md) ✅ |
+| 020 | Forms & Detail Editors | ⏸️ **DEFERRED** | 30-40h | **Moved to Phase 4** - See [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md) |
+| 021 | Integration & Polish | ⏸️ **DEFERRED** | 50-65h | **Moved to Phase 4** |
 
 ---
 
@@ -195,34 +171,39 @@ _Moved to MCP Integration section above_
 ## 📊 Progress Overview
 
 ```
-Overall Project Progress: ███████████░░░░░░░░░ 53%
+Overall Project Progress: █████████░░░░░░░░░░░ 45%
 
-Phase 1: Foundation        [████████████████████] 100% ✅
-Phase 2: Core Tree         [████████████████████] 100% ✅
-UX Improvements            [███████░░░░░░░░░░░░░]  40% 🚧
-MCP Integration            [████████████████████] 100% ✅ COMPLETE!
-Phase 3: Draft Editing     [████████████░░░░░░░░]  64% 🚧 (9 of 14 tasks)
-Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░░░░]   0% 📋
+Foundation & Tree          [████████████████████] 100% ✅
+UX High Priority           [████████████████████] 100% ✅
+Draft Infrastructure       [████████████████████] 100% ✅
+Text Editor Integration    [████████████████████] 100% ✅
+MCP Integration            [████████████████████] 100% ✅ (blocked)
+FEATURE PARITY Phase 1     [░░░░░░░░░░░░░░░░░░░░]   0% 🔥 CURRENT
+FEATURE PARITY Phase 2     [░░░░░░░░░░░░░░░░░░░░]   0% 📋
+FEATURE PARITY Phase 3     [░░░░░░░░░░░░░░░░░░░░]   0% 📋
+Visual Editor (Phase 4)    [██████░░░░░░░░░░░░░░]  50% ⏸️ DEFERRED
 ```
 
-**Note:** Phase 3.2 effort increased from 40-60h to 200-260h due to React rewrite requirement (CSP constraint). Overall project completion % recalculated accordingly.
+**Completed Work:**
+- ✅ Foundation & Core Tree (100%)
+- ✅ UX High Priority (4/4 tasks - 100%)
+- ✅ Draft Infrastructure (4/4 tasks - 100%)
+- ✅ Text Editor Integration (3/3 tasks - 100%)
+- ✅ MCP Integration (4/4 tasks - 100%, blocked by Claude Code bug)
+- ✅ UX Medium Priority (2/3 tasks - 67%)
 
-**✅ MCP Integration - Local Scenario:** 4 of 4 tasks complete (100%) - COMPLETE!
-- ✅ MCP-1: Fix MCPConfigurationManager (4-6h) - 2025-11-02
-- ✅ MCP-2: Enhance MCPServerManager (3-4h) - 2025-11-03
-- ✅ MCP-3: Create Setup Wizard (6-8h) - 2025-11-03
-- ✅ MCP-4: Update Commands (2-3h) - 2025-11-03
+**Feature Parity Roadmap (NEW - 2025-11-05):**
+- 🔥 Phase 1: Core Operations (0/4 tasks - 0%) - **CURRENT**
+- 📋 Phase 2: Advanced Features (0/4 tasks - 0%)
+- 📋 Phase 3: Admin & Utility (0/4 tasks - 0%)
+- ⏸️ Phase 4: Visual Editor (2/4 tasks - 50%) - **DEFERRED**
 
-**UX Improvements:** 4 of 10 tasks complete (40%)
-- 🔴 High Priority: All complete! ✅
-- 🟡 Medium Priority: 1 of 5 complete (20%)
-- 🟢 Low Priority: 0 of 3 (deferred)
-
-**Phase 3: Draft Editing & Studio Integration:** 9 of 14 tasks complete (64%)
-- Phase 3.0 (Infrastructure): 4 of 4 tasks (100%) ✅ COMPLETE!
-- Phase 3.1 (Text Editor): 3 of 3 tasks (100%) ✅ COMPLETE!
-- Phase 3.2 (React Visual Editor): 2 of 4 tasks (50%) - Tasks 018 ✅, 019 ✅ complete
-- Phase 3.3 (Workflow & UX): 0 of 3 tasks (0%)
+**Estimated Remaining Effort:**
+- Phase 1: 15-20h
+- Phase 2: 18-26h
+- Phase 3: 12-20h
+- Phase 4 (deferred): 80-130h
+- **Total:** 125-196h remaining
 
 ---
 
@@ -277,6 +258,28 @@ Phase 4: Advanced Features [░░░░░░░░░░░░░░░░░�
 ---
 
 ## 📝 Recent Activity
+
+**2025-11-05 (🔄 ROADMAP CONSOLIDATION - Feature Parity Focus)**
+- 📋 **Strategic Decision**: Deferred Visual Editor to Phase 4 (final phase)
+- 📚 **New Documents Created**:
+  - **FEATURE_GAP_ANALYSIS.md** - Comprehensive Web UI vs VSCode plugin comparison
+  - **FEATURE_ROADMAP.md** - 4-phase implementation plan (80-110h)
+  - Identified 15 critical gaps organized by priority
+- 📝 **Documentation Updates**:
+  - **MASTER_PLAN.md v2.0** - Major revision to align with Feature Parity Roadmap
+  - **TODO.md** - Updated to reflect new Phase 1 priorities
+  - Visual Editor work (Tasks 020-021) moved to Phase 4
+- 🎯 **New Priority**: Feature Parity Phase 1 - Core Operations (15-20h)
+  - Task 025: Advanced Search (2-3h) 🔴 CURRENT
+  - Task 026: Label Management (4-6h)
+  - Task 027: Version Creation UI (3-4h)
+  - Task 028-030: Metadata Editing (6-9h)
+- 📊 **Rationale**: Deliver high-value core features first (15-20h) before investing in visual editor (80-130h)
+- 🚀 **Next Action**: Start Task 025 - Advanced Search
+- 📖 **References**:
+  - See [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md) for complete plan
+  - See [FEATURE_GAP_ANALYSIS.md](FEATURE_GAP_ANALYSIS.md) for Web UI comparison
+  - See [MASTER_PLAN.md](MASTER_PLAN.md) v2.0 for strategic overview
 
 **2025-11-05 (Task 006 Complete! 🎉 User Preferences)**
 - ✅ **Task 006: User Preferences** (2.5h actual, 2-3h estimated)

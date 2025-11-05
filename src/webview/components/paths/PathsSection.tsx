@@ -41,6 +41,8 @@ import { TagLabel } from '../common/TagLabel';
 import { Markdown } from '../common/Markdown';
 import { PathInfoSection } from './PathInfoSection';
 import { PathServersSection } from './PathServersSection';
+import { InputDialog } from '../common/InputDialog';
+import { ConfirmDialog } from '../common/ConfirmDialog';
 
 /**
  * PathsSection component for displaying API paths.
@@ -56,10 +58,18 @@ interface PathItem {
   pathObject: any;
 }
 
+type DialogState =
+  | { type: 'none' }
+  | { type: 'add' }
+  | { type: 'clone'; sourcePath: string; sourceObject: any }
+  | { type: 'delete'; pathName: string; pathObject: any }
+  | { type: 'error'; message: string };
+
 export const PathsSection: React.FC = () => {
   const { document, updateDocument } = useDocument();
   const { executeCommand } = useCommandHistoryStore();
   const [filter, setFilter] = useState('');
+  const [dialogState, setDialogState] = useState<DialogState>({ type: 'none' });
 
   // Handle missing document
   if (!document) {
@@ -85,16 +95,15 @@ export const PathsSection: React.FC = () => {
   });
 
   const handleAddPath = () => {
-    const pathName = window.prompt('Enter path name (e.g., /users):');
-    if (!pathName || pathName.trim() === '') {
-      return;
-    }
+    setDialogState({ type: 'add' });
+  };
 
+  const handleAddPathConfirm = (pathName: string) => {
     const trimmedPath = pathName.trim();
 
     // Check if path already exists
     if (paths[trimmedPath]) {
-      window.alert(`Path "${trimmedPath}" already exists.`);
+      setDialogState({ type: 'error', message: `Path "${trimmedPath}" already exists.` });
       return;
     }
 
@@ -112,14 +121,20 @@ export const PathsSection: React.FC = () => {
       },
       getDescription: () => `Add path: ${trimmedPath}`,
     });
+
+    setDialogState({ type: 'none' });
   };
 
   const handleDeletePath = (pathName: string) => {
-    if (!window.confirm(`Are you sure you want to delete path "${pathName}"?`)) {
-      return;
-    }
+    setDialogState({ type: 'delete', pathName, pathObject: paths[pathName] });
+  };
 
-    const deletedPath = { ...paths[pathName] };
+  const handleDeletePathConfirm = () => {
+    if (dialogState.type !== 'delete') return;
+
+    const { pathName, pathObject } = dialogState;
+    const deletedPath = { ...pathObject };
+
     executeCommand({
       execute: () => {
         delete (document as any).paths[pathName];
@@ -131,19 +146,23 @@ export const PathsSection: React.FC = () => {
       },
       getDescription: () => `Delete path: ${pathName}`,
     });
+
+    setDialogState({ type: 'none' });
   };
 
   const handleClonePath = (sourcePath: string, sourceObject: any) => {
-    const newPathName = window.prompt(`Clone "${sourcePath}" as:`, `${sourcePath}-copy`);
-    if (!newPathName || newPathName.trim() === '') {
-      return;
-    }
+    setDialogState({ type: 'clone', sourcePath, sourceObject });
+  };
 
+  const handleClonePathConfirm = (newPathName: string) => {
+    if (dialogState.type !== 'clone') return;
+
+    const { sourcePath, sourceObject } = dialogState;
     const trimmedPath = newPathName.trim();
 
     // Check if path already exists
     if (paths[trimmedPath]) {
-      window.alert(`Path "${trimmedPath}" already exists.`);
+      setDialogState({ type: 'error', message: `Path "${trimmedPath}" already exists.` });
       return;
     }
 
@@ -164,48 +183,99 @@ export const PathsSection: React.FC = () => {
       },
       getDescription: () => `Clone path: ${sourcePath} → ${trimmedPath}`,
     });
+
+    setDialogState({ type: 'none' });
   };
 
   return (
-    <Stack hasGutter={true}>
-      <Toolbar>
-        <ToolbarContent>
-          <ToolbarItem>
-            <SearchInput
-              onChange={(_, value) => setFilter(value)}
-              onClear={() => setFilter('')}
-              value={filter}
-              placeholder={"Search paths..."}
-            />
-          </ToolbarItem>
-          <ToolbarItem>
-            <Button variant="primary" onClick={handleAddPath}>
-              Add Path
-            </Button>
-          </ToolbarItem>
-        </ToolbarContent>
-      </Toolbar>
+    <>
+      <Stack hasGutter={true}>
+        <Toolbar>
+          <ToolbarContent>
+            <ToolbarItem>
+              <SearchInput
+                onChange={(_, value) => setFilter(value)}
+                onClear={() => setFilter('')}
+                value={filter}
+                placeholder={"Search paths..."}
+              />
+            </ToolbarItem>
+            <ToolbarItem>
+              <Button variant="primary" onClick={handleAddPath}>
+                Add Path
+              </Button>
+            </ToolbarItem>
+          </ToolbarContent>
+        </Toolbar>
 
-      {filteredPaths.length === 0 && (
-        <EmptyState>
-          <EmptyStateBody>
-            {pathItems.length === 0
-              ? 'No paths have been defined.'
-              : 'No paths match your search.'}
-          </EmptyStateBody>
-        </EmptyState>
-      )}
+        {filteredPaths.length === 0 && (
+          <EmptyState>
+            <EmptyStateBody>
+              {pathItems.length === 0
+                ? 'No paths have been defined.'
+                : 'No paths match your search.'}
+            </EmptyStateBody>
+          </EmptyState>
+        )}
 
-      {filteredPaths.map(({ path, pathObject }) => (
-        <PathCard
-          key={path}
-          path={path}
-          pathObject={pathObject}
-          onDelete={() => handleDeletePath(path)}
-          onClone={() => handleClonePath(path, pathObject)}
-        />
-      ))}
-    </Stack>
+        {filteredPaths.map(({ path, pathObject }) => (
+          <PathCard
+            key={path}
+            path={path}
+            pathObject={pathObject}
+            onDelete={() => handleDeletePath(path)}
+            onClone={() => handleClonePath(path, pathObject)}
+          />
+        ))}
+      </Stack>
+
+      {/* Add Path Dialog */}
+      <InputDialog
+        isOpen={dialogState.type === 'add'}
+        title="Add Path"
+        label="Path name"
+        placeholder="/users"
+        onConfirm={handleAddPathConfirm}
+        onCancel={() => setDialogState({ type: 'none' })}
+      />
+
+      {/* Clone Path Dialog */}
+      <InputDialog
+        isOpen={dialogState.type === 'clone'}
+        title="Clone Path"
+        label="New path name"
+        initialValue={
+          dialogState.type === 'clone' ? `${dialogState.sourcePath}-copy` : ''
+        }
+        onConfirm={handleClonePathConfirm}
+        onCancel={() => setDialogState({ type: 'none' })}
+      />
+
+      {/* Delete Path Confirmation */}
+      <ConfirmDialog
+        isOpen={dialogState.type === 'delete'}
+        title="Delete Path"
+        message={
+          dialogState.type === 'delete'
+            ? `Are you sure you want to delete path "${dialogState.pathName}"?`
+            : ''
+        }
+        confirmLabel="Delete"
+        variant="danger"
+        onConfirm={handleDeletePathConfirm}
+        onCancel={() => setDialogState({ type: 'none' })}
+      />
+
+      {/* Error Dialog */}
+      <ConfirmDialog
+        isOpen={dialogState.type === 'error'}
+        title="Error"
+        message={dialogState.type === 'error' ? dialogState.message : ''}
+        confirmLabel="OK"
+        onConfirm={() => setDialogState({ type: 'none' })}
+        onCancel={() => setDialogState({ type: 'none' })}
+      />
+    </>
   );
 };
 

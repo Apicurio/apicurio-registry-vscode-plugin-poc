@@ -1,3 +1,12 @@
+import React, {
+  FormEventHandler,
+  FunctionComponent,
+  KeyboardEventHandler,
+  MouseEventHandler,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import {
   Button,
   Form,
@@ -10,15 +19,6 @@ import {
   TextInput,
 } from "@patternfly/react-core";
 import { CheckIcon, ExclamationCircleIcon } from "@patternfly/react-icons";
-import {
-  FormEventHandler,
-  FunctionComponent,
-  KeyboardEventHandler,
-  MouseEventHandler,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
 import classes from "./InlineEdit.module.css";
 
 type ValidationResult = {

@@ -4,12 +4,15 @@ import {
     DescriptionListGroup,
     DescriptionListTerm,
     DescriptionListDescription,
-    Title,
-    TextArea
+    TextArea,
+    Accordion
 } from '@patternfly/react-core';
 import { useDocument } from '../../core/hooks/useDocument';
 import { useCommandHistoryStore } from '../../core/stores/commandHistoryStore';
 import { InlineEdit } from '../common/InlineEdit';
+import { AccordionSection } from '../common/AccordionSection';
+import { ContactSection } from './ContactSection';
+import { LicenseSection } from './LicenseSection';
 
 /**
  * InfoForm component for editing OpenAPI/AsyncAPI info section.
@@ -76,69 +79,6 @@ export const InfoForm: React.FC = () => {
         });
     };
 
-    /**
-     * Update contact field.
-     */
-    const updateContactField = (field: string, value: string) => {
-        if (!document) return;
-
-        const oldValue = info?.contact ? info.contact[field] : undefined;
-
-        executeCommand({
-            execute: () => {
-                // Mutate document directly - don't clone!
-                if (!(document as any).info) {
-                    (document as any).info = {};
-                }
-                if (!(document as any).info.contact) {
-                    (document as any).info.contact = {};
-                }
-                (document as any).info.contact[field] = value;
-                updateDocument(document);
-            },
-            undo: () => {
-                if (oldValue !== undefined) {
-                    (document as any).info.contact[field] = oldValue;
-                } else if ((document as any).info?.contact) {
-                    delete (document as any).info.contact[field];
-                }
-                updateDocument(document);
-            },
-            getDescription: () => `Update contact ${field}: ${value}`
-        });
-    };
-
-    /**
-     * Update license field.
-     */
-    const updateLicenseField = (field: string, value: string) => {
-        if (!document) return;
-
-        const oldValue = info?.license ? info.license[field] : undefined;
-
-        executeCommand({
-            execute: () => {
-                // Mutate document directly - don't clone!
-                if (!(document as any).info) {
-                    (document as any).info = {};
-                }
-                if (!(document as any).info.license) {
-                    (document as any).info.license = {};
-                }
-                (document as any).info.license[field] = value;
-                updateDocument(document);
-            },
-            undo: () => {
-                if (oldValue !== undefined) {
-                    (document as any).info.license[field] = oldValue;
-                } else if ((document as any).info?.license) {
-                    delete (document as any).info.license[field];
-                }
-                updateDocument(document);
-            },
-            getDescription: () => `Update license ${field}: ${value}`
-        });
-    };
 
     /**
      * Validator for URL fields.
@@ -155,19 +95,6 @@ export const InfoForm: React.FC = () => {
         }
     };
 
-    /**
-     * Validator for email fields.
-     */
-    const validateEmail = (value: string) => {
-        if (!value) {
-            return { status: 'default' as const, errMessages: [] };
-        }
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (emailRegex.test(value)) {
-            return { status: 'success' as const, errMessages: [] };
-        }
-        return { status: 'error' as const, errMessages: ['Invalid email'] };
-    };
 
     /**
      * Validator for required fields.
@@ -235,83 +162,25 @@ export const InfoForm: React.FC = () => {
                 </DescriptionListGroup>
             </DescriptionList>
 
-            {/* Contact Section */}
-            <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid var(--pf-v5-global--BorderColor--100)' }}>
-                <Title headingLevel="h3" size="md" style={{ marginBottom: '1rem' }}>
-                    Contact Information
-                </Title>
-                <DescriptionList>
-                    <DescriptionListGroup>
-                        <DescriptionListTerm>Name</DescriptionListTerm>
-                        <DescriptionListDescription>
-                            <InlineEdit
-                                value={info?.contact?.name || ''}
-                                onChange={(value) => updateContactField('name', value)}
-                                editing={true}
-                                autoFocus={false}
-                            />
-                        </DescriptionListDescription>
-                    </DescriptionListGroup>
+            {/* Contact & License Sections - Collapsible */}
+            <div style={{ marginTop: '2rem' }}>
+                <Accordion>
+                    <AccordionSection
+                        id="contact-section"
+                        title="Contact Information"
+                        startExpanded={true}
+                    >
+                        <ContactSection />
+                    </AccordionSection>
 
-                    <DescriptionListGroup>
-                        <DescriptionListTerm>URL</DescriptionListTerm>
-                        <DescriptionListDescription>
-                            <InlineEdit
-                                value={info?.contact?.url || ''}
-                                onChange={(value) => updateContactField('url', value)}
-                                editing={true}
-                                autoFocus={false}
-                                validator={validateUrl}
-                            />
-                        </DescriptionListDescription>
-                    </DescriptionListGroup>
-
-                    <DescriptionListGroup>
-                        <DescriptionListTerm>Email</DescriptionListTerm>
-                        <DescriptionListDescription>
-                            <InlineEdit
-                                value={info?.contact?.email || ''}
-                                onChange={(value) => updateContactField('email', value)}
-                                editing={true}
-                                autoFocus={false}
-                                validator={validateEmail}
-                            />
-                        </DescriptionListDescription>
-                    </DescriptionListGroup>
-                </DescriptionList>
-            </div>
-
-            {/* License Section */}
-            <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid var(--pf-v5-global--BorderColor--100)' }}>
-                <Title headingLevel="h3" size="md" style={{ marginBottom: '1rem' }}>
-                    License Information
-                </Title>
-                <DescriptionList>
-                    <DescriptionListGroup>
-                        <DescriptionListTerm>Name</DescriptionListTerm>
-                        <DescriptionListDescription>
-                            <InlineEdit
-                                value={info?.license?.name || ''}
-                                onChange={(value) => updateLicenseField('name', value)}
-                                editing={true}
-                                autoFocus={false}
-                            />
-                        </DescriptionListDescription>
-                    </DescriptionListGroup>
-
-                    <DescriptionListGroup>
-                        <DescriptionListTerm>URL</DescriptionListTerm>
-                        <DescriptionListDescription>
-                            <InlineEdit
-                                value={info?.license?.url || ''}
-                                onChange={(value) => updateLicenseField('url', value)}
-                                editing={true}
-                                autoFocus={false}
-                                validator={validateUrl}
-                            />
-                        </DescriptionListDescription>
-                    </DescriptionListGroup>
-                </DescriptionList>
+                    <AccordionSection
+                        id="license-section"
+                        title="License Information"
+                        startExpanded={true}
+                    >
+                        <LicenseSection />
+                    </AccordionSection>
+                </Accordion>
             </div>
         </div>
     );

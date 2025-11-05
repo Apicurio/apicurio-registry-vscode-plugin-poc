@@ -418,6 +418,40 @@
           "minimum": 10,
           "maximum": 1000,
           "description": "Maximum results per page for MCP queries"
+        },
+        "apicurioRegistry.display.useArtifactNames": {
+          "type": "boolean",
+          "default": false,
+          "description": "Display artifact names instead of IDs in tree view (when available)"
+        },
+        "apicurioRegistry.display.reverseVersionOrder": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show newest versions first (default: oldest first)"
+        },
+        "apicurioRegistry.display.showArtifactCounts": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show artifact counts in group labels (e.g., 'my-group (5)')"
+        },
+        "apicurioRegistry.display.truncateDescriptions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Truncate long descriptions in tree view tooltips"
+        },
+        "apicurioRegistry.display.truncateLength": {
+          "type": "number",
+          "default": 50,
+          "minimum": 10,
+          "maximum": 200,
+          "description": "Maximum length for truncated descriptions"
+        },
+        "apicurioRegistry.search.defaultLimit": {
+          "type": "number",
+          "default": 50,
+          "minimum": 1,
+          "maximum": 1000,
+          "description": "Default maximum number of search results to return"
         }
       }
     }

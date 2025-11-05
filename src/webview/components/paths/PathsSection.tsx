@@ -1,18 +1,41 @@
 import React, { useState } from 'react';
 import {
+  Accordion,
   Card,
   CardBody,
   CardHeader,
   CardTitle,
+  DataList,
+  DataListCell,
+  DataListContent,
+  DataListItem,
+  DataListItemCells,
+  DataListItemRow,
+  DataListToggle,
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTerm,
   EmptyState,
   EmptyStateBody,
+  Label,
+  LabelGroup,
   SearchInput,
+  Split,
+  SplitItem,
   Stack,
+  StackItem,
+  Title,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
 } from "@patternfly/react-core";
 import { useDocument } from '../../core/hooks/useDocument';
+import { AccordionSection } from '../common/AccordionSection';
+import { OperationLabel } from '../common/OperationLabel';
+import { StatusCodeLabel } from '../common/StatusCodeLabel';
+import { TagLabel } from '../common/TagLabel';
+import { Markdown } from '../common/Markdown';
 
 /**
  * PathsSection component for displaying API paths.
@@ -86,7 +109,7 @@ export const PathsSection: React.FC = () => {
 };
 
 /**
- * PathCard - Displays a single path with its operations.
+ * PathCard - Displays a single path with expandable operations.
  */
 interface PathCardProps {
   path: string;
@@ -94,70 +117,238 @@ interface PathCardProps {
 }
 
 function PathCard({ path, pathObject }: PathCardProps) {
-  const operations = ['get', 'post', 'put', 'delete', 'patch', 'options', 'head'];
+  const operations = ['get', 'post', 'put', 'delete', 'patch', 'options', 'head', 'trace'];
   const pathOperations = operations.filter(op => pathObject[op]);
 
   return (
-    <Card isCompact={true}>
+    <Card isCompact={true} isPlain={true}>
       <CardHeader>
-        <CardTitle style={{ fontFamily: 'monospace', fontSize: '1.1em' }}>
-          {path}
+        <CardTitle>
+          <span style={{ fontFamily: 'monospace', fontSize: '1.1em' }}>
+            {path}
+          </span>
         </CardTitle>
       </CardHeader>
       {pathObject.summary && (
         <CardBody>
-          <div style={{ color: 'var(--pf-v5-global--Color--200)' }}>
-            {pathObject.summary}
-          </div>
+          <Markdown>{pathObject.summary}</Markdown>
         </CardBody>
       )}
-      {pathOperations.length > 0 && (
+      {pathObject.description && (
         <CardBody>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            {pathOperations.map(op => (
-              <OperationBadge key={op} operation={op} />
-            ))}
-          </div>
+          <Markdown>{pathObject.description}</Markdown>
         </CardBody>
       )}
+      <CardBody>
+        <DataList aria-label="Path operations">
+          {pathOperations.map(opName => (
+            <OperationRow
+              key={`${path}-${opName}`}
+              operation={pathObject[opName]}
+              operationName={opName as any}
+              path={path}
+            />
+          ))}
+        </DataList>
+      </CardBody>
     </Card>
   );
 }
 
 /**
- * OperationBadge - Displays an HTTP method badge.
+ * OperationRow - Displays an expandable operation with details.
  */
-interface OperationBadgeProps {
-  operation: string;
+interface OperationRowProps {
+  operation: any;
+  operationName: 'get' | 'post' | 'put' | 'delete' | 'patch' | 'options' | 'head' | 'trace';
+  path: string;
 }
 
-function OperationBadge({ operation }: OperationBadgeProps) {
-  const colors: Record<string, string> = {
-    get: '#61affe',
-    post: '#49cc90',
-    put: '#fca130',
-    delete: '#f93e3e',
-    patch: '#50e3c2',
-    options: '#0d5aa7',
-    head: '#9012fe',
-  };
+function OperationRow({ operation, operationName, path }: OperationRowProps) {
+  const [expanded, setExpanded] = useState(false);
 
-  const color = colors[operation.toLowerCase()] || '#999';
+  // Get parameters
+  const parameters = operation.parameters || [];
+  const pathParams = parameters.filter((p: any) => p.in === 'path');
+  const queryParams = parameters.filter((p: any) => p.in === 'query');
+  const headerParams = parameters.filter((p: any) => p.in === 'header');
+  const cookieParams = parameters.filter((p: any) => p.in === 'cookie');
+
+  // Get responses
+  const responses = operation.responses || {};
+  const responseKeys = Object.keys(responses);
+
+  // Get tags
+  const tags = operation.tags || [];
 
   return (
-    <span
-      style={{
-        display: 'inline-block',
-        padding: '0.25rem 0.75rem',
-        borderRadius: '3px',
-        backgroundColor: color,
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: '0.875rem',
-        textTransform: 'uppercase',
-      }}
+    <DataListItem
+      aria-labelledby={`operation-${path}-${operationName}`}
+      isExpanded={expanded}
     >
-      {operation}
-    </span>
+      <DataListItemRow>
+        <DataListToggle
+          onClick={() => setExpanded(v => !v)}
+          isExpanded={expanded}
+          id={`operation-${path}-${operationName}-toggle`}
+          aria-controls={`operation-${path}-${operationName}-expand`}
+        />
+        <DataListItemCells
+          dataListCells={[
+            <DataListCell isFilled={false} key="operation">
+              <OperationLabel name={operationName} />
+            </DataListCell>,
+            <DataListCell key="summary">
+              <Markdown>{operation.summary || operation.operationId || ''}</Markdown>
+            </DataListCell>,
+            <DataListCell key="tags" isFilled={false}>
+              <LabelGroup>
+                {tags.map((t: string) => (
+                  <TagLabel key={t} name={t} />
+                ))}
+              </LabelGroup>
+            </DataListCell>,
+          ]}
+        />
+      </DataListItemRow>
+      <DataListContent
+        aria-label="Operation details"
+        hasNoPadding={true}
+        id={`operation-${path}-${operationName}-expand`}
+        isHidden={!expanded}
+      >
+        {expanded && (
+          <Stack hasGutter={true} style={{ padding: '1rem' }}>
+            {operation.description && (
+              <StackItem>
+                <Markdown>{operation.description}</Markdown>
+              </StackItem>
+            )}
+
+            {(pathParams.length + queryParams.length + headerParams.length + cookieParams.length) > 0 && (
+              <StackItem>
+                <Title headingLevel="h4">Request Parameters</Title>
+                <Accordion>
+                  {pathParams.length > 0 && (
+                    <AccordionSection
+                      title="Path parameters"
+                      id={`${path}-${operationName}-path-params`}
+                      startExpanded={false}
+                      count={pathParams.length}
+                    >
+                      <Parameters parameters={pathParams} />
+                    </AccordionSection>
+                  )}
+                  {queryParams.length > 0 && (
+                    <AccordionSection
+                      title="Query parameters"
+                      id={`${path}-${operationName}-query-params`}
+                      startExpanded={false}
+                      count={queryParams.length}
+                    >
+                      <Parameters parameters={queryParams} />
+                    </AccordionSection>
+                  )}
+                  {headerParams.length > 0 && (
+                    <AccordionSection
+                      title="Header parameters"
+                      id={`${path}-${operationName}-header-params`}
+                      startExpanded={false}
+                      count={headerParams.length}
+                    >
+                      <Parameters parameters={headerParams} />
+                    </AccordionSection>
+                  )}
+                  {cookieParams.length > 0 && (
+                    <AccordionSection
+                      title="Cookie parameters"
+                      id={`${path}-${operationName}-cookie-params`}
+                      startExpanded={false}
+                      count={cookieParams.length}
+                    >
+                      <Parameters parameters={cookieParams} />
+                    </AccordionSection>
+                  )}
+                </Accordion>
+              </StackItem>
+            )}
+
+            {responseKeys.length > 0 && (
+              <StackItem>
+                <Title headingLevel="h4">Responses</Title>
+                <Accordion>
+                  {responseKeys.map(statusCode => (
+                    <AccordionSection
+                      key={statusCode}
+                      title={
+                        <Split hasGutter={true}>
+                          <SplitItem>
+                            <StatusCodeLabel code={statusCode} />
+                          </SplitItem>
+                          {responses[statusCode].description && (
+                            <SplitItem>
+                              <Markdown>{responses[statusCode].description}</Markdown>
+                            </SplitItem>
+                          )}
+                        </Split>
+                      }
+                      id={`${path}-${operationName}-response-${statusCode}`}
+                      startExpanded={false}
+                    >
+                      <div style={{ padding: '0.5rem' }}>
+                        {responses[statusCode].description && (
+                          <Markdown>{responses[statusCode].description}</Markdown>
+                        )}
+                        {/* TODO: Add response schema and examples */}
+                      </div>
+                    </AccordionSection>
+                  ))}
+                </Accordion>
+              </StackItem>
+            )}
+          </Stack>
+        )}
+      </DataListContent>
+    </DataListItem>
+  );
+}
+
+/**
+ * Parameters - Displays a list of parameters.
+ */
+interface ParametersProps {
+  parameters: any[];
+}
+
+function Parameters({ parameters }: ParametersProps) {
+  return (
+    <DescriptionList>
+      {parameters.map((param, idx) => (
+        <DescriptionListGroup key={idx}>
+          <DescriptionListTerm>
+            <Stack hasGutter={true}>
+              <StackItem>{param.name}</StackItem>
+              {param.required && (
+                <StackItem>
+                  <Label color="blue">Required</Label>
+                </StackItem>
+              )}
+            </Stack>
+          </DescriptionListTerm>
+          <DescriptionListDescription>
+            <Stack hasGutter={true}>
+              <StackItem>
+                {param.schema?.type || param.type || 'any'}
+              </StackItem>
+              {param.description && (
+                <StackItem>
+                  <Markdown>{param.description}</Markdown>
+                </StackItem>
+              )}
+            </Stack>
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+      ))}
+    </DescriptionList>
   );
 }

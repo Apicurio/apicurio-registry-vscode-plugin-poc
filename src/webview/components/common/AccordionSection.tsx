@@ -1,3 +1,4 @@
+import React, { ReactNode, useState } from "react";
 import {
   AccordionContent,
   AccordionItem,
@@ -6,7 +7,6 @@ import {
   Split,
   SplitItem,
 } from "@patternfly/react-core";
-import { ReactNode, useState } from "react";
 
 export function AccordionSection({
   children,

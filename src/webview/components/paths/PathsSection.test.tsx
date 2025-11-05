@@ -7,6 +7,21 @@ import { useCommandHistoryStore } from '../../core/stores/commandHistoryStore';
 // Mock dependencies
 jest.mock('../../core/hooks/useDocument');
 jest.mock('../../core/stores/commandHistoryStore');
+jest.mock('../common/Markdown', () => ({
+    Markdown: ({ children }: any) => <div>{children}</div>
+}));
+jest.mock('../common/AccordionSection', () => ({
+    AccordionSection: ({ children }: any) => <div>{children}</div>
+}));
+jest.mock('../common/OperationLabel', () => ({
+    OperationLabel: ({ name }: any) => <span>{name.toUpperCase()}</span>
+}));
+jest.mock('../common/StatusCodeLabel', () => ({
+    StatusCodeLabel: ({ code }: any) => <span>{code}</span>
+}));
+jest.mock('../common/TagLabel', () => ({
+    TagLabel: ({ name }: any) => <span>{name}</span>
+}));
 
 describe('PathsSection', () => {
     const mockExecuteCommand = jest.fn();

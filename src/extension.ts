@@ -11,6 +11,7 @@ import { searchCommand } from './commands/searchCommand';
 import { createArtifactCommand } from './commands/createArtifactCommand';
 import { setupMCPCommand } from './commands/setupMCPCommand';
 import { editMetadataCommand } from './commands/editMetadataCommand';
+import { manageRulesCommand } from './commands/rulesCommand';
 import {
     generateClaudeCommandCommand,
     verifyMCPCommand
@@ -371,6 +372,19 @@ export function activate(context: vscode.ExtensionContext) {
         await editMetadataCommand(registryService, () => registryTreeProvider.refresh(), node);
     });
 
+    // Rules management commands
+    const manageGlobalRules = vscode.commands.registerCommand('apicurioRegistry.manageGlobalRules', async () => {
+        await manageRulesCommand(registryService, () => registryTreeProvider.refresh(), undefined, true);
+    });
+
+    const manageGroupRules = vscode.commands.registerCommand('apicurioRegistry.manageGroupRules', async (node) => {
+        await manageRulesCommand(registryService, () => registryTreeProvider.refresh(), node);
+    });
+
+    const manageArtifactRules = vscode.commands.registerCommand('apicurioRegistry.manageArtifactRules', async (node) => {
+        await manageRulesCommand(registryService, () => registryTreeProvider.refresh(), node);
+    });
+
     // Draft commands
     const createDraftVersion = vscode.commands.registerCommand('apicurioRegistry.createDraftVersion', async (node) => {
         await createDraftVersionCommand(registryService, () => registryTreeProvider.refresh(), node);
@@ -441,6 +455,9 @@ export function activate(context: vscode.ExtensionContext) {
         deleteArtifact,
         deleteVersion,
         editMetadata,
+        manageGlobalRules,
+        manageGroupRules,
+        manageArtifactRules,
         createDraftVersion,
         finalizeDraft,
         discardDraft,

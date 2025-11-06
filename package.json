@@ -143,6 +143,21 @@
         "category": "Apicurio Registry"
       },
       {
+        "command": "apicurioRegistry.manageGlobalRules",
+        "title": "Manage Global Rules",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.manageGroupRules",
+        "title": "Manage Rules",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.manageArtifactRules",
+        "title": "Manage Rules",
+        "category": "Apicurio Registry"
+      },
+      {
         "command": "apicurioRegistry.createDraftVersion",
         "title": "Create Draft Version",
         "category": "Apicurio Registry"
@@ -321,6 +336,16 @@
           "command": "apicurioRegistry.editMetadata",
           "when": "view == apicurioRegistry && viewItem =~ /^version/",
           "group": "5_metadata@1"
+        },
+        {
+          "command": "apicurioRegistry.manageGroupRules",
+          "when": "view == apicurioRegistry && viewItem == group",
+          "group": "6_rules@1"
+        },
+        {
+          "command": "apicurioRegistry.manageArtifactRules",
+          "when": "view == apicurioRegistry && viewItem =~ /artifact.*/",
+          "group": "6_rules@1"
         },
         {
           "command": "apicurioRegistry.deleteGroup",

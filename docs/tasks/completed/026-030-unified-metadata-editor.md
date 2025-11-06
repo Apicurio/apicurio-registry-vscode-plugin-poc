@@ -509,6 +509,15 @@ npm run test
 - Lesson: Could support both formats in future
 - Current: Only "key=value" supported, validation shows error
 
+**QuickPick Separator Syntax (2025-11-06):**
+- Initial implementation used incorrect separator syntax that broke rendering
+- Problem: `{ label: vscode.QuickPickItemKind.Separator as any }`
+- Effect: QuickPick would only show some items, not all menu options
+- Solution: `{ label: '─────────────', kind: vscode.QuickPickItemKind.Separator }`
+- Lesson: QuickPickItem separators require both `label` and `kind` properties
+- Debugging tip: When UI doesn't match code, add distinctive debug text to verify code is loading
+- Fixed in commit `ae2f444`
+
 ### Technical Decisions
 
 **Method Naming Convention:**

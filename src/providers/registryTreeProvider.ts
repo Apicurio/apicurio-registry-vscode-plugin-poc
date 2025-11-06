@@ -60,35 +60,110 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
         this.searchFilter = { mode, criteria };
         this.refresh();
 
-        // Auto-expand matched nodes after a short delay to allow tree refresh
-        setTimeout(() => this.expandMatchedNodes(), 100);
+        // Auto-expand matched nodes after a delay to allow tree refresh
+        // Longer delay needed for tree to fully render before expansion
+        setTimeout(() => this.expandMatchedNodes(), 500);
     }
 
     /**
      * Auto-expand all nodes that contain search matches.
+     * Recursively expands groups → artifacts → versions.
      */
     private async expandMatchedNodes(): Promise<void> {
         if (!this.treeView || !this.searchFilter) {
+            console.log('Auto-expand skipped: no treeView or searchFilter');
             return;
         }
+
+        console.log('Auto-expand starting for mode:', this.searchFilter.mode);
 
         try {
             // Get root level items (groups with matches)
             const rootItems = await this.getChildren(undefined);
+            console.log('Root items count:', rootItems.length);
 
-            // Expand each group to reveal matching artifacts
-            for (const item of rootItems) {
-                if (item.type === RegistryItemType.Group) {
-                    await this.treeView.reveal(item, {
+            // Expand based on search mode
+            switch (this.searchFilter.mode) {
+                case 'artifact':
+                    // Expand groups to show artifacts
+                    await this.expandGroups(rootItems);
+                    break;
+
+                case 'version':
+                    // Expand groups AND artifacts to show versions
+                    await this.expandGroupsAndArtifacts(rootItems);
+                    break;
+
+                case 'group':
+                    // Groups are already visible at root level
+                    break;
+            }
+
+            console.log('Auto-expand completed');
+        } catch (error) {
+            console.error('Failed to auto-expand nodes:', error);
+        }
+    }
+
+    /**
+     * Expand all groups to show artifacts.
+     */
+    private async expandGroups(groups: RegistryItem[]): Promise<void> {
+        for (const group of groups) {
+            if (group.type === RegistryItemType.Group) {
+                console.log('Expanding group:', group.label);
+                try {
+                    await this.treeView!.reveal(group, {
                         select: false,
                         focus: false,
-                        expand: true
+                        expand: 1  // Expand 1 level
                     });
+                } catch (error) {
+                    console.error('Error expanding group:', group.label, error);
                 }
             }
-        } catch (error) {
-            // Silently fail - auto-expand is a UX enhancement, not critical
-            console.error('Failed to auto-expand nodes:', error);
+        }
+    }
+
+    /**
+     * Expand groups and their artifacts to show versions.
+     */
+    private async expandGroupsAndArtifacts(groups: RegistryItem[]): Promise<void> {
+        for (const group of groups) {
+            if (group.type === RegistryItemType.Group) {
+                console.log('Expanding group:', group.label);
+
+                // Expand group first
+                try {
+                    await this.treeView!.reveal(group, {
+                        select: false,
+                        focus: false,
+                        expand: 1
+                    });
+
+                    // Get artifacts in this group
+                    const artifacts = await this.getChildren(group);
+                    console.log('Artifacts in group:', artifacts.length);
+
+                    // Expand each artifact to show versions
+                    for (const artifact of artifacts) {
+                        if (artifact.type === RegistryItemType.Artifact) {
+                            console.log('Expanding artifact:', artifact.label);
+                            try {
+                                await this.treeView!.reveal(artifact, {
+                                    select: false,
+                                    focus: false,
+                                    expand: 1
+                                });
+                            } catch (error) {
+                                console.error('Error expanding artifact:', artifact.label, error);
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error expanding group:', group.label, error);
+                }
+            }
         }
     }
 

@@ -266,3 +266,28 @@ export interface RegistryInfo {
     /** Build timestamp (ISO 8601 format) */
     builtOn: string;
 }
+
+/**
+ * Rule type enumeration
+ */
+export enum RuleType {
+    VALIDITY = 'VALIDITY',
+    COMPATIBILITY = 'COMPATIBILITY',
+    INTEGRITY = 'INTEGRITY'
+}
+
+/**
+ * Validation rule configuration
+ */
+export interface Rule {
+    ruleType: RuleType;
+    config: string;
+}
+
+/**
+ * Create/update rule request
+ */
+export interface CreateRule {
+    ruleType: RuleType;
+    config: string;
+}

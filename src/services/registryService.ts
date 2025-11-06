@@ -5,6 +5,8 @@ import {
     CreateVersion,
     GroupMetaData,
     RegistryInfo,
+    Rule,
+    RuleType,
     UIConfig
 } from '../models/registryModels';
 
@@ -1032,6 +1034,300 @@ export class RegistryService {
             }
 
             throw new Error(`Failed to update version metadata: ${error.message || error}`);
+        }
+    }
+
+    // ================================================================================
+    // RULES MANAGEMENT
+    // ================================================================================
+
+    /**
+     * Get all global rules
+     */
+    async getGlobalRules(): Promise<RuleType[]> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const response = await this.client.get('/admin/rules');
+            return response.data;
+        } catch (error: any) {
+            console.error('Error fetching global rules:', error);
+            throw new Error(`Failed to fetch global rules: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Get a specific global rule
+     */
+    async getGlobalRule(ruleType: RuleType): Promise<Rule> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const response = await this.client.get(`/admin/rules/${ruleType}`);
+            return response.data;
+        } catch (error: any) {
+            console.error(`Error fetching global rule ${ruleType}:`, error);
+            throw new Error(`Failed to fetch global rule: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Create a global rule
+     */
+    async createGlobalRule(ruleType: RuleType, config: string): Promise<Rule> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const response = await this.client.post('/admin/rules', {
+                ruleType,
+                config
+            });
+            return response.data;
+        } catch (error: any) {
+            console.error(`Error creating global rule ${ruleType}:`, error);
+            throw new Error(`Failed to create global rule: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Update a global rule configuration
+     */
+    async updateGlobalRule(ruleType: RuleType, config: string): Promise<Rule> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const response = await this.client.put(`/admin/rules/${ruleType}`, {
+                config
+            });
+            return response.data;
+        } catch (error: any) {
+            console.error(`Error updating global rule ${ruleType}:`, error);
+            throw new Error(`Failed to update global rule: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Delete a global rule
+     */
+    async deleteGlobalRule(ruleType: RuleType): Promise<void> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            await this.client.delete(`/admin/rules/${ruleType}`);
+        } catch (error: any) {
+            console.error(`Error deleting global rule ${ruleType}:`, error);
+            throw new Error(`Failed to delete global rule: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Get all group rules
+     */
+    async getGroupRules(groupId: string): Promise<RuleType[]> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const response = await this.client.get(`/groups/${encodedGroupId}/rules`);
+            return response.data;
+        } catch (error: any) {
+            console.error(`Error fetching group rules for ${groupId}:`, error);
+            throw new Error(`Failed to fetch group rules: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Get a specific group rule
+     */
+    async getGroupRule(groupId: string, ruleType: RuleType): Promise<Rule> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const response = await this.client.get(`/groups/${encodedGroupId}/rules/${ruleType}`);
+            return response.data;
+        } catch (error: any) {
+            console.error(`Error fetching group rule ${ruleType} for ${groupId}:`, error);
+            throw new Error(`Failed to fetch group rule: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Create a group rule
+     */
+    async createGroupRule(groupId: string, ruleType: RuleType, config: string): Promise<Rule> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const response = await this.client.post(`/groups/${encodedGroupId}/rules`, {
+                ruleType,
+                config
+            });
+            return response.data;
+        } catch (error: any) {
+            console.error(`Error creating group rule ${ruleType} for ${groupId}:`, error);
+            throw new Error(`Failed to create group rule: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Update a group rule configuration
+     */
+    async updateGroupRule(groupId: string, ruleType: RuleType, config: string): Promise<Rule> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const response = await this.client.put(`/groups/${encodedGroupId}/rules/${ruleType}`, {
+                config
+            });
+            return response.data;
+        } catch (error: any) {
+            console.error(`Error updating group rule ${ruleType} for ${groupId}:`, error);
+            throw new Error(`Failed to update group rule: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Delete a group rule
+     */
+    async deleteGroupRule(groupId: string, ruleType: RuleType): Promise<void> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            await this.client.delete(`/groups/${encodedGroupId}/rules/${ruleType}`);
+        } catch (error: any) {
+            console.error(`Error deleting group rule ${ruleType} for ${groupId}:`, error);
+            throw new Error(`Failed to delete group rule: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Get all artifact rules
+     */
+    async getArtifactRules(groupId: string, artifactId: string): Promise<RuleType[]> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            const response = await this.client.get(`/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/rules`);
+            return response.data;
+        } catch (error: any) {
+            console.error(`Error fetching artifact rules for ${groupId}/${artifactId}:`, error);
+            throw new Error(`Failed to fetch artifact rules: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Get a specific artifact rule
+     */
+    async getArtifactRule(groupId: string, artifactId: string, ruleType: RuleType): Promise<Rule> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            const response = await this.client.get(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/rules/${ruleType}`
+            );
+            return response.data;
+        } catch (error: any) {
+            console.error(`Error fetching artifact rule ${ruleType} for ${groupId}/${artifactId}:`, error);
+            throw new Error(`Failed to fetch artifact rule: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Create an artifact rule
+     */
+    async createArtifactRule(groupId: string, artifactId: string, ruleType: RuleType, config: string): Promise<Rule> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            const response = await this.client.post(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/rules`,
+                {
+                    ruleType,
+                    config
+                }
+            );
+            return response.data;
+        } catch (error: any) {
+            console.error(`Error creating artifact rule ${ruleType} for ${groupId}/${artifactId}:`, error);
+            throw new Error(`Failed to create artifact rule: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Update an artifact rule configuration
+     */
+    async updateArtifactRule(groupId: string, artifactId: string, ruleType: RuleType, config: string): Promise<Rule> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            const response = await this.client.put(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/rules/${ruleType}`,
+                {
+                    config
+                }
+            );
+            return response.data;
+        } catch (error: any) {
+            console.error(`Error updating artifact rule ${ruleType} for ${groupId}/${artifactId}:`, error);
+            throw new Error(`Failed to update artifact rule: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Delete an artifact rule
+     */
+    async deleteArtifactRule(groupId: string, artifactId: string, ruleType: RuleType): Promise<void> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            await this.client.delete(`/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/rules/${ruleType}`);
+        } catch (error: any) {
+            console.error(`Error deleting artifact rule ${ruleType} for ${groupId}/${artifactId}:`, error);
+            throw new Error(`Failed to delete artifact rule: ${error.message || error}`);
         }
     }
 }

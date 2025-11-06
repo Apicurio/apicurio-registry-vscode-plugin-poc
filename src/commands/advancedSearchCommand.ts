@@ -230,8 +230,8 @@ async function executeSearch(
 ): Promise<void> {
     try {
         // Apply search filter to tree provider
-        // This will trigger tree refresh with filtered results
-        treeProvider.applySearchFilter(mode, criteria);
+        // This will trigger tree refresh with filtered results and auto-expand
+        await treeProvider.applySearchFilter(mode, criteria);
 
         const criteriaDesc = formatCriteriaDescription(criteria);
 

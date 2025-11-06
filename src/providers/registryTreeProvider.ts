@@ -9,6 +9,7 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
 
     private connection: any = null;
     private isConnected: boolean = false;
+    private treeView?: vscode.TreeView<RegistryItem>;
 
     // Search filter state
     private searchFilter: {
@@ -17,6 +18,13 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
     } | null = null;
 
     constructor(private registryService: RegistryService) {}
+
+    /**
+     * Set the tree view instance for reveal/expand functionality.
+     */
+    setTreeView(treeView: vscode.TreeView<RegistryItem>): void {
+        this.treeView = treeView;
+    }
 
     /**
      * Get user configuration for the extension.
@@ -46,10 +54,42 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
     /**
      * Apply a search filter to the tree view.
      * Supports multi-field filtering and different search modes.
+     * Auto-expands groups with matches.
      */
-    applySearchFilter(mode: 'artifact' | 'version' | 'group', criteria: Record<string, string>): void {
+    async applySearchFilter(mode: 'artifact' | 'version' | 'group', criteria: Record<string, string>): Promise<void> {
         this.searchFilter = { mode, criteria };
         this.refresh();
+
+        // Auto-expand matched nodes after a short delay to allow tree refresh
+        setTimeout(() => this.expandMatchedNodes(), 100);
+    }
+
+    /**
+     * Auto-expand all nodes that contain search matches.
+     */
+    private async expandMatchedNodes(): Promise<void> {
+        if (!this.treeView || !this.searchFilter) {
+            return;
+        }
+
+        try {
+            // Get root level items (groups with matches)
+            const rootItems = await this.getChildren(undefined);
+
+            // Expand each group to reveal matching artifacts
+            for (const item of rootItems) {
+                if (item.type === RegistryItemType.Group) {
+                    await this.treeView.reveal(item, {
+                        select: false,
+                        focus: false,
+                        expand: true
+                    });
+                }
+            }
+        } catch (error) {
+            // Silently fail - auto-expand is a UX enhancement, not critical
+            console.error('Failed to auto-expand nodes:', error);
+        }
     }
 
     /**

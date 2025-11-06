@@ -71,6 +71,9 @@ export function activate(context: vscode.ExtensionContext) {
         showCollapseAll: true
     });
 
+    // Pass tree view instance to provider for auto-expand functionality
+    registryTreeProvider.setTreeView(treeView);
+
     // Create conflict detector for concurrent edit detection
     const conflictDetector = new ConflictDetector(registryService);
 

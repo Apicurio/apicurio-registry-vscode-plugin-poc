@@ -725,7 +725,7 @@ export class RegistryService {
             const encodedVersion = encodeURIComponent(version);
 
             await this.client!.put(
-                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/versions/${encodedVersion}/meta`,
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/versions/${encodedVersion}`,
                 metadata
             );
         } catch (error: any) {
@@ -1011,7 +1011,7 @@ export class RegistryService {
             const encodedVersion = encodeURIComponent(version);
 
             await this.client!.put(
-                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/versions/${encodedVersion}/meta`,
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/versions/${encodedVersion}`,
                 metadata
             );
         } catch (error: any) {

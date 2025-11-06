@@ -467,7 +467,7 @@ describe('RegistryService - Draft Operations', () => {
             });
 
             expect(mockClient.put).toHaveBeenCalledWith(
-                '/groups/group/artifacts/artifact/versions/1.0.0/meta',
+                '/groups/group/artifacts/artifact/versions/1.0.0',
                 { name: 'New Name' }
             );
         });
@@ -480,7 +480,7 @@ describe('RegistryService - Draft Operations', () => {
             });
 
             expect(mockClient.put).toHaveBeenCalledWith(
-                '/groups/group/artifacts/artifact/versions/1.0.0/meta',
+                '/groups/group/artifacts/artifact/versions/1.0.0',
                 { description: 'New Description' }
             );
         });
@@ -494,7 +494,7 @@ describe('RegistryService - Draft Operations', () => {
             });
 
             expect(mockClient.put).toHaveBeenCalledWith(
-                '/groups/group/artifacts/artifact/versions/1.0.0/meta',
+                '/groups/group/artifacts/artifact/versions/1.0.0',
                 {
                     name: 'Updated Name',
                     description: 'Updated Description'
@@ -510,7 +510,7 @@ describe('RegistryService - Draft Operations', () => {
             });
 
             expect(mockClient.put).toHaveBeenCalledWith(
-                '/groups/group/artifacts/artifact/versions/1.0.0/meta',
+                '/groups/group/artifacts/artifact/versions/1.0.0',
                 { labels: { status: 'review', author: 'john' } }
             );
         });
@@ -525,7 +525,7 @@ describe('RegistryService - Draft Operations', () => {
             });
 
             expect(mockClient.put).toHaveBeenCalledWith(
-                '/groups/group/artifacts/artifact/versions/1.0.0/meta',
+                '/groups/group/artifacts/artifact/versions/1.0.0',
                 {
                     name: 'Complete Update',
                     description: 'All fields updated',
@@ -542,7 +542,7 @@ describe('RegistryService - Draft Operations', () => {
             });
 
             expect(mockClient.put).toHaveBeenCalledWith(
-                '/groups/my%20group/artifacts/my%2Fartifact/versions/1.0.0-draft%2Bbuild/meta',
+                '/groups/my%20group/artifacts/my%2Fartifact/versions/1.0.0-draft%2Bbuild',
                 { name: 'Test' }
             );
         });

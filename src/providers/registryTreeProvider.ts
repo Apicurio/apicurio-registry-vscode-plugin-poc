@@ -401,6 +401,50 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
         return [];
     }
 
+    /**
+     * Get parent of a tree item.
+     * Required for TreeView.reveal() functionality.
+     */
+    getParent(element: RegistryItem): RegistryItem | undefined {
+        if (!element) {
+            return undefined;
+        }
+
+        switch (element.type) {
+            case RegistryItemType.Group:
+                // Groups are at root level, no parent
+                return undefined;
+
+            case RegistryItemType.Artifact:
+                // Artifact's parent is a Group
+                if (element.parentId) {
+                    return new RegistryItem(
+                        element.parentId,
+                        RegistryItemType.Group,
+                        element.parentId
+                    );
+                }
+                return undefined;
+
+            case RegistryItemType.Version:
+                // Version's parent is an Artifact
+                if (element.parentId && element.groupId) {
+                    return new RegistryItem(
+                        element.parentId,
+                        RegistryItemType.Artifact,
+                        element.parentId,
+                        {},
+                        element.groupId,  // parentId of artifact is groupId
+                        element.groupId   // groupId
+                    );
+                }
+                return undefined;
+
+            default:
+                return undefined;
+        }
+    }
+
     private async getGroups(): Promise<RegistryItem[]> {
         const groups = await this.registryService.searchGroups();
         return groups.map(group => new RegistryItem(

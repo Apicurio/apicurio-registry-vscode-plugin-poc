@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { RegistryService } from '../services/registryService';
 import { IconService } from '../services/iconService';
 import { RegistryItem, RegistryItemType } from '../models/registryModels';
+import { formatLabelsForTooltip, getLabelCountDescription } from '../utils/metadataUtils';
 
 export class RegistryTreeDataProvider implements vscode.TreeDataProvider<RegistryItem> {
     private _onDidChangeTreeData: vscode.EventEmitter<RegistryItem | undefined | null | void> = new vscode.EventEmitter<RegistryItem | undefined | null | void>();
@@ -216,14 +217,33 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 treeItem.iconPath = IconService.getGroupIcon();
                 treeItem.contextValue = 'group';
 
-                // Enhanced tooltip with artifact count
+                // Enhanced tooltip with artifact count and labels
                 const artifactCount = element.metadata?.artifactCount || 0;
-                treeItem.tooltip = `Group: ${element.label}\nArtifacts: ${artifactCount}`;
+                const groupLabels = element.metadata?.labels || {};
+                const groupLabelTooltip = formatLabelsForTooltip(groupLabels);
 
-                // Add artifact count to description (respects preference)
+                treeItem.tooltip = new vscode.MarkdownString();
+                treeItem.tooltip.appendMarkdown(`**Group: ${element.label}**\n\n`);
+                treeItem.tooltip.appendMarkdown(`- Artifacts: ${artifactCount}\n`);
+                if (element.metadata?.description) {
+                    treeItem.tooltip.appendMarkdown(`- Description: ${element.metadata.description}\n`);
+                }
+                if (groupLabelTooltip) {
+                    treeItem.tooltip.appendMarkdown(`\n**Labels:**\n${groupLabelTooltip}`);
+                }
+
+                // Add artifact count and label count to description (respects preference)
                 const showArtifactCounts = config.get<boolean>('display.showArtifactCounts', true);
+                const descriptionParts: string[] = [];
                 if (showArtifactCounts && artifactCount > 0) {
-                    treeItem.description = `(${artifactCount})`;
+                    descriptionParts.push(`${artifactCount}`);
+                }
+                const labelCountDesc = getLabelCountDescription(groupLabels);
+                if (labelCountDesc) {
+                    descriptionParts.push(labelCountDesc);
+                }
+                if (descriptionParts.length > 0) {
+                    treeItem.description = `(${descriptionParts.join(', ')})`;
                 }
                 break;
 
@@ -237,11 +257,13 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 // Enhanced context value with type for future menu filtering
                 treeItem.contextValue = `artifact${artifactType ? '-' + artifactType : ''}`;
 
-                // Enhanced tooltip with type and state
+                // Enhanced tooltip with type, state, and labels
                 const typeLabel = IconService.getArtifactTypeLabel(artifactType);
                 const state = element.metadata?.state;
                 const stateLabel = state ? IconService.getStateLabel(state) : '';
                 const stateEmoji = state ? IconService.getStateEmoji(state) : '';
+                const artifactLabels = element.metadata?.labels || {};
+                const artifactLabelTooltip = formatLabelsForTooltip(artifactLabels);
 
                 treeItem.tooltip = new vscode.MarkdownString();
                 treeItem.tooltip.appendMarkdown(`**${element.label}**\n\n`);
@@ -252,8 +274,11 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 if (element.metadata?.description) {
                     treeItem.tooltip.appendMarkdown(`- Description: ${element.metadata.description}\n`);
                 }
+                if (artifactLabelTooltip) {
+                    treeItem.tooltip.appendMarkdown(`\n**Labels:**\n${artifactLabelTooltip}`);
+                }
 
-                // Add state indicator and description to tree item
+                // Add state indicator, description, and label count to tree item
                 let description = '';
                 if (stateEmoji) {
                     description += `${stateEmoji} `;
@@ -270,6 +295,13 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                         description += element.metadata.description;
                     }
                 }
+
+                // Add label count
+                const artifactLabelCount = getLabelCountDescription(artifactLabels);
+                if (artifactLabelCount) {
+                    description += (description ? ' ' : '') + artifactLabelCount;
+                }
+
                 if (description) {
                     treeItem.description = description;
                 }
@@ -278,19 +310,21 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
             case RegistryItemType.Version:
                 treeItem.collapsibleState = vscode.TreeItemCollapsibleState.None;
 
-                // Enhanced tooltip with state and metadata
+                // Enhanced tooltip with state, metadata, and labels
                 const versionState = element.metadata?.state;
                 const versionStateLabel = versionState ? IconService.getStateLabel(versionState) : '';
                 const versionStateEmoji = versionState ? IconService.getStateEmoji(versionState) : '';
+                const versionLabels = element.metadata?.labels || {};
+                const versionLabelTooltip = formatLabelsForTooltip(versionLabels);
+                const versionLabelCount = getLabelCountDescription(versionLabels);
 
                 // Set context value based on state for menu visibility
+                let baseDescription = '';
                 if (versionState === 'DRAFT') {
                     treeItem.contextValue = 'version-draft';
-                    // Use state-specific icon for drafts
                     const stateIcon = IconService.getIconForState(versionState);
                     treeItem.iconPath = stateIcon || IconService.getVersionIcon();
-                    // Add draft indicator to description
-                    treeItem.description = 'draft';
+                    baseDescription = 'draft';
                 } else if (versionState === 'ENABLED') {
                     treeItem.contextValue = 'version-published';
                     treeItem.iconPath = IconService.getVersionIcon();
@@ -298,16 +332,24 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                     treeItem.contextValue = 'version-disabled';
                     const stateIcon = IconService.getIconForState(versionState);
                     treeItem.iconPath = stateIcon || IconService.getVersionIcon();
-                    treeItem.description = 'disabled';
+                    baseDescription = 'disabled';
                 } else if (versionState === 'DEPRECATED') {
                     treeItem.contextValue = 'version-deprecated';
                     const stateIcon = IconService.getIconForState(versionState);
                     treeItem.iconPath = stateIcon || IconService.getVersionIcon();
-                    treeItem.description = 'deprecated';
+                    baseDescription = 'deprecated';
                 } else {
-                    // Fallback for unknown or missing state
                     treeItem.contextValue = 'version';
                     treeItem.iconPath = IconService.getVersionIcon();
+                }
+
+                // Build description with state and label count
+                if (versionLabelCount) {
+                    treeItem.description = baseDescription
+                        ? `${baseDescription} ${versionLabelCount}`
+                        : versionLabelCount.replace(/^\(|\)$/g, ''); // Remove parens if no state
+                } else if (baseDescription) {
+                    treeItem.description = baseDescription;
                 }
 
                 treeItem.tooltip = new vscode.MarkdownString();
@@ -320,6 +362,9 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 }
                 if (element.metadata?.createdOn) {
                     treeItem.tooltip.appendMarkdown(`- Created: ${new Date(element.metadata.createdOn).toLocaleString()}\n`);
+                }
+                if (versionLabelTooltip) {
+                    treeItem.tooltip.appendMarkdown(`\n**Labels:**\n${versionLabelTooltip}`);
                 }
 
                 // Make versions clickable to open content

@@ -36,8 +36,9 @@ describe('Advanced Search Command', () => {
         // Mock vscode window functions
         mockShowQuickPick = jest.fn();
         mockShowInputBox = jest.fn();
-        mockShowInformationMessage = jest.fn();
-        mockShowErrorMessage = jest.fn();
+        // Mock as thenable promises to avoid .then() errors
+        mockShowInformationMessage = jest.fn().mockResolvedValue(undefined);
+        mockShowErrorMessage = jest.fn().mockResolvedValue(undefined);
         mockWithProgress = jest.fn();
 
         (vscode.window.showQuickPick as jest.Mock) = mockShowQuickPick;
@@ -107,41 +108,34 @@ describe('Advanced Search Command', () => {
                 // Add Description criterion
                 .mockResolvedValueOnce({ label: 'Description', value: 'description' })
                 // Done - Search Now
-                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' })
-                // Results QuickPick
-                .mockResolvedValueOnce(undefined);
+                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' });
 
             // Input values
             mockShowInputBox
                 .mockResolvedValueOnce('User API') // name
                 .mockResolvedValueOnce('user management'); // description
 
-            mockRegistryService.searchArtifacts.mockResolvedValue([
-                { artifactId: 'user-api', name: 'User API', groupId: 'default', artifactType: 'OPENAPI' }
-            ] as any);
+            mockShowInformationMessage.mockResolvedValue(undefined);
 
             await advancedSearchCommand(mockRegistryService, mockTreeProvider);
 
-            expect(mockRegistryService.searchArtifacts).toHaveBeenCalledWith(
+            // Verify tree provider filter was applied
+            expect(mockTreeProvider.applySearchFilter).toHaveBeenCalledWith(
+                SearchMode.Artifact,
                 {
                     name: 'User API',
                     description: 'user management'
-                },
-                50 // default limit
+                }
             );
 
-            // Verify QuickPick shown with results
-            expect(mockShowQuickPick).toHaveBeenCalledTimes(5);
-            expect(mockShowQuickPick).toHaveBeenNthCalledWith(5,
-                expect.arrayContaining([
-                    expect.objectContaining({
-                        label: expect.stringContaining('User API')
-                    })
-                ]),
-                expect.objectContaining({
-                    title: expect.stringContaining('1 match')
-                })
+            // Verify information message shown with filter details
+            expect(mockShowInformationMessage).toHaveBeenCalledWith(
+                expect.stringContaining('Filtering artifacts by:'),
+                'Clear Filter'
             );
+
+            // Verify only mode/criteria QuickPicks, no results QuickPick
+            expect(mockShowQuickPick).toHaveBeenCalledTimes(4);
         });
 
         it('should handle empty criteria list (user selects Done immediately)', async () => {
@@ -207,58 +201,42 @@ describe('Advanced Search Command', () => {
                 .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' });
 
             mockShowInputBox.mockResolvedValueOnce('1.0.0');
-
-            mockRegistryService.searchVersions.mockResolvedValue([
-                {
-                    groupId: 'default',
-                    artifactId: 'user-api',
-                    version: '1.0.0',
-                    state: 'ENABLED'
-                }
-            ] as any);
+            mockShowInformationMessage.mockResolvedValue(undefined);
 
             await advancedSearchCommand(mockRegistryService, mockTreeProvider);
 
-            expect(mockRegistryService.searchVersions).toHaveBeenCalledWith(
-                { version: '1.0.0' },
-                50
+            // Verify tree provider filter was applied
+            expect(mockTreeProvider.applySearchFilter).toHaveBeenCalledWith(
+                SearchMode.Version,
+                { version: '1.0.0' }
+            );
+
+            // Verify information message shown
+            expect(mockShowInformationMessage).toHaveBeenCalledWith(
+                expect.stringContaining('Filtering versions by:'),
+                'Clear Filter'
             );
         });
 
-        it('should display version results with artifact context', async () => {
+        it('should apply tree filter for version results', async () => {
             mockShowQuickPick
                 .mockResolvedValueOnce({ label: 'Version Search', value: SearchMode.Version })
                 .mockResolvedValueOnce({ label: 'Version', value: 'version' })
-                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' })
-                .mockResolvedValueOnce(undefined); // Results QuickPick
+                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' });
 
             mockShowInputBox.mockResolvedValueOnce('1.0.0');
-
-            mockRegistryService.searchVersions.mockResolvedValue([
-                {
-                    groupId: 'default',
-                    artifactId: 'user-api',
-                    version: '1.0.0',
-                    globalId: 123,
-                    state: 'ENABLED'
-                }
-            ] as any);
+            mockShowInformationMessage.mockResolvedValue(undefined);
 
             await advancedSearchCommand(mockRegistryService, mockTreeProvider);
 
-            // Verify QuickPick called with results (4th call)
-            expect(mockShowQuickPick).toHaveBeenCalledTimes(4);
-            expect(mockShowQuickPick).toHaveBeenNthCalledWith(4,
-                expect.arrayContaining([
-                    expect.objectContaining({
-                        label: expect.stringContaining('1.0.0'),
-                        description: 'default/user-api'
-                    })
-                ]),
-                expect.objectContaining({
-                    title: expect.stringContaining('1 match')
-                })
+            // Verify tree provider filter applied (not QuickPick display)
+            expect(mockTreeProvider.applySearchFilter).toHaveBeenCalledWith(
+                SearchMode.Version,
+                { version: '1.0.0' }
             );
+
+            // Verify only mode/criteria QuickPicks, no results QuickPick
+            expect(mockShowQuickPick).toHaveBeenCalledTimes(3);
         });
 
         it('should search versions by labels', async () => {
@@ -268,14 +246,13 @@ describe('Advanced Search Command', () => {
                 .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' });
 
             mockShowInputBox.mockResolvedValueOnce('release:stable');
-
-            mockRegistryService.searchVersions.mockResolvedValue([]);
+            mockShowInformationMessage.mockResolvedValue(undefined);
 
             await advancedSearchCommand(mockRegistryService, mockTreeProvider);
 
-            expect(mockRegistryService.searchVersions).toHaveBeenCalledWith(
-                { labels: 'release:stable' },
-                50
+            expect(mockTreeProvider.applySearchFilter).toHaveBeenCalledWith(
+                SearchMode.Version,
+                { labels: 'release:stable' }
             );
         });
     });
@@ -288,60 +265,47 @@ describe('Advanced Search Command', () => {
                 .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' });
 
             mockShowInputBox.mockResolvedValueOnce('com.example');
-
-            mockRegistryService.searchGroups.mockResolvedValue([
-                {
-                    groupId: 'com.example.apis',
-                    artifactCount: 5,
-                    description: 'Example APIs'
-                }
-            ] as any);
+            mockShowInformationMessage.mockResolvedValue(undefined);
 
             await advancedSearchCommand(mockRegistryService, mockTreeProvider);
 
-            expect(mockRegistryService.searchGroups).toHaveBeenCalledWith(
-                { groupId: 'com.example' },
-                50
+            // Verify tree provider filter was applied
+            expect(mockTreeProvider.applySearchFilter).toHaveBeenCalledWith(
+                SearchMode.Group,
+                { groupId: 'com.example' }
+            );
+
+            // Verify information message shown
+            expect(mockShowInformationMessage).toHaveBeenCalledWith(
+                expect.stringContaining('Filtering groups by:'),
+                'Clear Filter'
             );
         });
 
-        it('should display group results with modification date', async () => {
+        it('should apply tree filter for group results', async () => {
             mockShowQuickPick
                 .mockResolvedValueOnce({ label: 'Group Search', value: SearchMode.Group })
                 .mockResolvedValueOnce({ label: 'Description', value: 'description' })
-                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' })
-                .mockResolvedValueOnce(undefined); // Results QuickPick
+                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' });
 
             mockShowInputBox.mockResolvedValueOnce('example');
-
-            mockRegistryService.searchGroups.mockResolvedValue([
-                {
-                    groupId: 'com.example.apis',
-                    modifiedOn: '2025-10-28T08:45:57Z',
-                    description: 'Example APIs'
-                }
-            ] as any);
+            mockShowInformationMessage.mockResolvedValue(undefined);
 
             await advancedSearchCommand(mockRegistryService, mockTreeProvider);
 
-            // Verify QuickPick called with results (4th call)
-            expect(mockShowQuickPick).toHaveBeenCalledTimes(4);
-            expect(mockShowQuickPick).toHaveBeenNthCalledWith(4,
-                expect.arrayContaining([
-                    expect.objectContaining({
-                        label: expect.stringContaining('com.example.apis'),
-                        description: expect.stringContaining('Modified:')
-                    })
-                ]),
-                expect.objectContaining({
-                    title: expect.stringContaining('1 match')
-                })
+            // Verify tree provider filter applied (not QuickPick display)
+            expect(mockTreeProvider.applySearchFilter).toHaveBeenCalledWith(
+                SearchMode.Group,
+                { description: 'example' }
             );
+
+            // Verify only mode/criteria QuickPicks, no results QuickPick
+            expect(mockShowQuickPick).toHaveBeenCalledTimes(3);
         });
     });
 
     describe('Error Handling', () => {
-        it('should handle search API errors', async () => {
+        it('should handle tree provider filter errors', async () => {
             mockShowQuickPick
                 .mockResolvedValueOnce({ label: 'Artifact Search', value: SearchMode.Artifact })
                 .mockResolvedValueOnce({ label: 'Name', value: 'name' })
@@ -349,7 +313,8 @@ describe('Advanced Search Command', () => {
 
             mockShowInputBox.mockResolvedValueOnce('test');
 
-            mockRegistryService.searchArtifacts.mockRejectedValue(
+            // Tree provider rejects the filter operation
+            mockTreeProvider.applySearchFilter.mockRejectedValue(
                 new Error('Network error')
             );
 
@@ -361,51 +326,54 @@ describe('Advanced Search Command', () => {
             );
         });
 
-        it('should show message when no results found', async () => {
+        it('should handle empty criteria list', async () => {
             mockShowQuickPick
                 .mockResolvedValueOnce({ label: 'Artifact Search', value: SearchMode.Artifact })
-                .mockResolvedValueOnce({ label: 'Name', value: 'name' })
                 .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' });
-
-            mockShowInputBox.mockResolvedValueOnce('nonexistent');
-
-            mockRegistryService.searchArtifacts.mockResolvedValue([]);
 
             mockShowInformationMessage.mockResolvedValue(undefined);
 
             await advancedSearchCommand(mockRegistryService, mockTreeProvider);
 
+            // Verify no filter applied for empty criteria
+            expect(mockTreeProvider.applySearchFilter).not.toHaveBeenCalled();
             expect(mockShowInformationMessage).toHaveBeenCalledWith(
-                expect.stringContaining('No artifacts found'),
-                expect.any(String)
+                expect.stringContaining('No search criteria')
             );
         });
     });
 
-    describe('Configuration', () => {
-        it('should use configured search limit', async () => {
-            // Mock custom limit
-            (vscode.workspace.getConfiguration as jest.Mock).mockReturnValue({
-                get: jest.fn((key: string, defaultValue: any) => {
-                    if (key === 'search.defaultLimit') return 100;
-                    return defaultValue;
-                })
-            });
-
+    describe('Clear Filter Functionality', () => {
+        it('should allow clearing filter from info message', async () => {
             mockShowQuickPick
                 .mockResolvedValueOnce({ label: 'Artifact Search', value: SearchMode.Artifact })
                 .mockResolvedValueOnce({ label: 'Name', value: 'name' })
                 .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' });
 
             mockShowInputBox.mockResolvedValueOnce('test');
-            mockRegistryService.searchArtifacts.mockResolvedValue([]);
+
+            // User clicks "Clear Filter" button
+            mockShowInformationMessage.mockImplementation(async (message, ...buttons) => {
+                // Simulate user clicking "Clear Filter"
+                if (buttons.includes('Clear Filter')) {
+                    return 'Clear Filter';
+                }
+                return undefined;
+            });
 
             await advancedSearchCommand(mockRegistryService, mockTreeProvider);
 
-            expect(mockRegistryService.searchArtifacts).toHaveBeenCalledWith(
-                expect.any(Object),
-                100 // custom limit
+            // Wait for promise chain to complete
+            await new Promise(resolve => setTimeout(resolve, 0));
+
+            // Verify filter was applied
+            expect(mockTreeProvider.applySearchFilter).toHaveBeenCalledWith(
+                SearchMode.Artifact,
+                { name: 'test' }
             );
+
+            // Verify clear filter was called
+            expect(mockTreeProvider.clearSearchFilter).toHaveBeenCalled();
         });
     });
 });

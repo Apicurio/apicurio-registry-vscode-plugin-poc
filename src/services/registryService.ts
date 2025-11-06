@@ -839,7 +839,7 @@ export class RegistryService {
             const encodedArtifactId = encodeURIComponent(artifactId);
 
             const response = await this.client!.get(
-                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/meta`
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}`
             );
             return response.data;
         } catch (error: any) {

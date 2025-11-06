@@ -47,6 +47,8 @@ export interface SearchedVersion {
     globalId?: number;
     contentId?: number;
     state?: string;
+    name?: string;
+    description?: string;
     labels?: Record<string, string>;
     createdOn?: Date;
     modifiedOn?: Date;
@@ -794,6 +796,242 @@ export class RegistryService {
             }
 
             throw new Error(`Failed to update content: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Get detailed group metadata for editing.
+     *
+     * @param groupId - The group ID
+     * @returns Group metadata including description and labels
+     */
+    async getGroupMetadataDetailed(groupId: string): Promise<GroupMetaData> {
+        this.ensureConnected();
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+
+            const response = await this.client!.get(`/groups/${encodedGroupId}`);
+            return response.data;
+        } catch (error: any) {
+            console.error('Error getting group metadata:', error);
+
+            if (error.response?.status === 404) {
+                throw new Error(`Group not found: ${groupId}`);
+            }
+
+            throw new Error(`Failed to get group metadata: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Get detailed artifact metadata for editing.
+     *
+     * @param groupId - The artifact group ID
+     * @param artifactId - The artifact ID
+     * @returns Artifact metadata including name, description, and labels
+     */
+    async getArtifactMetadataDetailed(groupId: string, artifactId: string): Promise<SearchedArtifact> {
+        this.ensureConnected();
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+
+            const response = await this.client!.get(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/meta`
+            );
+            return response.data;
+        } catch (error: any) {
+            console.error('Error getting artifact metadata:', error);
+
+            if (error.response?.status === 404) {
+                throw new Error(`Artifact not found: ${groupId}/${artifactId}`);
+            }
+
+            throw new Error(`Failed to get artifact metadata: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Get detailed version metadata for editing.
+     *
+     * @param groupId - The artifact group ID
+     * @param artifactId - The artifact ID
+     * @param version - The version identifier
+     * @returns Version metadata including name, description, and labels
+     */
+    async getVersionMetadataDetailed(groupId: string, artifactId: string, version: string): Promise<SearchedVersion> {
+        this.ensureConnected();
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            const encodedVersion = encodeURIComponent(version);
+
+            const response = await this.client!.get(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/versions/${encodedVersion}/meta`
+            );
+            return response.data;
+        } catch (error: any) {
+            console.error('Error getting version metadata:', error);
+
+            if (error.response?.status === 404) {
+                throw new Error(`Version not found: ${groupId}/${artifactId}:${version}`);
+            }
+
+            throw new Error(`Failed to get version metadata: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Update group metadata (description and labels).
+     * Note: Groups don't have a 'name' field in the API.
+     *
+     * @param groupId - The group ID
+     * @param metadata - Metadata to update (description and/or labels)
+     */
+    async updateGroupMetadata(
+        groupId: string,
+        metadata: {
+            description?: string;
+            labels?: Record<string, string>;
+        }
+    ): Promise<void> {
+        this.ensureConnected();
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+
+            // Transform labels to API format if present
+            const apiMetadata: any = {};
+            if (metadata.description !== undefined) {
+                apiMetadata.description = metadata.description;
+            }
+            if (metadata.labels !== undefined) {
+                apiMetadata.labels = metadata.labels;
+            }
+
+            await this.client!.put(
+                `/groups/${encodedGroupId}`,
+                apiMetadata
+            );
+        } catch (error: any) {
+            console.error('Error updating group metadata:', error);
+
+            if (error.response) {
+                const status = error.response.status;
+                const message = error.response.data?.message || error.response.data?.detail || error.message;
+
+                switch (status) {
+                    case 404:
+                        throw new Error(`Group not found: ${groupId}`);
+                    case 400:
+                        throw new Error(`Invalid metadata: ${message}`);
+                    default:
+                        throw new Error(`Failed to update group metadata: ${message}`);
+                }
+            }
+
+            throw new Error(`Failed to update group metadata: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Update artifact metadata (name, description, and labels).
+     *
+     * @param groupId - The artifact group ID
+     * @param artifactId - The artifact ID
+     * @param metadata - Metadata to update (name, description, and/or labels)
+     */
+    async updateArtifactMetadata(
+        groupId: string,
+        artifactId: string,
+        metadata: {
+            name?: string;
+            description?: string;
+            labels?: Record<string, string>;
+        }
+    ): Promise<void> {
+        this.ensureConnected();
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+
+            await this.client!.put(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/meta`,
+                metadata
+            );
+        } catch (error: any) {
+            console.error('Error updating artifact metadata:', error);
+
+            if (error.response) {
+                const status = error.response.status;
+                const message = error.response.data?.message || error.response.data?.detail || error.message;
+
+                switch (status) {
+                    case 404:
+                        throw new Error(`Artifact not found: ${groupId}/${artifactId}`);
+                    case 400:
+                        throw new Error(`Invalid metadata: ${message}`);
+                    default:
+                        throw new Error(`Failed to update artifact metadata: ${message}`);
+                }
+            }
+
+            throw new Error(`Failed to update artifact metadata: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Update version metadata (name, description, and labels).
+     * Works for both draft and published versions.
+     *
+     * @param groupId - The artifact group ID
+     * @param artifactId - The artifact ID
+     * @param version - The version identifier
+     * @param metadata - Metadata to update (name, description, and/or labels)
+     */
+    async updateVersionMetadata(
+        groupId: string,
+        artifactId: string,
+        version: string,
+        metadata: {
+            name?: string;
+            description?: string;
+            labels?: Record<string, string>;
+        }
+    ): Promise<void> {
+        this.ensureConnected();
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            const encodedVersion = encodeURIComponent(version);
+
+            await this.client!.put(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/versions/${encodedVersion}/meta`,
+                metadata
+            );
+        } catch (error: any) {
+            console.error('Error updating version metadata:', error);
+
+            if (error.response) {
+                const status = error.response.status;
+                const message = error.response.data?.message || error.response.data?.detail || error.message;
+
+                switch (status) {
+                    case 404:
+                        throw new Error(`Version not found: ${groupId}/${artifactId}:${version}`);
+                    case 400:
+                        throw new Error(`Invalid metadata: ${message}`);
+                    default:
+                        throw new Error(`Failed to update version metadata: ${message}`);
+                }
+            }
+
+            throw new Error(`Failed to update version metadata: ${error.message || error}`);
         }
     }
 }

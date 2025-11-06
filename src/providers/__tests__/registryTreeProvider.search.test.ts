@@ -17,22 +17,23 @@ describe('RegistryTreeDataProvider - Search/Filter Functionality', () => {
         mockService.isConnected = jest.fn().mockReturnValue(true);
         mockService.searchArtifacts = jest.fn();
         mockService.searchGroups = jest.fn();
+        mockService.searchVersions = jest.fn();
         mockService.getArtifacts = jest.fn();
         mockService.getVersions = jest.fn();
     });
 
     describe('applySearchFilter', () => {
         it('should store search filter', () => {
-            provider.applySearchFilter('name', 'test');
+            provider.applySearchFilter('artifact', { name: 'test' });
 
             expect(provider.hasActiveFilter()).toBe(true);
-            expect(provider.getFilterDescription()).toBe('Filtered by name: "test"');
+            expect(provider.getFilterDescription()).toBe('Filtered by name="test"');
         });
 
         it('should trigger tree refresh', () => {
             const refreshSpy = jest.spyOn(provider as any, 'refresh');
 
-            provider.applySearchFilter('type', 'OPENAPI');
+            provider.applySearchFilter('artifact', { artifactType: 'OPENAPI' });
 
             expect(refreshSpy).toHaveBeenCalled();
         });
@@ -40,7 +41,7 @@ describe('RegistryTreeDataProvider - Search/Filter Functionality', () => {
 
     describe('clearSearchFilter', () => {
         it('should remove search filter', () => {
-            provider.applySearchFilter('name', 'test');
+            provider.applySearchFilter('artifact', { name: 'test' });
             expect(provider.hasActiveFilter()).toBe(true);
 
             provider.clearSearchFilter();
@@ -51,7 +52,7 @@ describe('RegistryTreeDataProvider - Search/Filter Functionality', () => {
 
         it('should trigger tree refresh', () => {
             const refreshSpy = jest.spyOn(provider as any, 'refresh');
-            provider.applySearchFilter('name', 'test');
+            provider.applySearchFilter('artifact', { name: 'test' });
 
             provider.clearSearchFilter();
 
@@ -65,12 +66,12 @@ describe('RegistryTreeDataProvider - Search/Filter Functionality', () => {
         });
 
         it('should return true when filter applied', () => {
-            provider.applySearchFilter('name', 'test');
+            provider.applySearchFilter('artifact', { name: 'test' });
             expect(provider.hasActiveFilter()).toBe(true);
         });
 
         it('should return false after clearing filter', () => {
-            provider.applySearchFilter('name', 'test');
+            provider.applySearchFilter('artifact', { name: 'test' });
             provider.clearSearchFilter();
             expect(provider.hasActiveFilter()).toBe(false);
         });
@@ -82,18 +83,25 @@ describe('RegistryTreeDataProvider - Search/Filter Functionality', () => {
         });
 
         it('should return description for name filter', () => {
-            provider.applySearchFilter('name', 'user');
-            expect(provider.getFilterDescription()).toBe('Filtered by name: "user"');
+            provider.applySearchFilter('artifact', { name: 'user' });
+            expect(provider.getFilterDescription()).toBe('Filtered by name="user"');
         });
 
         it('should return description for type filter', () => {
-            provider.applySearchFilter('type', 'OPENAPI');
-            expect(provider.getFilterDescription()).toBe('Filtered by type: "OPENAPI"');
+            provider.applySearchFilter('artifact', { artifactType: 'OPENAPI' });
+            expect(provider.getFilterDescription()).toBe('Filtered by artifactType="OPENAPI"');
         });
 
         it('should return description for state filter', () => {
-            provider.applySearchFilter('state', 'ENABLED');
-            expect(provider.getFilterDescription()).toBe('Filtered by state: "ENABLED"');
+            provider.applySearchFilter('artifact', { state: 'ENABLED' });
+            expect(provider.getFilterDescription()).toBe('Filtered by state="ENABLED"');
+        });
+
+        it('should return description for multi-criteria filter', () => {
+            provider.applySearchFilter('artifact', { name: 'user', artifactType: 'OPENAPI' });
+            const description = provider.getFilterDescription();
+            expect(description).toContain('name="user"');
+            expect(description).toContain('artifactType="OPENAPI"');
         });
     });
 
@@ -111,15 +119,15 @@ describe('RegistryTreeDataProvider - Search/Filter Functionality', () => {
 
             mockService.searchArtifacts = jest.fn().mockResolvedValue(mockArtifacts);
 
-            provider.applySearchFilter('name', 'user');
+            provider.applySearchFilter('artifact', { name: 'user' });
             const items = await provider.getChildren();
 
             expect(mockService.searchArtifacts).toHaveBeenCalledWith({
                 name: 'user'
             });
             expect(items).toHaveLength(1);
-            expect(items[0].type).toBe(RegistryItemType.Artifact);
-            expect(items[0].label).toBe('test-group/user-api');
+            expect(items[0].type).toBe(RegistryItemType.Group);
+            expect(items[0].label).toBe('test-group');
         });
 
         it('should return groups when no filter active', async () => {
@@ -147,7 +155,7 @@ describe('RegistryTreeDataProvider - Search/Filter Functionality', () => {
         it('should show no results message when filter returns empty', async () => {
             mockService.searchArtifacts = jest.fn().mockResolvedValue([]);
 
-            provider.applySearchFilter('name', 'nonexistent');
+            provider.applySearchFilter('artifact', { name: 'nonexistent' });
             const items = await provider.getChildren();
 
             expect(items).toHaveLength(1);
@@ -155,11 +163,17 @@ describe('RegistryTreeDataProvider - Search/Filter Functionality', () => {
             expect(items[0].type).toBe(RegistryItemType.Connection);
         });
 
-        it('should include group prefix in filtered artifact labels', async () => {
+        it('should group artifacts by groupId in filtered results', async () => {
             const mockArtifacts = [
                 {
                     groupId: 'com.example',
                     artifactId: 'api1',
+                    artifactType: 'OPENAPI',
+                    state: 'ENABLED'
+                },
+                {
+                    groupId: 'com.example',
+                    artifactId: 'api2',
                     artifactType: 'OPENAPI',
                     state: 'ENABLED'
                 }
@@ -167,37 +181,16 @@ describe('RegistryTreeDataProvider - Search/Filter Functionality', () => {
 
             mockService.searchArtifacts = jest.fn().mockResolvedValue(mockArtifacts);
 
-            provider.applySearchFilter('type', 'OPENAPI');
+            provider.applySearchFilter('artifact', { artifactType: 'OPENAPI' });
             const items = await provider.getChildren();
 
-            expect(items[0].label).toBe('com.example/api1');
+            // Should return group items
+            expect(items).toHaveLength(1);
+            expect(items[0].type).toBe(RegistryItemType.Group);
+            expect(items[0].label).toBe('com.example');
         });
 
-        it('should preserve artifact metadata in filtered results', async () => {
-            const mockArtifacts = [
-                {
-                    groupId: 'test-group',
-                    artifactId: 'api',
-                    artifactType: 'OPENAPI',
-                    state: 'ENABLED',
-                    description: 'Test API',
-                    modifiedOn: new Date()
-                }
-            ];
-
-            mockService.searchArtifacts = jest.fn().mockResolvedValue(mockArtifacts);
-
-            provider.applySearchFilter('name', 'api');
-            const items = await provider.getChildren();
-
-            expect(items[0].metadata).toMatchObject({
-                artifactType: 'OPENAPI',
-                state: 'ENABLED',
-                description: 'Test API'
-            });
-        });
-
-        it('should handle multiple filtered results', async () => {
+        it('should handle multiple filtered results from different groups', async () => {
             const mockArtifacts = [
                 {
                     groupId: 'group1',
@@ -215,12 +208,13 @@ describe('RegistryTreeDataProvider - Search/Filter Functionality', () => {
 
             mockService.searchArtifacts = jest.fn().mockResolvedValue(mockArtifacts);
 
-            provider.applySearchFilter('type', 'OPENAPI');
+            provider.applySearchFilter('artifact', { artifactType: 'OPENAPI' });
             const items = await provider.getChildren();
 
             expect(items).toHaveLength(2);
-            expect(items[0].label).toBe('group1/api1');
-            expect(items[1].label).toBe('group2/api2');
+            expect(items[0].type).toBe(RegistryItemType.Group);
+            expect(items[0].label).toBe('group1');
+            expect(items[1].label).toBe('group2');
         });
     });
 
@@ -228,7 +222,7 @@ describe('RegistryTreeDataProvider - Search/Filter Functionality', () => {
         it('should show not connected message even with filter', async () => {
             mockService.isConnected = jest.fn().mockReturnValue(false);
 
-            provider.applySearchFilter('name', 'test');
+            provider.applySearchFilter('artifact', { name: 'test' });
             const items = await provider.getChildren();
 
             expect(items).toHaveLength(1);
@@ -239,7 +233,7 @@ describe('RegistryTreeDataProvider - Search/Filter Functionality', () => {
 
     describe('connect and disconnect with filter', () => {
         it('should preserve filter when connecting', async () => {
-            provider.applySearchFilter('name', 'test');
+            provider.applySearchFilter('artifact', { name: 'test' });
 
             await provider.connect({
                 name: 'Test',
@@ -251,7 +245,7 @@ describe('RegistryTreeDataProvider - Search/Filter Functionality', () => {
         });
 
         it('should preserve filter when disconnecting', () => {
-            provider.applySearchFilter('name', 'test');
+            provider.applySearchFilter('artifact', { name: 'test' });
 
             provider.disconnect();
 
@@ -272,7 +266,7 @@ describe('RegistryTreeDataProvider - Search/Filter Functionality', () => {
 
             mockService.searchArtifacts = jest.fn().mockResolvedValue(mockArtifacts);
 
-            provider.applySearchFilter('name', 'api');
+            provider.applySearchFilter('artifact', { name: 'api' });
             await provider.getChildren();
 
             // Refresh

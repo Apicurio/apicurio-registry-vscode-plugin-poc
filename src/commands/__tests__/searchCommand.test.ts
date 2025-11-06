@@ -1,363 +1,400 @@
 import * as vscode from 'vscode';
-import { searchArtifactsCommand, SearchCriteria } from '../searchCommand';
+import { searchCommand, SearchMode } from '../searchCommand';
 import { RegistryService } from '../../services/registryService';
 import { RegistryTreeDataProvider } from '../../providers/registryTreeProvider';
 
 // Mock vscode
 jest.mock('vscode');
 
-// Mock dependencies
-jest.mock('../../services/registryService');
-jest.mock('../../providers/registryTreeProvider');
-
-describe('searchArtifactsCommand', () => {
-    let mockService: jest.Mocked<RegistryService>;
+describe('Unified Search Command', () => {
+    let mockRegistryService: jest.Mocked<RegistryService>;
     let mockTreeProvider: jest.Mocked<RegistryTreeDataProvider>;
-    let mockShowQuickPick: jest.SpyInstance;
-    let mockShowInputBox: jest.SpyInstance;
-    let mockShowErrorMessage: jest.SpyInstance;
-    let mockShowInformationMessage: jest.SpyInstance;
-    let mockWithProgress: jest.SpyInstance;
+    let mockShowQuickPick: jest.Mock;
+    let mockShowInputBox: jest.Mock;
+    let mockShowInformationMessage: jest.Mock;
+    let mockShowErrorMessage: jest.Mock;
 
     beforeEach(() => {
-        // Create mocks
-        mockService = new RegistryService() as jest.Mocked<RegistryService>;
-        mockTreeProvider = new RegistryTreeDataProvider(mockService) as jest.Mocked<RegistryTreeDataProvider>;
-
-        // Mock VSCode window functions
-        mockShowQuickPick = jest.spyOn(vscode.window, 'showQuickPick');
-        mockShowInputBox = jest.spyOn(vscode.window, 'showInputBox');
-        mockShowErrorMessage = jest.spyOn(vscode.window, 'showErrorMessage');
-        mockShowInformationMessage = jest.spyOn(vscode.window, 'showInformationMessage');
-        mockWithProgress = jest.spyOn(vscode.window, 'withProgress');
-
-        // Mock tree provider methods
-        mockTreeProvider.applySearchFilter = jest.fn();
-        mockTreeProvider.clearSearchFilter = jest.fn();
-
-        // Default: service is connected
-        mockService.isConnected = jest.fn().mockReturnValue(true);
-        mockService.searchArtifacts = jest.fn();
-    });
-
-    afterEach(() => {
+        // Reset all mocks
         jest.clearAllMocks();
+
+        // Mock RegistryService
+        mockRegistryService = {
+            isConnected: jest.fn().mockReturnValue(true),
+            searchArtifacts: jest.fn(),
+            searchVersions: jest.fn(),
+            searchGroups: jest.fn(),
+        } as any;
+
+        // Mock RegistryTreeDataProvider
+        mockTreeProvider = {
+            applySearchFilter: jest.fn(),
+            clearSearchFilter: jest.fn(),
+        } as any;
+
+        // Mock vscode window functions
+        mockShowQuickPick = jest.fn();
+        mockShowInputBox = jest.fn();
+        // Mock as thenable promises to avoid .then() errors
+        mockShowInformationMessage = jest.fn().mockResolvedValue(undefined);
+        mockShowErrorMessage = jest.fn().mockResolvedValue(undefined);
+
+        (vscode.window.showQuickPick as jest.Mock) = mockShowQuickPick;
+        (vscode.window.showInputBox as jest.Mock) = mockShowInputBox;
+        (vscode.window.showInformationMessage as jest.Mock) = mockShowInformationMessage;
+        (vscode.window.showErrorMessage as jest.Mock) = mockShowErrorMessage;
     });
 
-    describe('Connection Check', () => {
-        it('should show error when not connected', async () => {
-            mockService.isConnected = jest.fn().mockReturnValue(false);
-            mockShowErrorMessage.mockResolvedValue(undefined);
-
-            await searchArtifactsCommand(mockService, mockTreeProvider);
-
-            expect(mockShowErrorMessage).toHaveBeenCalledWith(
-                'Please connect to a registry first before searching.'
-            );
-            expect(mockShowQuickPick).not.toHaveBeenCalled();
-        });
-
-        it('should proceed when connected', async () => {
-            mockService.isConnected = jest.fn().mockReturnValue(true);
+    describe('Search Type Selection', () => {
+        it('should show quick vs advanced search options', async () => {
             mockShowQuickPick.mockResolvedValue(undefined); // User cancels
 
-            await searchArtifactsCommand(mockService, mockTreeProvider);
-
-            expect(mockShowQuickPick).toHaveBeenCalled();
-        });
-    });
-
-    describe('Search Criteria Selection', () => {
-        it('should show all 6 search criteria options', async () => {
-            mockShowQuickPick.mockResolvedValue(undefined);
-
-            await searchArtifactsCommand(mockService, mockTreeProvider);
+            await searchCommand(mockRegistryService, mockTreeProvider);
 
             expect(mockShowQuickPick).toHaveBeenCalledWith(
                 expect.arrayContaining([
-                    expect.objectContaining({ label: 'Name' }),
-                    expect.objectContaining({ label: 'Group' }),
-                    expect.objectContaining({ label: 'Description' }),
-                    expect.objectContaining({ label: 'Type' }),
-                    expect.objectContaining({ label: 'State' }),
-                    expect.objectContaining({ label: 'Labels' })
+                    expect.objectContaining({ label: expect.stringContaining('Quick Search') }),
+                    expect.objectContaining({ label: expect.stringContaining('Advanced Search') })
                 ]),
                 expect.objectContaining({
-                    title: 'Search Artifacts - Step 1/2: Select Search Criteria'
+                    title: 'Search Registry'
                 })
             );
         });
 
-        it('should cancel when user dismisses criteria selection', async () => {
+        it('should handle user cancellation at type selection', async () => {
             mockShowQuickPick.mockResolvedValue(undefined);
 
-            await searchArtifactsCommand(mockService, mockTreeProvider);
+            await searchCommand(mockRegistryService, mockTreeProvider);
 
-            expect(mockShowInputBox).not.toHaveBeenCalled();
-            expect(mockService.searchArtifacts).not.toHaveBeenCalled();
+            expect(mockTreeProvider.applySearchFilter).not.toHaveBeenCalled();
         });
-    });
 
-    describe('Search by Name', () => {
-        it('should prompt for name input', async () => {
-            mockShowQuickPick.mockResolvedValue({ label: 'Name', value: SearchCriteria.Name });
-            mockShowInputBox.mockResolvedValue(undefined); // User cancels
+        it('should show error if not connected', async () => {
+            mockRegistryService.isConnected.mockReturnValue(false);
 
-            await searchArtifactsCommand(mockService, mockTreeProvider);
+            await searchCommand(mockRegistryService, mockTreeProvider);
 
-            expect(mockShowInputBox).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    title: 'Search Artifacts - Step 2/2: Enter Name',
-                    prompt: 'Enter search term for name',
-                    placeHolder: 'e.g., User API'
-                })
+            expect(mockShowErrorMessage).toHaveBeenCalledWith(
+                expect.stringContaining('connect to a registry')
             );
         });
-
-        it('should validate name input length', async () => {
-            mockShowQuickPick.mockResolvedValue({ label: 'Name', value: SearchCriteria.Name });
-            mockShowInputBox.mockResolvedValue('A'); // Too short
-
-            await searchArtifactsCommand(mockService, mockTreeProvider);
-
-            const inputBoxCall = mockShowInputBox.mock.calls[0][0];
-            const validator = inputBoxCall.validateInput;
-
-            expect(validator('')).toBe('Name cannot be empty');
-            expect(validator('A')).toBe('Name must be at least 2 characters');
-            expect(validator('AB')).toBeNull();
-        });
     });
 
-    describe('Search by Type', () => {
-        it('should show artifact type dropdown', async () => {
+    describe('Quick Search Flow', () => {
+        it('should perform single-field artifact search', async () => {
+            // User selects Quick Search
             mockShowQuickPick
-                .mockResolvedValueOnce({ label: 'Type', value: SearchCriteria.Type })
-                .mockResolvedValueOnce(undefined); // User cancels type selection
+                .mockResolvedValueOnce({ label: '$(search) Quick Search', value: 'quick' })
+                .mockResolvedValueOnce({ label: 'Name', value: 'name' });
 
-            await searchArtifactsCommand(mockService, mockTreeProvider);
+            mockShowInputBox.mockResolvedValueOnce('User API');
+            mockShowInformationMessage.mockResolvedValue(undefined);
 
-            expect(mockShowQuickPick).toHaveBeenNthCalledWith(2,
-                expect.arrayContaining([
-                    expect.objectContaining({ label: 'OPENAPI' }),
-                    expect.objectContaining({ label: 'ASYNCAPI' }),
-                    expect.objectContaining({ label: 'AVRO' }),
-                    expect.objectContaining({ label: 'PROTOBUF' }),
-                    expect.objectContaining({ label: 'JSON' }),
-                    expect.objectContaining({ label: 'GRAPHQL' }),
-                    expect.objectContaining({ label: 'KCONNECT' }),
-                    expect.objectContaining({ label: 'WSDL' }),
-                    expect.objectContaining({ label: 'XSD' })
-                ]),
-                expect.objectContaining({
-                    title: 'Search Artifacts - Step 2/2: Select Artifact Type'
-                })
+            await searchCommand(mockRegistryService, mockTreeProvider);
+
+            // Verify tree provider filter was applied
+            expect(mockTreeProvider.applySearchFilter).toHaveBeenCalledWith(
+                SearchMode.Artifact,
+                { name: 'User API' }
+            );
+
+            // Verify information message shown
+            expect(mockShowInformationMessage).toHaveBeenCalledWith(
+                expect.stringContaining('Filtering artifacts by:'),
+                'Clear Filter'
             );
         });
     });
 
-    describe('Search by State', () => {
-        it('should show state dropdown', async () => {
+    describe('Advanced Search - Multi-Field Artifact Search', () => {
+        it('should allow adding multiple search criteria', async () => {
+            // User selects Advanced Search
             mockShowQuickPick
-                .mockResolvedValueOnce({ label: 'State', value: SearchCriteria.State })
-                .mockResolvedValueOnce(undefined);
+                .mockResolvedValueOnce({ label: '$(filter) Advanced Search', value: 'advanced' })
+                // Then Artifact Search mode
+                .mockResolvedValueOnce({ label: 'Artifact Search', value: SearchMode.Artifact })
+                // Add Name criterion
+                .mockResolvedValueOnce({ label: 'Name', value: 'name' })
+                // Add Description criterion
+                .mockResolvedValueOnce({ label: 'Description', value: 'description' })
+                // Done - Search Now
+                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' });
 
-            await searchArtifactsCommand(mockService, mockTreeProvider);
+            // Input values
+            mockShowInputBox
+                .mockResolvedValueOnce('User API') // name
+                .mockResolvedValueOnce('user management'); // description
 
-            expect(mockShowQuickPick).toHaveBeenNthCalledWith(2,
-                expect.arrayContaining([
-                    expect.objectContaining({ label: 'ENABLED' }),
-                    expect.objectContaining({ label: 'DISABLED' }),
-                    expect.objectContaining({ label: 'DEPRECATED' })
-                ]),
-                expect.objectContaining({
-                    title: 'Search Artifacts - Step 2/2: Select State'
-                })
-            );
-        });
-    });
+            mockShowInformationMessage.mockResolvedValue(undefined);
 
-    describe('Search by Labels', () => {
-        it('should prompt for label in key=value format', async () => {
-            mockShowQuickPick.mockResolvedValue({ label: 'Labels', value: SearchCriteria.Labels });
-            mockShowInputBox.mockResolvedValue(undefined);
+            await searchCommand(mockRegistryService, mockTreeProvider);
 
-            await searchArtifactsCommand(mockService, mockTreeProvider);
-
-            expect(mockShowInputBox).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    title: 'Search Artifacts - Step 2/2: Enter Label',
-                    prompt: 'Enter label in format: key=value',
-                    placeHolder: 'e.g., environment=production'
-                })
-            );
-        });
-
-        it('should validate label format', async () => {
-            mockShowQuickPick.mockResolvedValue({ label: 'Labels', value: SearchCriteria.Labels });
-            mockShowInputBox.mockResolvedValue('invalid');
-
-            await searchArtifactsCommand(mockService, mockTreeProvider);
-
-            const inputBoxCall = mockShowInputBox.mock.calls[0][0];
-            const validator = inputBoxCall.validateInput;
-
-            expect(validator('invalid')).toBe('Label must be in format: key=value');
-            expect(validator('key=value')).toBeNull();
-        });
-    });
-
-    describe('Search Execution', () => {
-        it('should execute search with selected criteria', async () => {
-            const mockResults = [
+            // Verify tree provider filter was applied
+            expect(mockTreeProvider.applySearchFilter).toHaveBeenCalledWith(
+                SearchMode.Artifact,
                 {
-                    groupId: 'test',
-                    artifactId: 'api',
-                    artifactType: 'OPENAPI',
-                    state: 'ENABLED'
+                    name: 'User API',
+                    description: 'user management'
                 }
-            ];
+            );
 
-            mockShowQuickPick.mockResolvedValue({ label: 'Name', value: SearchCriteria.Name });
-            mockShowInputBox.mockResolvedValue('test');
-            mockService.searchArtifacts = jest.fn().mockResolvedValue(mockResults);
-            mockWithProgress.mockImplementation((options, task) => task({ report: jest.fn() }));
-            mockShowInformationMessage.mockResolvedValue(undefined);
+            // Verify information message shown with filter details
+            expect(mockShowInformationMessage).toHaveBeenCalledWith(
+                expect.stringContaining('Filtering artifacts by:'),
+                'Clear Filter'
+            );
 
-            await searchArtifactsCommand(mockService, mockTreeProvider);
-
-            expect(mockService.searchArtifacts).toHaveBeenCalledWith({ name: 'test' });
-            expect(mockTreeProvider.applySearchFilter).toHaveBeenCalledWith('name', 'test');
+            // Verify QuickPick calls: type selection + mode + 2 criteria + done = 5
+            expect(mockShowQuickPick).toHaveBeenCalledTimes(5);
         });
 
-        it('should show progress indicator during search', async () => {
-            mockShowQuickPick.mockResolvedValue({ label: 'Name', value: SearchCriteria.Name });
-            mockShowInputBox.mockResolvedValue('test');
-            mockService.searchArtifacts = jest.fn().mockResolvedValue([]);
-            mockWithProgress.mockImplementation((options, task) => task({ report: jest.fn() }));
+        it('should handle empty criteria list (user selects Done immediately)', async () => {
+            mockShowQuickPick
+                .mockResolvedValueOnce({ label: '$(filter) Advanced Search', value: 'advanced' })
+                .mockResolvedValueOnce({ label: 'Artifact Search', value: SearchMode.Artifact })
+                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' });
+
             mockShowInformationMessage.mockResolvedValue(undefined);
 
-            await searchArtifactsCommand(mockService, mockTreeProvider);
+            await searchCommand(mockRegistryService, mockTreeProvider);
 
-            expect(mockWithProgress).toHaveBeenCalledWith(
+            expect(mockShowInformationMessage).toHaveBeenCalledWith(
+                expect.stringContaining('No search criteria')
+            );
+            expect(mockRegistryService.searchArtifacts).not.toHaveBeenCalled();
+        });
+
+        it('should validate label format (key:value)', async () => {
+            mockShowQuickPick
+                .mockResolvedValueOnce({ label: '$(filter) Advanced Search', value: 'advanced' })
+                .mockResolvedValueOnce({ label: 'Artifact Search', value: SearchMode.Artifact })
+                .mockResolvedValueOnce({ label: 'Labels (key:value)', value: 'labels' })
+                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' });
+
+            mockShowInputBox.mockResolvedValueOnce('env:prod'); // valid label
+
+            mockRegistryService.searchArtifacts.mockResolvedValue([]);
+
+            await searchCommand(mockRegistryService, mockTreeProvider);
+
+            // Check that validateInput function was provided
+            expect(mockShowInputBox).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    location: vscode.ProgressLocation.Notification,
-                    title: 'Searching for artifacts...'
-                }),
-                expect.any(Function)
+                    validateInput: expect.any(Function)
+                })
             );
         });
 
-        it('should show results count notification', async () => {
-            const mockResults = [{ groupId: 'test', artifactId: 'api1' }];
+        it('should reject invalid label format', async () => {
+            mockShowQuickPick
+                .mockResolvedValueOnce({ label: '$(filter) Advanced Search', value: 'advanced' })
+                .mockResolvedValueOnce({ label: 'Artifact Search', value: SearchMode.Artifact })
+                .mockResolvedValueOnce({ label: 'Labels (key:value)', value: 'labels' });
 
-            mockShowQuickPick.mockResolvedValue({ label: 'Type', value: SearchCriteria.Type });
-            mockShowQuickPick.mockResolvedValueOnce({ label: 'Name', value: SearchCriteria.Name });
-            mockShowQuickPick.mockResolvedValueOnce({ label: 'OPENAPI' });
-            mockService.searchArtifacts = jest.fn().mockResolvedValue(mockResults);
-            mockWithProgress.mockImplementation((options, task) => task({ report: jest.fn() }));
+            mockShowInputBox.mockImplementation(async (options) => {
+                // Test the validation function
+                const validate = options?.validateInput;
+                if (validate) {
+                    expect(validate('invalid')).toBeTruthy(); // Should return error
+                    expect(validate('key:value')).toBeUndefined(); // Should be valid
+                    expect(validate('key=value')).toBeUndefined(); // Should be valid
+                }
+                return undefined; // User cancels
+            });
+
+            await searchCommand(mockRegistryService, mockTreeProvider);
+        });
+    });
+
+    describe('Advanced Search - Version Search', () => {
+        it('should search versions when mode selected', async () => {
+            mockShowQuickPick
+                .mockResolvedValueOnce({ label: '$(filter) Advanced Search', value: 'advanced' })
+                .mockResolvedValueOnce({ label: 'Version Search', value: SearchMode.Version })
+                .mockResolvedValueOnce({ label: 'Version', value: 'version' })
+                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' });
+
+            mockShowInputBox.mockResolvedValueOnce('1.0.0');
             mockShowInformationMessage.mockResolvedValue(undefined);
 
-            await searchArtifactsCommand(mockService, mockTreeProvider);
+            await searchCommand(mockRegistryService, mockTreeProvider);
 
+            // Verify tree provider filter was applied
+            expect(mockTreeProvider.applySearchFilter).toHaveBeenCalledWith(
+                SearchMode.Version,
+                { version: '1.0.0' }
+            );
+
+            // Verify information message shown
             expect(mockShowInformationMessage).toHaveBeenCalledWith(
-                expect.stringContaining('Found 1 artifact'),
+                expect.stringContaining('Filtering versions by:'),
                 'Clear Filter'
             );
         });
 
-        it('should handle plural in results notification', async () => {
-            const mockResults = [
-                { groupId: 'test', artifactId: 'api1' },
-                { groupId: 'test', artifactId: 'api2' }
-            ];
+        it('should apply tree filter for version results', async () => {
+            mockShowQuickPick
+                .mockResolvedValueOnce({ label: '$(filter) Advanced Search', value: 'advanced' })
+                .mockResolvedValueOnce({ label: 'Version Search', value: SearchMode.Version })
+                .mockResolvedValueOnce({ label: 'Version', value: 'version' })
+                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' });
 
-            mockShowQuickPick.mockResolvedValue({ label: 'Name', value: SearchCriteria.Name });
-            mockShowInputBox.mockResolvedValue('api');
-            mockService.searchArtifacts = jest.fn().mockResolvedValue(mockResults);
-            mockWithProgress.mockImplementation((options, task) => task({ report: jest.fn() }));
+            mockShowInputBox.mockResolvedValueOnce('1.0.0');
             mockShowInformationMessage.mockResolvedValue(undefined);
 
-            await searchArtifactsCommand(mockService, mockTreeProvider);
+            await searchCommand(mockRegistryService, mockTreeProvider);
 
-            expect(mockShowInformationMessage).toHaveBeenCalledWith(
-                expect.stringContaining('Found 2 artifacts'),
-                'Clear Filter'
+            // Verify tree provider filter applied (not QuickPick display)
+            expect(mockTreeProvider.applySearchFilter).toHaveBeenCalledWith(
+                SearchMode.Version,
+                { version: '1.0.0' }
+            );
+
+            // Verify QuickPick calls: type selection + mode + criterion + done = 4
+            expect(mockShowQuickPick).toHaveBeenCalledTimes(4);
+        });
+
+        it('should search versions by labels', async () => {
+            mockShowQuickPick
+                .mockResolvedValueOnce({ label: '$(filter) Advanced Search', value: 'advanced' })
+                .mockResolvedValueOnce({ label: 'Version Search', value: SearchMode.Version })
+                .mockResolvedValueOnce({ label: 'Labels (key:value)', value: 'labels' })
+                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' });
+
+            mockShowInputBox.mockResolvedValueOnce('release:stable');
+            mockShowInformationMessage.mockResolvedValue(undefined);
+
+            await searchCommand(mockRegistryService, mockTreeProvider);
+
+            expect(mockTreeProvider.applySearchFilter).toHaveBeenCalledWith(
+                SearchMode.Version,
+                { labels: 'release:stable' }
             );
         });
     });
 
-    describe('No Results Handling', () => {
-        it('should show message when no results found', async () => {
-            mockShowQuickPick.mockResolvedValue({ label: 'Name', value: SearchCriteria.Name });
-            mockShowInputBox.mockResolvedValue('nonexistent');
-            mockService.searchArtifacts = jest.fn().mockResolvedValue([]);
-            mockWithProgress.mockImplementation((options, task) => task({ report: jest.fn() }));
+    describe('Advanced Search - Group Search', () => {
+        it('should search groups when mode selected', async () => {
+            mockShowQuickPick
+                .mockResolvedValueOnce({ label: '$(filter) Advanced Search', value: 'advanced' })
+                .mockResolvedValueOnce({ label: 'Group Search', value: SearchMode.Group })
+                .mockResolvedValueOnce({ label: 'Group ID', value: 'groupId' })
+                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' });
+
+            mockShowInputBox.mockResolvedValueOnce('com.example');
             mockShowInformationMessage.mockResolvedValue(undefined);
 
-            await searchArtifactsCommand(mockService, mockTreeProvider);
+            await searchCommand(mockRegistryService, mockTreeProvider);
 
+            // Verify tree provider filter was applied
+            expect(mockTreeProvider.applySearchFilter).toHaveBeenCalledWith(
+                SearchMode.Group,
+                { groupId: 'com.example' }
+            );
+
+            // Verify information message shown
             expect(mockShowInformationMessage).toHaveBeenCalledWith(
-                expect.stringContaining('No artifacts found'),
-                'Try Again'
+                expect.stringContaining('Filtering groups by:'),
+                'Clear Filter'
             );
         });
 
-        it('should allow retry when no results', async () => {
-            mockShowQuickPick.mockResolvedValue({ label: 'Name', value: SearchCriteria.Name });
-            mockShowInputBox.mockResolvedValue('test');
-            mockService.searchArtifacts = jest.fn().mockResolvedValue([]);
-            mockWithProgress.mockImplementation((options, task) => task({ report: jest.fn() }));
-            mockShowInformationMessage.mockResolvedValue('Try Again');
+        it('should apply tree filter for group results', async () => {
+            mockShowQuickPick
+                .mockResolvedValueOnce({ label: '$(filter) Advanced Search', value: 'advanced' })
+                .mockResolvedValueOnce({ label: 'Group Search', value: SearchMode.Group })
+                .mockResolvedValueOnce({ label: 'Description', value: 'description' })
+                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' });
 
-            await searchArtifactsCommand(mockService, mockTreeProvider);
+            mockShowInputBox.mockResolvedValueOnce('example');
+            mockShowInformationMessage.mockResolvedValue(undefined);
 
-            // Should attempt to run command again (recursive call)
-            expect(mockShowInformationMessage).toHaveBeenCalled();
+            await searchCommand(mockRegistryService, mockTreeProvider);
+
+            // Verify tree provider filter applied (not QuickPick display)
+            expect(mockTreeProvider.applySearchFilter).toHaveBeenCalledWith(
+                SearchMode.Group,
+                { description: 'example' }
+            );
+
+            // Verify QuickPick calls: type selection + mode + criterion + done = 4
+            expect(mockShowQuickPick).toHaveBeenCalledTimes(4);
         });
     });
 
     describe('Error Handling', () => {
-        it('should show error message on search failure', async () => {
-            mockShowQuickPick.mockResolvedValue({ label: 'Name', value: SearchCriteria.Name });
-            mockShowInputBox.mockResolvedValue('test');
-            mockService.searchArtifacts = jest.fn().mockRejectedValue(new Error('Network error'));
-            mockWithProgress.mockImplementation((options, task) => task({ report: jest.fn() }));
-            mockShowErrorMessage.mockResolvedValue(undefined);
+        it('should handle tree provider filter errors', async () => {
+            mockShowQuickPick
+                .mockResolvedValueOnce({ label: '$(filter) Advanced Search', value: 'advanced' })
+                .mockResolvedValueOnce({ label: 'Artifact Search', value: SearchMode.Artifact })
+                .mockResolvedValueOnce({ label: 'Name', value: 'name' })
+                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' });
 
-            await searchArtifactsCommand(mockService, mockTreeProvider);
+            mockShowInputBox.mockResolvedValueOnce('test');
+
+            // Tree provider rejects the filter operation
+            mockTreeProvider.applySearchFilter.mockRejectedValue(
+                new Error('Network error')
+            );
+
+            await searchCommand(mockRegistryService, mockTreeProvider);
 
             expect(mockShowErrorMessage).toHaveBeenCalledWith(
-                expect.stringContaining('Search failed'),
-                'Try Again'
+                expect.stringContaining('Network error'),
+                expect.any(String)
             );
         });
 
-        it('should allow retry on error', async () => {
-            mockShowQuickPick.mockResolvedValue({ label: 'Name', value: SearchCriteria.Name });
-            mockShowInputBox.mockResolvedValue('test');
-            mockService.searchArtifacts = jest.fn().mockRejectedValue(new Error('Network error'));
-            mockWithProgress.mockImplementation((options, task) => task({ report: jest.fn() }));
-            mockShowErrorMessage.mockResolvedValue('Try Again');
+        it('should handle empty criteria list', async () => {
+            mockShowQuickPick
+                .mockResolvedValueOnce({ label: '$(filter) Advanced Search', value: 'advanced' })
+                .mockResolvedValueOnce({ label: 'Artifact Search', value: SearchMode.Artifact })
+                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' });
 
-            await searchArtifactsCommand(mockService, mockTreeProvider);
+            mockShowInformationMessage.mockResolvedValue(undefined);
 
-            expect(mockShowErrorMessage).toHaveBeenCalled();
+            await searchCommand(mockRegistryService, mockTreeProvider);
+
+            // Verify no filter applied for empty criteria
+            expect(mockTreeProvider.applySearchFilter).not.toHaveBeenCalled();
+            expect(mockShowInformationMessage).toHaveBeenCalledWith(
+                expect.stringContaining('No search criteria')
+            );
         });
     });
 
-    describe('Clear Filter', () => {
-        it('should clear filter when user clicks Clear Filter button', async () => {
-            const mockResults = [{ groupId: 'test', artifactId: 'api' }];
+    describe('Clear Filter Functionality', () => {
+        it('should allow clearing filter from info message', async () => {
+            mockShowQuickPick
+                .mockResolvedValueOnce({ label: '$(filter) Advanced Search', value: 'advanced' })
+                .mockResolvedValueOnce({ label: 'Artifact Search', value: SearchMode.Artifact })
+                .mockResolvedValueOnce({ label: 'Name', value: 'name' })
+                .mockResolvedValueOnce({ label: '✅ Done - Search Now', value: 'done' });
 
-            mockShowQuickPick.mockResolvedValue({ label: 'Name', value: SearchCriteria.Name });
-            mockShowInputBox.mockResolvedValue('test');
-            mockService.searchArtifacts = jest.fn().mockResolvedValue(mockResults);
-            mockWithProgress.mockImplementation((options, task) => task({ report: jest.fn() }));
-            mockShowInformationMessage.mockResolvedValue('Clear Filter');
+            mockShowInputBox.mockResolvedValueOnce('test');
 
-            await searchArtifactsCommand(mockService, mockTreeProvider);
+            // User clicks "Clear Filter" button
+            mockShowInformationMessage.mockImplementation(async (message, ...buttons) => {
+                // Simulate user clicking "Clear Filter"
+                if (buttons.includes('Clear Filter')) {
+                    return 'Clear Filter';
+                }
+                return undefined;
+            });
 
+            await searchCommand(mockRegistryService, mockTreeProvider);
+
+            // Wait for promise chain to complete
+            await new Promise(resolve => setTimeout(resolve, 0));
+
+            // Verify filter was applied
+            expect(mockTreeProvider.applySearchFilter).toHaveBeenCalledWith(
+                SearchMode.Artifact,
+                { name: 'test' }
+            );
+
+            // Verify clear filter was called
             expect(mockTreeProvider.clearSearchFilter).toHaveBeenCalled();
         });
     });

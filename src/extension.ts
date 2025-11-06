@@ -7,8 +7,7 @@ import { StatusBarManager } from './ui/statusBarManager';
 import { ApicurioUriBuilder } from './utils/uriBuilder';
 import { AutoSaveManager } from './services/autoSaveManager';
 import { ConflictDetector } from './services/conflictDetector';
-import { searchArtifactsCommand } from './commands/searchCommand';
-import { advancedSearchCommand } from './commands/advancedSearchCommand';
+import { searchCommand } from './commands/searchCommand';
 import { createArtifactCommand } from './commands/createArtifactCommand';
 import { setupMCPCommand } from './commands/setupMCPCommand';
 import {
@@ -293,12 +292,8 @@ export function activate(context: vscode.ExtensionContext) {
         registryTreeProvider.disconnect();
     });
 
-    const searchCommand = vscode.commands.registerCommand('apicurioRegistry.search', async () => {
-        await searchArtifactsCommand(registryService, registryTreeProvider);
-    });
-
-    const advancedSearch = vscode.commands.registerCommand('apicurioRegistry.advancedSearch', async () => {
-        await advancedSearchCommand(registryService, registryTreeProvider);
+    const searchCmd = vscode.commands.registerCommand('apicurioRegistry.search', async () => {
+        await searchCommand(registryService, registryTreeProvider);
     });
 
     const createArtifact = vscode.commands.registerCommand('apicurioRegistry.createArtifact', async () => {
@@ -422,8 +417,7 @@ export function activate(context: vscode.ExtensionContext) {
         refreshCommand,
         connectCommand,
         disconnectCommand,
-        searchCommand,
-        advancedSearch,
+        searchCmd,
         createArtifact,
         setupMCP,
         generateClaudeCommand,

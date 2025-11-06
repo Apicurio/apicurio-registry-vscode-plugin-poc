@@ -61,13 +61,8 @@
       },
       {
         "command": "apicurioRegistry.search",
-        "title": "Search Artifacts",
-        "icon": "$(search)"
-      },
-      {
-        "command": "apicurioRegistry.advancedSearch",
-        "title": "Advanced Search",
-        "icon": "$(search-view-icon)",
+        "title": "Search Registry",
+        "icon": "$(search)",
         "category": "Apicurio Registry"
       },
       {
@@ -217,11 +212,6 @@
         },
         {
           "command": "apicurioRegistry.search",
-          "when": "view == apicurioRegistry",
-          "group": "navigation"
-        },
-        {
-          "command": "apicurioRegistry.advancedSearch",
           "when": "view == apicurioRegistry",
           "group": "navigation"
         },

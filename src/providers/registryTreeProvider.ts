@@ -169,18 +169,6 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
     }
 
     /**
-     * Legacy method for backward compatibility with basic search.
-     * Converts single-field search to new format.
-     */
-    applySearchFilterLegacy(criterion: string, value: string): void {
-        this.searchFilter = {
-            mode: 'artifact',
-            criteria: { [criterion]: value }
-        };
-        this.refresh();
-    }
-
-    /**
      * Clear the current search filter and show all items.
      */
     clearSearchFilter(): void {

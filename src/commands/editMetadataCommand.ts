@@ -272,7 +272,7 @@ async function manageLabels(currentLabels: Record<string, string>): Promise<Reco
         const actions = [
             { label: 'Add Label', value: 'add', description: 'Add a new label' },
             { label: 'Remove Label', value: 'remove', description: 'Remove an existing label' },
-            { label: vscode.QuickPickItemKind.Separator as any },
+            { label: '─────────────', kind: vscode.QuickPickItemKind.Separator },
             { label: 'Done', value: 'done', description: formatLabelsForDisplay(labels) }
         ];
 

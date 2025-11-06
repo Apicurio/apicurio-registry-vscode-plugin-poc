@@ -138,6 +138,11 @@
         "category": "Apicurio Registry"
       },
       {
+        "command": "apicurioRegistry.editMetadata",
+        "title": "Edit Metadata",
+        "category": "Apicurio Registry"
+      },
+      {
         "command": "apicurioRegistry.createDraftVersion",
         "title": "Create Draft Version",
         "category": "Apicurio Registry"
@@ -301,6 +306,21 @@
           "command": "apicurioRegistry.discardDraft",
           "when": "view == apicurioRegistry && viewItem == version-draft",
           "group": "9_dangerous@2"
+        },
+        {
+          "command": "apicurioRegistry.editMetadata",
+          "when": "view == apicurioRegistry && viewItem == group",
+          "group": "5_metadata@1"
+        },
+        {
+          "command": "apicurioRegistry.editMetadata",
+          "when": "view == apicurioRegistry && viewItem =~ /artifact.*/",
+          "group": "5_metadata@1"
+        },
+        {
+          "command": "apicurioRegistry.editMetadata",
+          "when": "view == apicurioRegistry && viewItem =~ /^version/",
+          "group": "5_metadata@1"
         },
         {
           "command": "apicurioRegistry.deleteGroup",

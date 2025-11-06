@@ -10,6 +10,7 @@ import { ConflictDetector } from './services/conflictDetector';
 import { searchCommand } from './commands/searchCommand';
 import { createArtifactCommand } from './commands/createArtifactCommand';
 import { setupMCPCommand } from './commands/setupMCPCommand';
+import { editMetadataCommand } from './commands/editMetadataCommand';
 import {
     generateClaudeCommandCommand,
     verifyMCPCommand
@@ -365,6 +366,11 @@ export function activate(context: vscode.ExtensionContext) {
         await deleteVersionCommand(registryService, () => registryTreeProvider.refresh(), node);
     });
 
+    // Metadata editing command (unified for groups, artifacts, and versions)
+    const editMetadata = vscode.commands.registerCommand('apicurioRegistry.editMetadata', async (node) => {
+        await editMetadataCommand(registryService, () => registryTreeProvider.refresh(), node);
+    });
+
     // Draft commands
     const createDraftVersion = vscode.commands.registerCommand('apicurioRegistry.createDraftVersion', async (node) => {
         await createDraftVersionCommand(registryService, () => registryTreeProvider.refresh(), node);
@@ -434,6 +440,7 @@ export function activate(context: vscode.ExtensionContext) {
         deleteGroup,
         deleteArtifact,
         deleteVersion,
+        editMetadata,
         createDraftVersion,
         finalizeDraft,
         discardDraft,

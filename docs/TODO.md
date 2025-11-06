@@ -9,34 +9,30 @@
 
 ## 🚧 In Progress
 
-**None** - Starting new phase
+**None** - Ready for next task
 
 ---
 
 ## 🎯 What to Work on TODAY
 
-**🎉 FEATURE PARITY PHASE 1 COMPLETE!**
+**🎉 TASK 031 COMPLETE! Rules Configuration Delivered!**
 
-**Phase 1 Achievements:**
-- ✅ Task 025: Advanced Search (2.5h)
-- ✅ Tasks 026-030: Unified Metadata Editor (6-8h) - **Consolidated implementation!**
-  - Label Management (add/edit/remove, display, validation)
-  - Edit Artifact Metadata (name, description, labels)
-  - Edit Version Metadata (name, description, labels)
-  - Edit Group Metadata (description, labels)
-  - Tree view label display (tooltips + count badges)
+**Latest Achievement:**
+- ✅ Task 031: Rules Configuration (6h actual, 6-8h estimated) - **All 6 phases complete!**
+  - Global, Group, and Artifact rules management
+  - Enable/Configure/Disable workflow via QuickPick
+  - Rule violation error parsing with suggestions
+  - Tree view rule display (tooltips + badges)
+  - 30 comprehensive tests passing (15 service + 15 command)
+  - 4 new files, 7 modified, ~1,850 lines of code
 
-**Phase 1 Results:**
-- 100% complete (all tasks done!)
-- 13 new tests passing ✅
-- 1,383 lines of code added
-- 62% time savings through unified approach
-- Unified metadata editor for all entity types
+**Phase 1 & 2 Progress:**
+- ✅ Phase 1: 100% complete (Search + Metadata Editor)
+- 🔥 Phase 2: 25% complete (1 of 4 tasks done!)
 
-**🚀 Next: FEATURE PARITY PHASE 2 - Advanced Features**
+**🚀 Next: FEATURE PARITY PHASE 2 - Continue Advanced Features**
 
-**Phase 2 Overview** (18-26h total):
-- Rules Configuration (6-8h) 🔴 HIGH
+**Phase 2 Remaining** (12-18h):
 - Group Management (2-3h) 🟡 MEDIUM
 - Branching Support (8-10h) 🟡 MEDIUM
 - Enhanced Tree View (2-5h) 🟢 LOW
@@ -99,11 +95,16 @@
 
 **Phase 1 Complete!** All core operations implemented with unified metadata editor.
 
+### ✅ Recently Completed - FEATURE PARITY PHASE 2
+
+| # | Task | Status | Effort | Completed | Details |
+|---|------|--------|--------|-----------|---------|
+| 031 | Rules Configuration | ✅ Done | 6h | 2025-11-06 | [spec](tasks/completed/031-rules-configuration.md) - 30 tests passing |
+
 ### 🔴 High Priority - FEATURE PARITY PHASE 2
 
 | # | Task | Status | Effort | Details |
 |---|------|--------|--------|---------|
-| 031 | Rules Configuration | 📋 Todo | 6-8h | Create/edit validation rules, enable/disable |
 
 ### 🟡 Medium Priority - FEATURE PARITY PHASE 2
 
@@ -157,6 +158,12 @@
 
 ## ✅ Completed Tasks
 
+### Feature Parity Phase 2
+
+| # | Task | Completed | Effort | Notes |
+|---|------|-----------|--------|-------|
+| 031 | Rules Configuration | 2025-11-06 | 6h | Global/group/artifact rules, enable/configure/disable, error parsing, tree view display, 30 tests passing |
+
 ### Feature Parity Phase 1
 
 | # | Task | Completed | Effort | Notes |
@@ -188,7 +195,7 @@
 ## 📊 Progress Overview
 
 ```
-Overall Project Progress: ███████████░░░░░░░░░ 52%
+Overall Project Progress: ████████████░░░░░░░░ 54%
 
 Foundation & Tree          [████████████████████] 100% ✅
 UX High Priority           [████████████████████] 100% ✅
@@ -196,7 +203,7 @@ Draft Infrastructure       [█████████████████�
 Text Editor Integration    [████████████████████] 100% ✅
 MCP Integration            [████████████████████] 100% ✅ (blocked)
 FEATURE PARITY Phase 1     [████████████████████] 100% ✅ COMPLETE!
-FEATURE PARITY Phase 2     [░░░░░░░░░░░░░░░░░░░░]   0% 🔥 NEXT
+FEATURE PARITY Phase 2     [█████░░░░░░░░░░░░░░░]  25% 🔥 IN PROGRESS
 FEATURE PARITY Phase 3     [░░░░░░░░░░░░░░░░░░░░]   0% 📋
 Visual Editor (Phase 4)    [██████░░░░░░░░░░░░░░]  50% ⏸️ DEFERRED
 ```
@@ -209,19 +216,20 @@ Visual Editor (Phase 4)    [██████░░░░░░░░░░░�
 - ✅ MCP Integration (4/4 tasks - 100%, blocked by Claude Code bug)
 - ✅ UX Medium Priority (2/3 tasks - 67%)
 - ✅ **FEATURE PARITY Phase 1 (2/2 tasks - 100%)** 🎉
+- 🔥 **FEATURE PARITY Phase 2 (1/4 tasks - 25%)** - IN PROGRESS
 
 **Feature Parity Roadmap:**
 - ✅ Phase 1: Core Operations (2/2 tasks - 100%) - **COMPLETE!**
-- 🔥 Phase 2: Advanced Features (0/4 tasks - 0%) - **NEXT**
+- 🔥 Phase 2: Advanced Features (1/4 tasks - 25%) - **IN PROGRESS**
 - 📋 Phase 3: Admin & Utility (0/4 tasks - 0%)
 - ⏸️ Phase 4: Visual Editor (2/4 tasks - 50%) - **DEFERRED**
 
 **Estimated Remaining Effort:**
 - Phase 1: ✅ COMPLETE (saved 6-9h through consolidation!)
-- Phase 2: 18-26h
+- Phase 2: 12-18h remaining (6h completed)
 - Phase 3: 12-20h
 - Phase 4 (deferred): 80-130h
-- **Total:** 110-176h remaining
+- **Total:** 104-168h remaining
 
 ---
 
@@ -276,6 +284,52 @@ Visual Editor (Phase 4)    [██████░░░░░░░░░░░�
 ---
 
 ## 📝 Recent Activity
+
+**2025-11-06 (Task 031 Complete! 🎉 Rules Configuration - Phase 2 Started!)**
+- ✅ **Task 031: Rules Configuration** (6h actual, 6-8h estimated)
+- 🎯 **Implementation Complete**: All 6 phases delivered
+  - Phase 1: Registry Service Extensions (15 new methods, +295 lines)
+  - Phase 2: Rules Management Command (QuickPick workflow, 320 lines)
+  - Phase 3: Tree View Enhancements (rule counts + tooltips, +112 lines)
+  - Phase 4: Rule Violation Error Parsing (smart detection + suggestions, 259 lines)
+  - Phase 5: Command Registration (3 commands, context menus)
+  - Phase 6: Test Coverage (30/30 tests passing ✅)
+- 🔧 **Rules Management**:
+  - Global Rules: Apply to all artifacts (unless overridden)
+  - Group Rules: Apply to all artifacts in group (unless overridden)
+  - Artifact Rules: Apply to specific artifact only (highest priority)
+  - Rule Types: VALIDITY, COMPATIBILITY, INTEGRITY
+  - Actions: Enable, Configure, Disable via QuickPick workflow
+- 📊 **Configuration Options**:
+  - VALIDITY: SYNTAX_ONLY, FULL
+  - COMPATIBILITY: BACKWARD, BACKWARD_TRANSITIVE, FORWARD, FORWARD_TRANSITIVE, FULL, FULL_TRANSITIVE, NONE
+  - INTEGRITY: NO_DUPLICATES, ALL_REFS_MAPPED, REFS_EXIST
+- 🐛 **Critical Lesson Learned**: QuickPick separator bug
+  - Issue: Incorrect separator syntax broke QuickPick rendering
+  - Root Cause: `{ label: vscode.QuickPickItemKind.Separator as any }` (WRONG)
+  - Fix: `{ label: '─────────────', kind: vscode.QuickPickItemKind.Separator }` (CORRECT)
+  - Lesson: QuickPickItem separators require BOTH `label` AND `kind` properties
+- 🎨 **Tree View Display**:
+  - Rule counts in tooltips: "Rules: 2 configured"
+  - Rule details with config: "• Validity: FULL"
+  - Description badges: "(2 rules)"
+  - Async fetching with Promise.all for performance
+- 💡 **Smart Error Handling**:
+  - Detects rule violations from API errors (409/400 status codes)
+  - Extracts rule type (VALIDITY, COMPATIBILITY, INTEGRITY)
+  - Parses violation details and causes
+  - Generates rule-specific suggestions
+  - User-friendly modal dialogs with "View Rules" action
+- 🧪 **Tests** - 30 comprehensive tests passing
+  - Service methods: 15 tests (5 global + 5 group + 5 artifact)
+  - Command workflow: 15 tests (enable, configure, disable, cancellation, errors)
+  - All CRUD operations covered
+  - All config options validated
+- 📝 **Files Changed**: 4 new files, 7 modified, ~1,850 lines
+  - New: rulesCommand.ts (320), ruleErrorParser.ts (259), 2 test files (771)
+  - Modified: registryService.ts (+295), registryTreeProvider.ts (+112), others
+- 🎉 **PHASE 2 PROGRESS**: 25% complete (1 of 4 tasks)
+- 🚀 **Next**: Task 032 - Group Management (2-3h) or Task 033 - Branching Support (8-10h)
 
 **2025-11-06 (Tasks 026-030 Complete! 🎉 Unified Metadata Editor - Phase 1 DONE!)**
 - ✅ **Tasks 026-030: Unified Metadata Editor** (6-8h actual, 15-21h estimated if done separately)

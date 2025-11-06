@@ -60,14 +60,13 @@ export function isDuplicateLabelKey(labels: Record<string, string>, key: string)
 }
 
 /**
- * Format labels for display in QuickPick or messages.
- * Returns a formatted string with each label on a new line.
+ * Format labels for display in QuickPick descriptions or messages.
+ * Returns a comma-separated inline string.
  *
  * @param labels Labels object
- * @param indent Indentation string (default: "  ")
- * @returns Formatted string, or "(none)" if no labels
+ * @returns Formatted string like "key1=value1, key2=value2", or "(none)" if no labels
  */
-export function formatLabelsForDisplay(labels: Record<string, string>, indent: string = '  '): string {
+export function formatLabelsForDisplay(labels: Record<string, string>): string {
     const entries = Object.entries(labels);
 
     if (entries.length === 0) {
@@ -75,8 +74,8 @@ export function formatLabelsForDisplay(labels: Record<string, string>, indent: s
     }
 
     return entries
-        .map(([key, value]) => `${indent}${key}=${value}`)
-        .join('\n');
+        .map(([key, value]) => `${key}=${value}`)
+        .join(', ');
 }
 
 /**

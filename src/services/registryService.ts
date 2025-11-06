@@ -960,7 +960,7 @@ export class RegistryService {
             const encodedArtifactId = encodeURIComponent(artifactId);
 
             await this.client!.put(
-                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/meta`,
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}`,
                 metadata
             );
         } catch (error: any) {

@@ -870,7 +870,7 @@ export class RegistryService {
             const encodedVersion = encodeURIComponent(version);
 
             const response = await this.client!.get(
-                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/versions/${encodedVersion}/meta`
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/versions/${encodedVersion}`
             );
             return response.data;
         } catch (error: any) {

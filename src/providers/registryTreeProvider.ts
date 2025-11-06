@@ -217,10 +217,11 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 treeItem.iconPath = IconService.getGroupIcon();
                 treeItem.contextValue = 'group';
 
-                // Enhanced tooltip with artifact count and labels
+                // Enhanced tooltip with artifact count, labels, and rules
                 const artifactCount = element.metadata?.artifactCount || 0;
                 const groupLabels = element.metadata?.labels || {};
                 const groupLabelTooltip = formatLabelsForTooltip(groupLabels);
+                const groupRules = element.metadata?.rules || [];
 
                 treeItem.tooltip = new vscode.MarkdownString();
                 treeItem.tooltip.appendMarkdown(`**Group: ${element.label}**\n\n`);
@@ -228,11 +229,20 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 if (element.metadata?.description) {
                     treeItem.tooltip.appendMarkdown(`- Description: ${element.metadata.description}\n`);
                 }
+                if (groupRules.length > 0) {
+                    treeItem.tooltip.appendMarkdown(`- Rules: ${groupRules.length} configured\n`);
+                }
                 if (groupLabelTooltip) {
                     treeItem.tooltip.appendMarkdown(`\n**Labels:**\n${groupLabelTooltip}`);
                 }
+                if (groupRules.length > 0) {
+                    treeItem.tooltip.appendMarkdown(`\n**Rules:**\n`);
+                    groupRules.forEach((rule: any) => {
+                        (treeItem.tooltip as vscode.MarkdownString).appendMarkdown(`- ${rule.ruleType}: ${rule.config}\n`);
+                    });
+                }
 
-                // Add artifact count and label count to description (respects preference)
+                // Add artifact count, label count, and rule count to description (respects preference)
                 const showArtifactCounts = config.get<boolean>('display.showArtifactCounts', true);
                 const descriptionParts: string[] = [];
                 if (showArtifactCounts && artifactCount > 0) {
@@ -241,6 +251,9 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 const labelCountDesc = getLabelCountDescription(groupLabels);
                 if (labelCountDesc) {
                     descriptionParts.push(labelCountDesc);
+                }
+                if (groupRules.length > 0) {
+                    descriptionParts.push(`${groupRules.length} rule${groupRules.length > 1 ? 's' : ''}`);
                 }
                 if (descriptionParts.length > 0) {
                     treeItem.description = `(${descriptionParts.join(', ')})`;
@@ -257,13 +270,14 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 // Enhanced context value with type for future menu filtering
                 treeItem.contextValue = `artifact${artifactType ? '-' + artifactType : ''}`;
 
-                // Enhanced tooltip with type, state, and labels
+                // Enhanced tooltip with type, state, labels, and rules
                 const typeLabel = IconService.getArtifactTypeLabel(artifactType);
                 const state = element.metadata?.state;
                 const stateLabel = state ? IconService.getStateLabel(state) : '';
                 const stateEmoji = state ? IconService.getStateEmoji(state) : '';
                 const artifactLabels = element.metadata?.labels || {};
                 const artifactLabelTooltip = formatLabelsForTooltip(artifactLabels);
+                const artifactRules = element.metadata?.rules || [];
 
                 treeItem.tooltip = new vscode.MarkdownString();
                 treeItem.tooltip.appendMarkdown(`**${element.label}**\n\n`);
@@ -274,8 +288,17 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 if (element.metadata?.description) {
                     treeItem.tooltip.appendMarkdown(`- Description: ${element.metadata.description}\n`);
                 }
+                if (artifactRules.length > 0) {
+                    treeItem.tooltip.appendMarkdown(`- Rules: ${artifactRules.length} configured\n`);
+                }
                 if (artifactLabelTooltip) {
                     treeItem.tooltip.appendMarkdown(`\n**Labels:**\n${artifactLabelTooltip}`);
+                }
+                if (artifactRules.length > 0) {
+                    treeItem.tooltip.appendMarkdown(`\n**Rules:**\n`);
+                    artifactRules.forEach((rule: any) => {
+                        (treeItem.tooltip as vscode.MarkdownString).appendMarkdown(`- ${rule.ruleType}: ${rule.config}\n`);
+                    });
                 }
 
                 // Add state indicator, description, and label count to tree item
@@ -296,10 +319,14 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                     }
                 }
 
-                // Add label count
+                // Add label count and rule count
                 const artifactLabelCount = getLabelCountDescription(artifactLabels);
                 if (artifactLabelCount) {
                     description += (description ? ' ' : '') + artifactLabelCount;
+                }
+                if (artifactRules.length > 0) {
+                    const ruleCountDesc = `(${artifactRules.length} rule${artifactRules.length > 1 ? 's' : ''})`;
+                    description += (description ? ' ' : '') + ruleCountDesc;
                 }
 
                 if (description) {
@@ -480,33 +507,91 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
 
     private async getGroups(): Promise<RegistryItem[]> {
         const groups = await this.registryService.searchGroups();
-        return groups.map(group => new RegistryItem(
-            group.groupId || 'default',
-            RegistryItemType.Group,
-            group.groupId,
-            {
-                artifactCount: group.artifactCount,
-                description: group.description,
-                modifiedOn: group.modifiedOn
-            }
-        ));
+
+        // Fetch rules for each group
+        const groupsWithRules = await Promise.all(
+            groups.map(async (group) => {
+                let rules: any[] = [];
+                try {
+                    const ruleTypes = await this.registryService.getGroupRules(group.groupId!);
+                    // Fetch details for each rule
+                    rules = await Promise.all(
+                        ruleTypes.map(async (ruleType) => {
+                            try {
+                                return await this.registryService.getGroupRule(group.groupId!, ruleType);
+                            } catch {
+                                return null;
+                            }
+                        })
+                    );
+                    rules = rules.filter(r => r !== null);
+                } catch {
+                    // No rules or error fetching - that's okay
+                    rules = [];
+                }
+
+                return new RegistryItem(
+                    group.groupId || 'default',
+                    RegistryItemType.Group,
+                    group.groupId,
+                    {
+                        artifactCount: group.artifactCount,
+                        description: group.description,
+                        modifiedOn: group.modifiedOn,
+                        labels: group.labels,
+                        rules: rules
+                    }
+                );
+            })
+        );
+
+        return groupsWithRules;
     }
 
     private async getArtifacts(groupId: string): Promise<RegistryItem[]> {
         const artifacts = await this.registryService.getArtifacts(groupId);
-        return artifacts.map(artifact => new RegistryItem(
-            artifact.artifactId || 'unknown',
-            RegistryItemType.Artifact,
-            artifact.artifactId,
-            {
-                artifactType: artifact.artifactType,
-                state: artifact.state,
-                description: artifact.description,
-                modifiedOn: artifact.modifiedOn
-            },
-            groupId,  // parentId (the group this artifact belongs to)
-            groupId   // groupId (needed for commands that require groupId)
-        ));
+
+        // Fetch rules for each artifact
+        const artifactsWithRules = await Promise.all(
+            artifacts.map(async (artifact) => {
+                let rules: any[] = [];
+                try {
+                    const ruleTypes = await this.registryService.getArtifactRules(groupId, artifact.artifactId!);
+                    // Fetch details for each rule
+                    rules = await Promise.all(
+                        ruleTypes.map(async (ruleType) => {
+                            try {
+                                return await this.registryService.getArtifactRule(groupId, artifact.artifactId!, ruleType);
+                            } catch {
+                                return null;
+                            }
+                        })
+                    );
+                    rules = rules.filter(r => r !== null);
+                } catch {
+                    // No rules or error fetching - that's okay
+                    rules = [];
+                }
+
+                return new RegistryItem(
+                    artifact.artifactId || 'unknown',
+                    RegistryItemType.Artifact,
+                    artifact.artifactId,
+                    {
+                        artifactType: artifact.artifactType,
+                        state: artifact.state,
+                        description: artifact.description,
+                        modifiedOn: artifact.modifiedOn,
+                        labels: artifact.labels,
+                        rules: rules
+                    },
+                    groupId,  // parentId (the group this artifact belongs to)
+                    groupId   // groupId (needed for commands that require groupId)
+                );
+            })
+        );
+
+        return artifactsWithRules;
     }
 
     private async getVersions(groupId: string, artifactId: string, artifactType?: string): Promise<RegistryItem[]> {

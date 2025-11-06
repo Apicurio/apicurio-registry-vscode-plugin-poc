@@ -140,9 +140,16 @@ export async function createArtifactCommand(
             }
         );
     } catch (error) {
-        vscode.window.showErrorMessage(
-            `Failed to create artifact: ${error instanceof Error ? error.message : String(error)}`
-        );
+        // Try to handle as rule violation first
+        const { handlePotentialRuleViolation } = await import('../utils/ruleErrorParser');
+        const handled = await handlePotentialRuleViolation(error);
+
+        if (!handled) {
+            // Show generic error if not a rule violation
+            vscode.window.showErrorMessage(
+                `Failed to create artifact: ${error instanceof Error ? error.message : String(error)}`
+            );
+        }
     }
 }
 

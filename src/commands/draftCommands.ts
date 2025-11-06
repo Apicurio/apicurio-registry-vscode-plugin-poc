@@ -93,9 +93,16 @@ export async function createDraftVersionCommand(
         );
         refresh();
     } catch (error: any) {
-        vscode.window.showErrorMessage(
-            `Failed to create draft version: ${error.message}`
-        );
+        // Try to handle as rule violation first
+        const { handlePotentialRuleViolation } = await import('../utils/ruleErrorParser');
+        const handled = await handlePotentialRuleViolation(error);
+
+        if (!handled) {
+            // Show generic error if not a rule violation
+            vscode.window.showErrorMessage(
+                `Failed to create draft version: ${error.message}`
+            );
+        }
     }
 }
 
@@ -176,9 +183,16 @@ export async function finalizeDraftCommand(
         );
         refresh();
     } catch (error: any) {
-        vscode.window.showErrorMessage(
-            `Failed to finalize draft: ${error.message}`
-        );
+        // Try to handle as rule violation first
+        const { handlePotentialRuleViolation } = await import('../utils/ruleErrorParser');
+        const handled = await handlePotentialRuleViolation(error);
+
+        if (!handled) {
+            // Show generic error if not a rule violation
+            vscode.window.showErrorMessage(
+                `Failed to finalize draft: ${error.message}`
+            );
+        }
     }
 }
 

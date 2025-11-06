@@ -95,7 +95,8 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                     break;
 
                 case 'group':
-                    // Groups are already visible at root level
+                    // Expand matched groups to show their contents
+                    await this.expandGroups(rootItems);
                     break;
             }
 

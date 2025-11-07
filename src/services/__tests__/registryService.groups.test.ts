@@ -66,7 +66,7 @@ describe('RegistryService - Group Operations', () => {
             const result = await registryService.createGroup(groupId, metadata);
 
             expect(mockClient.post).toHaveBeenCalledWith(
-                '/admin/groups',
+                '/groups',
                 {
                     groupId: 'api-schemas',
                     description: 'REST API schema definitions',
@@ -96,7 +96,7 @@ describe('RegistryService - Group Operations', () => {
             const result = await registryService.createGroup(groupId);
 
             expect(mockClient.post).toHaveBeenCalledWith(
-                '/admin/groups',
+                '/groups',
                 {
                     groupId: 'minimal-group'
                 }
@@ -124,7 +124,7 @@ describe('RegistryService - Group Operations', () => {
             });
 
             expect(mockClient.post).toHaveBeenCalledWith(
-                '/admin/groups',
+                '/groups',
                 {
                     groupId: 'existing-group'
                 }

@@ -48,7 +48,7 @@ async createGroup(groupId: string, metadata?: {
 
 **API Endpoint:**
 ```
-POST /admin/groups
+POST /groups
 Content-Type: application/json
 
 {
@@ -397,7 +397,7 @@ export interface CreateGroupRequest {
 
 **Create Group:**
 ```
-POST /admin/groups
+POST /groups
 Content-Type: application/json
 
 Request Body:
@@ -426,7 +426,7 @@ Errors:
 
 **Delete Group:**
 ```
-DELETE /admin/groups/{groupId}
+DELETE /groups/{groupId}
 
 Response: 204 No Content
 

@@ -355,7 +355,7 @@ export class RegistryService {
                 requestBody.labels = metadata.labels;
             }
 
-            const response = await this.client!.post('/admin/groups', requestBody);
+            const response = await this.client!.post('/groups', requestBody);
 
             return response.data;
         } catch (error) {

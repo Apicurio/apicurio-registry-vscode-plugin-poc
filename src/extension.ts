@@ -289,6 +289,8 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Register commands
     const refreshCommand = vscode.commands.registerCommand('apicurioRegistry.refresh', () => {
+        // Clear any active search filter when manually refreshing
+        registryTreeProvider.clearSearchFilter();
         registryTreeProvider.refresh();
     });
 

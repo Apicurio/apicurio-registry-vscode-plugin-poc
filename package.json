@@ -123,6 +123,12 @@
         "category": "Apicurio Registry"
       },
       {
+        "command": "apicurioRegistry.createGroup",
+        "title": "Create Group",
+        "category": "Apicurio Registry",
+        "icon": "$(add)"
+      },
+      {
         "command": "apicurioRegistry.deleteGroup",
         "title": "Delete Group",
         "category": "Apicurio Registry"
@@ -236,9 +242,14 @@
           "group": "navigation"
         },
         {
-          "command": "apicurioRegistry.createArtifact",
+          "command": "apicurioRegistry.createGroup",
           "when": "view == apicurioRegistry",
           "group": "navigation@2"
+        },
+        {
+          "command": "apicurioRegistry.createArtifact",
+          "when": "view == apicurioRegistry",
+          "group": "navigation@3"
         },
         {
           "command": "apicurioRegistry.connect",

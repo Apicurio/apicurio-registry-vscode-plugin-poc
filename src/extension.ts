@@ -32,10 +32,13 @@ import {
 } from './commands/stateCommands';
 import { downloadContentCommand } from './commands/downloadCommand';
 import {
-    deleteGroupCommand,
     deleteArtifactCommand,
     deleteVersionCommand
 } from './commands/deleteCommands';
+import {
+    createGroupCommand,
+    deleteGroupCommand
+} from './commands/groupCommands';
 import {
     createDraftVersionCommand,
     finalizeDraftCommand,
@@ -354,6 +357,11 @@ export function activate(context: vscode.ExtensionContext) {
         await downloadContentCommand(registryService, node);
     });
 
+    // Group management commands
+    const createGroup = vscode.commands.registerCommand('apicurioRegistry.createGroup', async () => {
+        await createGroupCommand(registryService, registryTreeProvider);
+    });
+
     // Delete commands
     const deleteGroup = vscode.commands.registerCommand('apicurioRegistry.deleteGroup', async (node) => {
         await deleteGroupCommand(registryService, () => registryTreeProvider.refresh(), node);
@@ -451,6 +459,7 @@ export function activate(context: vscode.ExtensionContext) {
         changeArtifactState,
         changeVersionState,
         downloadContent,
+        createGroup,
         deleteGroup,
         deleteArtifact,
         deleteVersion,

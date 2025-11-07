@@ -66,8 +66,8 @@
         "category": "Apicurio Registry"
       },
       {
-        "command": "apicurioRegistry.createArtifact",
-        "title": "Create Artifact",
+        "command": "apicurioRegistry.create",
+        "title": "Create",
         "icon": "$(add)",
         "category": "Apicurio Registry"
       },
@@ -121,12 +121,6 @@
         "command": "apicurioRegistry.downloadContent",
         "title": "Download Content",
         "category": "Apicurio Registry"
-      },
-      {
-        "command": "apicurioRegistry.createGroup",
-        "title": "Create Group",
-        "category": "Apicurio Registry",
-        "icon": "$(add)"
       },
       {
         "command": "apicurioRegistry.deleteGroup",
@@ -242,14 +236,9 @@
           "group": "navigation"
         },
         {
-          "command": "apicurioRegistry.createGroup",
+          "command": "apicurioRegistry.create",
           "when": "view == apicurioRegistry",
           "group": "navigation@2"
-        },
-        {
-          "command": "apicurioRegistry.createArtifact",
-          "when": "view == apicurioRegistry",
-          "group": "navigation@3"
         },
         {
           "command": "apicurioRegistry.connect",

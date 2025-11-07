@@ -8,7 +8,7 @@ import { ApicurioUriBuilder } from './utils/uriBuilder';
 import { AutoSaveManager } from './services/autoSaveManager';
 import { ConflictDetector } from './services/conflictDetector';
 import { searchCommand } from './commands/searchCommand';
-import { createArtifactCommand } from './commands/createArtifactCommand';
+import { createCommand } from './commands/createCommand';
 import { setupMCPCommand } from './commands/setupMCPCommand';
 import { editMetadataCommand } from './commands/editMetadataCommand';
 import { manageRulesCommand } from './commands/rulesCommand';
@@ -35,10 +35,7 @@ import {
     deleteArtifactCommand,
     deleteVersionCommand
 } from './commands/deleteCommands';
-import {
-    createGroupCommand,
-    deleteGroupCommand
-} from './commands/groupCommands';
+import { deleteGroupCommand } from './commands/groupCommands';
 import {
     createDraftVersionCommand,
     finalizeDraftCommand,
@@ -301,8 +298,8 @@ export function activate(context: vscode.ExtensionContext) {
         await searchCommand(registryService, registryTreeProvider);
     });
 
-    const createArtifact = vscode.commands.registerCommand('apicurioRegistry.createArtifact', async () => {
-        await createArtifactCommand(registryService, registryTreeProvider);
+    const create = vscode.commands.registerCommand('apicurioRegistry.create', async () => {
+        await createCommand(registryService, registryTreeProvider);
     });
 
     const setupMCP = vscode.commands.registerCommand('apicurioRegistry.setupMCP', async () => {
@@ -355,11 +352,6 @@ export function activate(context: vscode.ExtensionContext) {
     // Download command
     const downloadContent = vscode.commands.registerCommand('apicurioRegistry.downloadContent', async (node) => {
         await downloadContentCommand(registryService, node);
-    });
-
-    // Group management commands
-    const createGroup = vscode.commands.registerCommand('apicurioRegistry.createGroup', async () => {
-        await createGroupCommand(registryService, registryTreeProvider);
     });
 
     // Delete commands
@@ -446,7 +438,7 @@ export function activate(context: vscode.ExtensionContext) {
         connectCommand,
         disconnectCommand,
         searchCmd,
-        createArtifact,
+        create,
         setupMCP,
         generateClaudeCommand,
         verifyMCP,
@@ -459,7 +451,6 @@ export function activate(context: vscode.ExtensionContext) {
         changeArtifactState,
         changeVersionState,
         downloadContent,
-        createGroup,
         deleteGroup,
         deleteArtifact,
         deleteVersion,

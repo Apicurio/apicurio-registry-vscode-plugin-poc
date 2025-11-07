@@ -178,6 +178,27 @@
         "category": "Apicurio Registry"
       },
       {
+        "command": "apicurioRegistry.createBranch",
+        "title": "Create Branch",
+        "category": "Apicurio Registry",
+        "icon": "$(git-branch)"
+      },
+      {
+        "command": "apicurioRegistry.editBranchMetadata",
+        "title": "Edit Branch Metadata",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.addVersionToBranch",
+        "title": "Add Version to Branch",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.deleteBranch",
+        "title": "Delete Branch",
+        "category": "Apicurio Registry"
+      },
+      {
         "command": "apicurioRegistry.mcp.start",
         "title": "Start MCP Server",
         "category": "Apicurio MCP"
@@ -346,6 +367,26 @@
           "command": "apicurioRegistry.manageArtifactRules",
           "when": "view == apicurioRegistry && viewItem =~ /artifact.*/",
           "group": "6_rules@1"
+        },
+        {
+          "command": "apicurioRegistry.createBranch",
+          "when": "view == apicurioRegistry && viewItem =~ /artifact.*/",
+          "group": "8_branch@1"
+        },
+        {
+          "command": "apicurioRegistry.editBranchMetadata",
+          "when": "view == apicurioRegistry && viewItem == branch-custom",
+          "group": "8_branch@2"
+        },
+        {
+          "command": "apicurioRegistry.addVersionToBranch",
+          "when": "view == apicurioRegistry && viewItem =~ /branch-.*/",
+          "group": "8_branch@3"
+        },
+        {
+          "command": "apicurioRegistry.deleteBranch",
+          "when": "view == apicurioRegistry && viewItem == branch-custom",
+          "group": "9_dangerous@1"
         },
         {
           "command": "apicurioRegistry.deleteGroup",

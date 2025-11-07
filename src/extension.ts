@@ -37,6 +37,12 @@ import {
 } from './commands/deleteCommands';
 import { deleteGroupCommand } from './commands/groupCommands';
 import {
+    createBranchCommand,
+    editBranchMetadataCommand,
+    addVersionToBranchCommand,
+    deleteBranchCommand
+} from './commands/branchCommands';
+import {
     createDraftVersionCommand,
     finalizeDraftCommand,
     discardDraftCommand,
@@ -402,6 +408,23 @@ export function activate(context: vscode.ExtensionContext) {
         await editDraftMetadataCommand(registryService, () => registryTreeProvider.refresh(), node);
     });
 
+    // Branch commands
+    const createBranch = vscode.commands.registerCommand('apicurioRegistry.createBranch', async (node) => {
+        await createBranchCommand(registryService, () => registryTreeProvider.refresh(), node);
+    });
+
+    const editBranchMetadata = vscode.commands.registerCommand('apicurioRegistry.editBranchMetadata', async (node) => {
+        await editBranchMetadataCommand(registryService, () => registryTreeProvider.refresh(), node);
+    });
+
+    const addVersionToBranch = vscode.commands.registerCommand('apicurioRegistry.addVersionToBranch', async (node) => {
+        await addVersionToBranchCommand(registryService, () => registryTreeProvider.refresh(), node);
+    });
+
+    const deleteBranch = vscode.commands.registerCommand('apicurioRegistry.deleteBranch', async (node) => {
+        await deleteBranchCommand(registryService, () => registryTreeProvider.refresh(), node);
+    });
+
     // MCP commands
     const mcpStart = vscode.commands.registerCommand('apicurioRegistry.mcp.start', async () => {
         await startMCPServerCommand(mcpServerManager);
@@ -462,6 +485,10 @@ export function activate(context: vscode.ExtensionContext) {
         finalizeDraft,
         discardDraft,
         editDraftMetadata,
+        createBranch,
+        editBranchMetadata,
+        addVersionToBranch,
+        deleteBranch,
         mcpStart,
         mcpStop,
         mcpRestart,

@@ -333,6 +333,37 @@ export class RegistryService {
         }
     }
 
+    async createGroup(
+        groupId: string,
+        metadata?: {
+            description?: string;
+            labels?: Record<string, string>;
+        }
+    ): Promise<GroupMetaData> {
+        this.ensureConnected();
+
+        try {
+            const requestBody: any = {
+                groupId
+            };
+
+            if (metadata?.description) {
+                requestBody.description = metadata.description;
+            }
+
+            if (metadata?.labels) {
+                requestBody.labels = metadata.labels;
+            }
+
+            const response = await this.client!.post('/admin/groups', requestBody);
+
+            return response.data;
+        } catch (error) {
+            console.error('Error creating group:', error);
+            throw error;
+        }
+    }
+
     async createArtifact(
         groupId: string,
         data: CreateArtifactRequest

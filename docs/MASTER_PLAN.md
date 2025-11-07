@@ -1,8 +1,9 @@
 # Apicurio VSCode Plugin - Master Implementation Plan
 
-**Last Updated:** 2025-11-06
-**Status:** Feature Parity Roadmap - Phase 1 COMPLETE! 🎉 Starting Phase 2
-**Next:** Phase 2.1 - Rules Configuration (6-8h)
+**Last Updated:** 2025-11-07
+**Status:** Feature Parity Roadmap - Phase 2 IN PROGRESS! 🔥 (25% complete)
+**Latest:** Task 031 - Rules Configuration COMPLETE ✅ (6h actual)
+**Next:** Phase 2.2 - Group Management (2-3h) or Phase 2.3 - Branching Support (8-10h)
 
 ---
 
@@ -37,7 +38,7 @@ This master plan integrates planning documents into a unified roadmap prioritizi
 | **Text Editor** (Phase 3.1) | ✅ Complete | 100% (3/3) | - |
 | **MCP Integration** | ⚠️ Complete (Blocked) | 100% (4/4) | Blocked by Claude Code bug |
 | **✅ FEATURE PARITY Phase 1** | ✅ **COMPLETE!** | 100% (2/2) | **All core operations done** |
-| **🔥 FEATURE PARITY Phase 2** | 📋 **NEXT** | 0% (0/4) | **Rules Configuration** |
+| **🔥 FEATURE PARITY Phase 2** | 🚧 **IN PROGRESS** | 25% (1/4) | **Task 031 Complete! ✅** |
 | **FEATURE PARITY Phase 3** | 📋 Planned | 0% (0/4) | After Phase 2 |
 | **Visual Editor** (Phase 4) | ⏸️ **DEFERRED** | 50% (2/4) | **Moved to end** |
 
@@ -58,11 +59,11 @@ This is now the **primary roadmap** for the extension. Based on comprehensive an
   - Edit Artifact/Version/Group Metadata
   - Tree view enhancements
 
-**Phase 2: Advanced Features (18-26h)**
-- Rules Configuration (6-8h)
-- Group Management (2-3h)
-- Branching Support (8-10h)
-- Enhanced Tree View (2-5h)
+**Phase 2: Advanced Features (12-18h remaining, 6h completed)**
+- ✅ Task 031: Rules Configuration (6h actual) - **COMPLETE!**
+- 📋 Task 032: Group Management (2-3h)
+- 📋 Task 033: Branching Support (8-10h)
+- 📋 Enhanced Tree View (2-5h)
 
 **Phase 3: Admin & Utility (12-20h)**
 - Import/Export (4-6h)
@@ -73,6 +74,76 @@ This is now the **primary roadmap** for the extension. Based on comprehensive an
 - OpenAPI Visual Editor (15-20h)
 - AsyncAPI Visual Editor (15-20h)
 - Editor Integration & Polish (5-10h)
+
+---
+
+## Recent Completion: Task 031 - Rules Configuration (2025-11-07)
+
+**Duration:** 6 hours (estimated 6-8h) - **On target!** ✅
+**Status:** ✅ **COMPLETE** - All 6 phases delivered, 30/30 tests passing
+**Completed:** 2025-11-07
+**Reference:** [docs/tasks/completed/031-rules-configuration.md](tasks/completed/031-rules-configuration.md)
+
+**Goal:** Implement comprehensive rules management for Apicurio Registry at three levels (Global, Group, Artifact) with full create/update/delete/configure capabilities.
+
+**What Was Delivered:**
+
+**Phase 1: Registry Service Extensions (15 methods)**
+- Global Rules: getGlobalRules, getGlobalRule, createGlobalRule, updateGlobalRule, deleteGlobalRule
+- Group Rules: getGroupRules, getGroupRule, createGroupRule, updateGroupRule, deleteGroupRule
+- Artifact Rules: getArtifactRules, getArtifactRule, createArtifactRule, updateArtifactRule, deleteArtifactRule
+- Full CRUD operations with proper error handling and URL encoding
+- +295 lines in registryService.ts
+
+**Phase 2: Rules Management Command (QuickPick workflow)**
+- Enable/Configure/Disable workflow for all 3 rule types (VALIDITY, COMPATIBILITY, INTEGRITY)
+- Rule-specific configuration options (7 COMPATIBILITY modes, 2 VALIDITY modes, 3 INTEGRITY modes)
+- User cancellation handling at all steps
+- +326 lines in rulesCommand.ts
+
+**Phase 3: Tree View Enhancements**
+- Async rule fetching with Promise.all for performance
+- Rule counts in tooltips: "Rules: 2 configured"
+- Rule details: "• Validity: FULL, • Compatibility: BACKWARD"
+- Description badges: "(2 rules)"
+- +112 lines in registryTreeProvider.ts
+
+**Phase 4: Rule Violation Error Parsing**
+- Smart error detection from API 409/400 responses
+- Extracts rule type (VALIDITY, COMPATIBILITY, INTEGRITY)
+- Parses violation details and causes
+- Generates rule-specific suggestions
+- User-friendly modal dialogs with "View Rules" action
+- Integrated into createArtifactCommand and draftCommands
+- +234 lines in ruleErrorParser.ts
+
+**Phase 5: Command Registration**
+- 3 commands: manageGlobalRules, manageGroupRules, manageArtifactRules
+- Context menu integration (group "6_rules@1")
+- Command Palette support with icons
+
+**Phase 6: Test Coverage (30 tests passing ✅)**
+- 15 service tests (5 global + 5 group + 5 artifact)
+- 15 command tests (enable, configure, disable, cancellation, errors)
+- All CRUD operations covered
+- All config options validated
+
+**Critical Lesson Learned - QuickPick Separator Bug:**
+- **Issue:** Incorrect separator syntax broke QuickPick rendering (only showed some items)
+- **Root Cause:** `{ label: vscode.QuickPickItemKind.Separator as any }` (WRONG)
+- **Fix:** `{ label: '─────────────', kind: vscode.QuickPickItemKind.Separator }` (CORRECT)
+- **Lesson:** QuickPickItem separators require BOTH `label` AND `kind` properties
+- Documented in task completion summary for future reference
+
+**Files Changed:** 4 new files, 7 modified, ~1,850 lines of code
+- New: rulesCommand.ts (326), ruleErrorParser.ts (234), 2 test files (771)
+- Modified: registryService.ts (+295), registryTreeProvider.ts (+112), models, extension, package.json, commands
+
+**Impact:**
+- ✅ Full feature parity with Web UI for rules management
+- ✅ Better UX than Web UI (smart error handling with suggestions)
+- ✅ Consistent QuickPick workflow across all rule levels
+- ✅ Phase 2 progress: 0% → 25% (1 of 4 tasks complete)
 
 ---
 

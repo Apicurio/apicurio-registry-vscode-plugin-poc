@@ -1,7 +1,7 @@
 # Apicurio VSCode Plugin - TODO
 
-**Last Updated:** 2025-11-06
-**Status:** Feature Parity Phase 1 COMPLETE! 🎉 All tasks done - Ready for Phase 2
+**Last Updated:** 2025-11-07
+**Status:** Feature Parity Phase 2 IN PROGRESS! 🔥 (25% complete - Task 031 done!)
 
 > 📘 For detailed strategy and roadmap → see [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md) and [MASTER_PLAN.md](MASTER_PLAN.md)
 
@@ -278,7 +278,7 @@ Visual Editor (Phase 4)    [██████░░░░░░░░░░░�
 | M2: Core Tree Complete | Oct 22 | ✅ Done | 100% |
 | M3: UX High Priority | Oct 31 | ✅ Done | 100% (Sprint 2 complete) |
 | M4: Feature Parity Phase 1 | Nov 6 | ✅ Done | 100% (all core operations) |
-| M5: Feature Parity Phase 2 | TBD | 📋 Planned | 0% (Advanced features) |
+| M5: Feature Parity Phase 2 | Nov 15 (est) | 🚧 In Progress | 25% (Task 031 complete, 3 tasks remaining) |
 | M6: Full Release | Dec 15 | 📋 Planned | - |
 
 ---
@@ -766,4 +766,4 @@ Visual Editor (Phase 4)    [██████░░░░░░░░░░░�
 ---
 
 _For detailed analysis, charts, and strategy → see [MASTER_PLAN.md](MASTER_PLAN.md)_
-_Last updated: 2025-11-04_
+_Last updated: 2025-11-07_

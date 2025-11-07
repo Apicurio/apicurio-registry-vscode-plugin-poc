@@ -2,6 +2,7 @@ export enum RegistryItemType {
     Connection = 'connection',
     Group = 'group',
     Artifact = 'artifact',
+    Branch = 'branch',
     Version = 'version'
 }
 
@@ -21,6 +22,8 @@ export class RegistryItem {
                 return `Group: ${this.label}\\nArtifacts: ${this.metadata?.artifactCount || 0}`;
             case RegistryItemType.Artifact:
                 return `Artifact: ${this.label}\\nType: ${this.metadata?.artifactType || 'Unknown'}`;
+            case RegistryItemType.Branch:
+                return `Branch: ${this.label}\\nSystem: ${this.metadata?.systemDefined ? 'Yes' : 'No'}`;
             case RegistryItemType.Version:
                 return `Version: ${this.label}\\nState: ${this.metadata?.state || 'Unknown'}`;
             default:

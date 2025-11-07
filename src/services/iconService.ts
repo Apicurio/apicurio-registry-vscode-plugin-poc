@@ -129,6 +129,16 @@ export class IconService {
     }
 
     /**
+     * Returns an icon for branch nodes.
+     * Branches are represented as git branches.
+     *
+     * @returns VSCode ThemeIcon for branches
+     */
+    static getBranchIcon(): vscode.ThemeIcon {
+        return new vscode.ThemeIcon('git-branch');
+    }
+
+    /**
      * Returns an icon for connection/placeholder nodes.
      * Used for "Not connected" and error states.
      *

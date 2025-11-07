@@ -334,6 +334,48 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 }
                 break;
 
+            case RegistryItemType.Branch:
+                treeItem.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+                treeItem.iconPath = IconService.getBranchIcon();
+
+                // Set context value based on whether it's system-defined
+                const systemDefined = element.metadata?.systemDefined;
+                treeItem.contextValue = systemDefined ? 'branch-system' : 'branch-custom';
+
+                // Enhanced tooltip with branch metadata
+                treeItem.tooltip = new vscode.MarkdownString();
+                treeItem.tooltip.appendMarkdown(`**Branch: ${element.label}**\n\n`);
+                if (systemDefined) {
+                    treeItem.tooltip.appendMarkdown(`- Type: System-defined\n`);
+                } else {
+                    treeItem.tooltip.appendMarkdown(`- Type: Custom\n`);
+                }
+                if (element.metadata?.description) {
+                    treeItem.tooltip.appendMarkdown(`- Description: ${element.metadata.description}\n`);
+                }
+                if (element.metadata?.createdOn) {
+                    treeItem.tooltip.appendMarkdown(`- Created: ${new Date(element.metadata.createdOn).toLocaleString()}\n`);
+                }
+                if (element.metadata?.modifiedOn) {
+                    treeItem.tooltip.appendMarkdown(`- Modified: ${new Date(element.metadata.modifiedOn).toLocaleString()}\n`);
+                }
+
+                // Add description for system branches
+                if (systemDefined) {
+                    treeItem.description = 'system';
+                } else if (element.metadata?.description) {
+                    // Truncate description if too long
+                    const truncateDescriptions = config.get<boolean>('display.truncateDescriptions', true);
+                    const truncateLength = config.get<number>('display.truncateLength', 50);
+
+                    if (truncateDescriptions && element.metadata.description.length > truncateLength) {
+                        treeItem.description = element.metadata.description.substring(0, truncateLength) + '...';
+                    } else {
+                        treeItem.description = element.metadata.description;
+                    }
+                }
+                break;
+
             case RegistryItemType.Version:
                 treeItem.collapsibleState = vscode.TreeItemCollapsibleState.None;
 
@@ -441,9 +483,11 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 // Group level: return artifacts
                 return await this.getArtifacts(element.id!);
             } else if (element.type === RegistryItemType.Artifact) {
-                // Artifact level: return versions
-                const artifactType = element.metadata?.artifactType;
-                return await this.getVersions(element.parentId!, element.id!, artifactType);
+                // Artifact level: return branches
+                return await this.getBranches(element.parentId!, element.id!);
+            } else if (element.type === RegistryItemType.Branch) {
+                // Branch level: return versions
+                return await this.getBranchVersions(element.groupId!, element.parentId!, element.id!);
             }
         } catch (error) {
             console.error('Error fetching registry data:', error);
@@ -592,6 +636,115 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
         );
 
         return artifactsWithRules;
+    }
+
+    /**
+     * Get branches for an artifact.
+     */
+    private async getBranches(groupId: string, artifactId: string): Promise<RegistryItem[]> {
+        try {
+            const branches = await this.registryService.getBranches(groupId, artifactId);
+
+            if (branches.length === 0) {
+                return [
+                    new RegistryItem(
+                        'No branches',
+                        RegistryItemType.Connection,
+                        undefined,
+                        { description: 'No branches found for this artifact' }
+                    )
+                ];
+            }
+
+            // Sort branches: system branches first, then custom branches alphabetically
+            const sortedBranches = branches.sort((a, b) => {
+                if (a.systemDefined && !b.systemDefined) {
+                    return -1;
+                }
+                if (!a.systemDefined && b.systemDefined) {
+                    return 1;
+                }
+                return a.branchId.localeCompare(b.branchId);
+            });
+
+            return sortedBranches.map(branch => new RegistryItem(
+                branch.branchId,
+                RegistryItemType.Branch,
+                branch.branchId,
+                {
+                    systemDefined: branch.systemDefined,
+                    description: branch.description,
+                    createdOn: branch.createdOn,
+                    modifiedOn: branch.modifiedOn,
+                    owner: branch.owner
+                },
+                artifactId,  // parent is artifact
+                groupId      // store groupId for later use
+            ));
+        } catch (error) {
+            console.error('Error fetching branches:', error);
+            return [
+                new RegistryItem(
+                    'Error loading branches',
+                    RegistryItemType.Connection,
+                    undefined,
+                    { description: `Error: ${error instanceof Error ? error.message : String(error)}` }
+                )
+            ];
+        }
+    }
+
+    /**
+     * Get versions in a branch.
+     */
+    private async getBranchVersions(groupId: string, artifactId: string, branchId: string): Promise<RegistryItem[]> {
+        const config = this.getConfig();
+        const reverseVersionOrder = config.get<boolean>('display.reverseVersionOrder', false);
+
+        try {
+            let versions = await this.registryService.getBranchVersions(groupId, artifactId, branchId);
+
+            if (versions.length === 0) {
+                return [
+                    new RegistryItem(
+                        'No versions',
+                        RegistryItemType.Connection,
+                        undefined,
+                        { description: 'No versions in this branch' }
+                    )
+                ];
+            }
+
+            // Apply version ordering preference
+            if (reverseVersionOrder) {
+                versions = versions.reverse();
+            }
+
+            return versions.map(version => new RegistryItem(
+                version.version || 'unknown',
+                RegistryItemType.Version,
+                version.version,
+                {
+                    versionId: version.versionId,
+                    globalId: version.globalId,
+                    state: version.state,
+                    createdOn: version.createdOn,
+                    labels: version.labels
+                },
+                artifactId,
+                groupId
+            ));
+        } catch (error) {
+            console.error('Error fetching branch versions:', error);
+            return [
+                new RegistryItem(
+                    'Error loading versions',
+                    RegistryItemType.Connection,
+                    undefined,
+                    { description: `Error: ${error instanceof Error ? error.message : String(error)}` }
+                )
+            ];
+        }
     }
 
     private async getVersions(groupId: string, artifactId: string, artifactType?: string): Promise<RegistryItem[]> {

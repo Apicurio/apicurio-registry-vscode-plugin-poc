@@ -291,3 +291,48 @@ export interface CreateRule {
     ruleType: RuleType;
     config: string;
 }
+
+/**
+ * Branch metadata
+ */
+export interface BranchMetadata {
+    groupId: string;
+    artifactId: string;
+    branchId: string;
+    createdOn: string;      // ISO timestamp
+    modifiedOn: string;     // ISO timestamp
+    modifiedBy: string;
+    owner: string;
+    description?: string;
+    systemDefined: boolean; // true for "latest", false for custom
+}
+
+/**
+ * Branch list response
+ */
+export interface BranchList {
+    branches: BranchMetadata[];
+    count: number;
+}
+
+/**
+ * Create branch request
+ */
+export interface CreateBranchRequest {
+    branchId: string;
+    description?: string;
+}
+
+/**
+ * Update branch metadata request
+ */
+export interface UpdateBranchMetadataRequest {
+    description?: string;
+}
+
+/**
+ * Add version to branch request
+ */
+export interface AddVersionToBranchRequest {
+    version: string;
+}

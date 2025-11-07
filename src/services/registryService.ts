@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import {
+    BranchMetadata,
     CreateArtifactRequest,
     CreateArtifactResponse,
     CreateVersion,
@@ -1359,6 +1360,229 @@ export class RegistryService {
         } catch (error: any) {
             console.error(`Error deleting artifact rule ${ruleType} for ${groupId}/${artifactId}:`, error);
             throw new Error(`Failed to delete artifact rule: ${error.message || error}`);
+        }
+    }
+
+    // ================================================================================
+    // BRANCH MANAGEMENT
+    // ================================================================================
+
+    /**
+     * Get all branches for an artifact
+     */
+    async getBranches(groupId: string, artifactId: string): Promise<BranchMetadata[]> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            const response = await this.client.get(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/branches`
+            );
+            return response.data.branches || [];
+        } catch (error: any) {
+            console.error(`Error fetching branches for ${groupId}/${artifactId}:`, error);
+
+            if (error.response?.status === 404) {
+                throw new Error(`Artifact not found: ${groupId}/${artifactId}`);
+            }
+
+            throw new Error(`Failed to fetch branches: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Get metadata for a specific branch
+     */
+    async getBranchMetadata(groupId: string, artifactId: string, branchId: string): Promise<BranchMetadata> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            const encodedBranchId = encodeURIComponent(branchId);
+            const response = await this.client.get(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/branches/${encodedBranchId}`
+            );
+            return response.data;
+        } catch (error: any) {
+            console.error(`Error fetching branch ${branchId} for ${groupId}/${artifactId}:`, error);
+
+            if (error.response?.status === 404) {
+                throw new Error(`Branch not found: ${branchId}`);
+            }
+
+            throw new Error(`Failed to fetch branch metadata: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Create a new branch
+     */
+    async createBranch(
+        groupId: string,
+        artifactId: string,
+        branchId: string,
+        description?: string
+    ): Promise<BranchMetadata> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+
+            const requestBody: any = { branchId };
+            if (description) {
+                requestBody.description = description;
+            }
+
+            const response = await this.client.post(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/branches`,
+                requestBody
+            );
+            return response.data;
+        } catch (error: any) {
+            console.error(`Error creating branch ${branchId} for ${groupId}/${artifactId}:`, error);
+
+            if (error.response?.status === 409) {
+                throw new Error(`Branch already exists: ${branchId}`);
+            }
+
+            if (error.response?.status === 400) {
+                throw new Error(`Invalid branch ID format: ${branchId}`);
+            }
+
+            throw new Error(`Failed to create branch: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Update branch metadata
+     */
+    async updateBranchMetadata(
+        groupId: string,
+        artifactId: string,
+        branchId: string,
+        metadata: { description?: string }
+    ): Promise<void> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            const encodedBranchId = encodeURIComponent(branchId);
+
+            await this.client.put(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/branches/${encodedBranchId}`,
+                metadata
+            );
+        } catch (error: any) {
+            console.error(`Error updating branch ${branchId} for ${groupId}/${artifactId}:`, error);
+
+            if (error.response?.status === 404) {
+                throw new Error(`Branch not found: ${branchId}`);
+            }
+
+            throw new Error(`Failed to update branch metadata: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Delete a branch
+     */
+    async deleteBranch(groupId: string, artifactId: string, branchId: string): Promise<void> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            const encodedBranchId = encodeURIComponent(branchId);
+
+            await this.client.delete(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/branches/${encodedBranchId}`
+            );
+        } catch (error: any) {
+            console.error(`Error deleting branch ${branchId} for ${groupId}/${artifactId}:`, error);
+
+            if (error.response?.status === 405) {
+                throw new Error(`Cannot delete system-defined branch: ${branchId}`);
+            }
+
+            if (error.response?.status === 404) {
+                throw new Error(`Branch not found: ${branchId}`);
+            }
+
+            throw new Error(`Failed to delete branch: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Get versions in a branch
+     */
+    async getBranchVersions(groupId: string, artifactId: string, branchId: string): Promise<SearchedVersion[]> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            const encodedBranchId = encodeURIComponent(branchId);
+
+            const response = await this.client.get(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/branches/${encodedBranchId}/versions`
+            );
+            return response.data.versions || [];
+        } catch (error: any) {
+            console.error(`Error fetching versions for branch ${branchId} in ${groupId}/${artifactId}:`, error);
+            throw new Error(`Failed to fetch branch versions: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Add a version to a branch
+     */
+    async addVersionToBranch(
+        groupId: string,
+        artifactId: string,
+        branchId: string,
+        version: string
+    ): Promise<void> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+            const encodedBranchId = encodeURIComponent(branchId);
+
+            await this.client.post(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/branches/${encodedBranchId}/versions`,
+                { version }
+            );
+        } catch (error: any) {
+            console.error(`Error adding version ${version} to branch ${branchId} in ${groupId}/${artifactId}:`, error);
+
+            if (error.response?.status === 404) {
+                throw new Error(`Version not found: ${version}`);
+            }
+
+            if (error.response?.status === 409) {
+                throw new Error(`Version already in branch: ${version}`);
+            }
+
+            throw new Error(`Failed to add version to branch: ${error.message || error}`);
         }
     }
 }

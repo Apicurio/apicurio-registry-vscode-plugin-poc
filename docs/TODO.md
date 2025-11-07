@@ -1,7 +1,7 @@
 # Apicurio VSCode Plugin - TODO
 
 **Last Updated:** 2025-11-07
-**Status:** Feature Parity Phase 2 IN PROGRESS! 🔥 (50% complete - Tasks 031-033 done!)
+**Status:** Feature Parity Phase 2 COMPLETE! 🎉 (100% complete - All tasks done!)
 
 > 📘 For detailed strategy and roadmap → see [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md) and [MASTER_PLAN.md](MASTER_PLAN.md)
 
@@ -15,32 +15,35 @@
 
 ## 🎯 What to Work on TODAY
 
-**🎉 TASK 033 COMPLETE! Branching Support Delivered!**
+**🎉 PHASE 2 COMPLETE! All Advanced Features Delivered!**
 
 **Latest Achievement:**
-- ✅ Task 033: Branching Support (8h actual, 8-10h estimated) - **All 4 phases complete!**
-  - Create/manage branches for artifact versions
-  - 4-level tree hierarchy (Group → Artifact → Branch → Version)
-  - 4 branch commands (create, edit metadata, add versions, delete)
-  - System branch protection (can't delete "latest")
-  - Multi-select version picker for batch operations
-  - 39 comprehensive tests passing (19 service + 20 command)
-  - 5 new files, 6 modified, ~2,500+ lines of code
+- ✅ Task 034: Tree Sort & Filter Preferences (2h actual, 2-3h estimated) - **Enhanced Tree View complete!**
+  - 7 new configuration properties (3 sort + 4 filter)
+  - Sort groups/artifacts/branches by multiple criteria
+  - Filter by state (disabled/deprecated) and type
+  - Hide empty groups for cleaner navigation
+  - 6 helper methods + integration in 5 tree provider methods
+  - Auto-refresh when preferences change
+  - 3 files modified, ~190 lines of code
 
 **Phase 1 & 2 Progress:**
-- ✅ Phase 1: 100% complete (Search + Metadata Editor)
-- 🔥 Phase 2: 50% complete (4 of 8 tasks done!)
+- ✅ Phase 1: 100% complete (Search + Metadata Editor) 🎉
+- ✅ Phase 2: 100% complete (All advanced features) 🎉
 
-**🚀 Next: FEATURE PARITY PHASE 2 - Continue Advanced Features**
+**🚀 Next: FEATURE PARITY PHASE 3 - Admin & Utility Features**
 
-**Phase 2 Remaining** (2-5h):
-- Enhanced Tree View (2-5h) 🟢 LOW - UI polish
+**Phase 3 Tasks** (12-20h):
+- Import/Export operations (4-6h)
+- Role Management (4-6h)
+- Settings/Configuration (6-8h)
+- Additional utility features (6-10h)
 
 **See:**
 - [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md) - Complete 4-phase plan
 - [FEATURE_GAP_ANALYSIS.md](FEATURE_GAP_ANALYSIS.md) - Web UI comparison
 - [MASTER_PLAN.md](MASTER_PLAN.md) - Updated strategic plan
-- [tasks/completed/high-priority/033-branching-support.md](tasks/completed/high-priority/033-branching-support.md) - Latest completion
+- [tasks/completed/low-priority/034-tree-sort-filter-preferences.md](tasks/completed/low-priority/034-tree-sort-filter-preferences.md) - Latest completion
 
 ---
 
@@ -98,9 +101,11 @@
 
 | # | Task | Status | Effort | Completed | Details |
 |---|------|--------|--------|-----------|---------|
+| 034 | Tree Sort & Filter Preferences | ✅ Done | 2h | 2025-11-07 | [spec](tasks/completed/low-priority/034-tree-sort-filter-preferences.md) - 7 preferences, 6 methods |
 | 033 | Branching Support | ✅ Done | 8h | 2025-11-07 | [spec](tasks/completed/high-priority/033-branching-support.md) - 39 tests passing |
 | 032 | Group Management | ✅ Done | 2h | 2025-11-07 | [spec](tasks/completed/high-priority/032-group-management.md) - 15 tests passing |
 | 031 | Rules Configuration | ✅ Done | 6h | 2025-11-06 | [spec](tasks/completed/031-rules-configuration.md) - 30 tests passing |
+| 025 | Advanced Search | ✅ Done | 2.5h | 2025-11-05 | [spec](tasks/completed/025-advanced-search.md) - 15 tests passing |
 
 ### 🔴 High Priority - FEATURE PARITY PHASE 2
 
@@ -161,6 +166,7 @@
 
 | # | Task | Completed | Effort | Notes |
 |---|------|-----------|--------|-------|
+| 034 | Tree Sort & Filter Preferences | 2025-11-07 | 2h | 7 new configuration properties (3 sort + 4 filter), 6 helper methods, integration in 5 tree provider methods, auto-refresh on preference changes |
 | 033 | Branching Support | 2025-11-07 | 8h | Create/manage branches, 4-level tree hierarchy, system branch protection, multi-select version picker, 39 tests passing (19 service + 20 command) |
 | 032 | Group Management | 2025-11-07 | 2h | Create/delete groups wizard, safety warnings, 15 tests passing (3 service + 12 command) |
 | 031 | Rules Configuration | 2025-11-06 | 6h | Global/group/artifact rules, enable/configure/disable, error parsing, tree view display, 30 tests passing |
@@ -196,7 +202,7 @@
 ## 📊 Progress Overview
 
 ```
-Overall Project Progress: ████████████░░░░░░░░ 57%
+Overall Project Progress: █████████████░░░░░░░ 60%
 
 Foundation & Tree          [████████████████████] 100% ✅
 UX High Priority           [████████████████████] 100% ✅
@@ -204,8 +210,8 @@ Draft Infrastructure       [█████████████████�
 Text Editor Integration    [████████████████████] 100% ✅
 MCP Integration            [████████████████████] 100% ✅ (blocked)
 FEATURE PARITY Phase 1     [████████████████████] 100% ✅ COMPLETE!
-FEATURE PARITY Phase 2     [██████████░░░░░░░░░░]  50% 🔥 IN PROGRESS
-FEATURE PARITY Phase 3     [░░░░░░░░░░░░░░░░░░░░]   0% 📋
+FEATURE PARITY Phase 2     [████████████████████] 100% ✅ COMPLETE!
+FEATURE PARITY Phase 3     [░░░░░░░░░░░░░░░░░░░░]   0% 📋 NEXT
 Visual Editor (Phase 4)    [██████░░░░░░░░░░░░░░]  50% ⏸️ DEFERRED
 ```
 
@@ -217,20 +223,20 @@ Visual Editor (Phase 4)    [██████░░░░░░░░░░░�
 - ✅ MCP Integration (4/4 tasks - 100%, blocked by Claude Code bug)
 - ✅ UX Medium Priority (2/3 tasks - 67%)
 - ✅ **FEATURE PARITY Phase 1 (2/2 tasks - 100%)** 🎉
-- 🔥 **FEATURE PARITY Phase 2 (4/8 tasks - 50%)** - IN PROGRESS
+- ✅ **FEATURE PARITY Phase 2 (5/5 tasks - 100%)** 🎉 **COMPLETE!**
 
 **Feature Parity Roadmap:**
 - ✅ Phase 1: Core Operations (2/2 tasks - 100%) - **COMPLETE!**
-- 🔥 Phase 2: Advanced Features (4/8 tasks - 50%) - **IN PROGRESS**
-- 📋 Phase 3: Admin & Utility (0/4 tasks - 0%)
+- ✅ Phase 2: Advanced Features (5/5 tasks - 100%) - **COMPLETE!** 🎉
+- 📋 Phase 3: Admin & Utility (0/4 tasks - 0%) - **NEXT**
 - ⏸️ Phase 4: Visual Editor (2/4 tasks - 50%) - **DEFERRED**
 
 **Estimated Remaining Effort:**
 - Phase 1: ✅ COMPLETE (saved 6-9h through consolidation!)
-- Phase 2: 2-5h remaining (16h completed: 6h rules + 2h groups + 8h branching)
+- Phase 2: ✅ COMPLETE (18h total: 6h rules + 2h groups + 8h branching + 2h tree sort/filter)
 - Phase 3: 12-20h
 - Phase 4 (deferred): 80-130h
-- **Total:** 94-155h remaining
+- **Total:** 92-150h remaining
 
 ---
 
@@ -285,6 +291,47 @@ Visual Editor (Phase 4)    [██████░░░░░░░░░░░�
 ---
 
 ## 📝 Recent Activity
+
+**2025-11-07 (Task 034 Complete! 🎉 Phase 2 COMPLETE! Enhanced Tree View)**
+- ✅ **Task 034: Tree Sort & Filter Preferences** (2h actual, 2-3h estimated) - **Matched estimate!**
+- 🎯 **Implementation Complete**: All 5 phases delivered in one session
+  - Phase 1 & 2: Configuration (7 new preferences in package.json)
+  - Phase 3 & 4: Helper methods (6 sort/filter methods)
+  - Phase 5: Integration (5 tree provider methods updated)
+- ⚙️ **Sort Preferences** - 3 new settings
+  - Sort Groups: alphabetical, modified-date, artifact-count
+  - Sort Artifacts: alphabetical, modified-date, artifact-type
+  - Sort Branches: system-first, alphabetical
+- 🔍 **Filter Preferences** - 4 new settings
+  - Hide Disabled: filter out DISABLED artifacts/versions
+  - Hide Deprecated: filter out DEPRECATED versions
+  - Hide Empty Groups: hide groups with 0 artifacts
+  - Artifact Types: show only selected types (OPENAPI, ASYNCAPI, etc.)
+- 🔧 **Helper Methods** - Clean separation of concerns
+  - sortGroups(), sortArtifacts(), sortBranches()
+  - filterGroups(), filterArtifacts(), filterVersions()
+  - Applied in getGroups(), getArtifacts(), getBranches(), getBranchVersions(), getVersions()
+- 🔄 **Auto-Refresh** - Tree updates immediately when preferences change
+  - Extended configuration listener for filter.* namespace
+  - No reload required, seamless UX
+- 📝 **Files Changed**: 3 files, ~190 lines
+  - package.json (+60 lines - 7 new properties)
+  - registryTreeProvider.ts (+130 lines - 6 methods + integration)
+  - extension.ts (+1 line - filter config listener)
+- 💡 **Lessons Learned**:
+  - Preferences are powerful - 7 properties give users significant control
+  - Following platform conventions (VSCode settings) is simpler than custom UI
+  - Helper methods enable clean, testable code
+  - Default values ensure backward compatibility
+- 🎉 **PHASE 2 COMPLETE!** All 5 tasks delivered (100%)
+  - Task 025: Advanced Search (2.5h)
+  - Task 026-030: Unified Metadata Editor (6-8h)
+  - Task 031: Rules Configuration (6h)
+  - Task 032: Group Management (2h)
+  - Task 033: Branching Support (8h)
+  - Task 034: Tree Sort & Filter Preferences (2h)
+  - **Total: 26.5-28.5h** (originally estimated 20-30h)
+- 🚀 **Next**: FEATURE PARITY PHASE 3 - Admin & Utility Features (12-20h)
 
 **2025-11-07 (Task 033 Complete! 🎉 Branching Support - Phase 2 at 50%!)**
 - ✅ **Task 033: Branching Support** (8h actual, 8-10h estimated) - **Matched estimate!**

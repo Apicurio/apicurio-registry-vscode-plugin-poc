@@ -549,6 +549,138 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
         }
     }
 
+    /**
+     * Sort groups based on user preference.
+     */
+    private sortGroups(groups: RegistryItem[]): RegistryItem[] {
+        const config = this.getConfig();
+        const sortBy = config.get<string>('display.sortGroups', 'alphabetical');
+
+        switch (sortBy) {
+            case 'modified-date':
+                return groups.sort((a, b) => {
+                    const dateA = new Date(a.metadata?.modifiedOn || 0).getTime();
+                    const dateB = new Date(b.metadata?.modifiedOn || 0).getTime();
+                    return dateB - dateA; // Newest first
+                });
+            case 'artifact-count':
+                return groups.sort((a, b) => {
+                    const countA = a.metadata?.artifactCount || 0;
+                    const countB = b.metadata?.artifactCount || 0;
+                    return countB - countA; // Most artifacts first
+                });
+            case 'alphabetical':
+            default:
+                return groups.sort((a, b) => a.label.localeCompare(b.label));
+        }
+    }
+
+    /**
+     * Sort artifacts based on user preference.
+     */
+    private sortArtifacts(artifacts: RegistryItem[]): RegistryItem[] {
+        const config = this.getConfig();
+        const sortBy = config.get<string>('display.sortArtifacts', 'alphabetical');
+
+        switch (sortBy) {
+            case 'modified-date':
+                return artifacts.sort((a, b) => {
+                    const dateA = new Date(a.metadata?.modifiedOn || 0).getTime();
+                    const dateB = new Date(b.metadata?.modifiedOn || 0).getTime();
+                    return dateB - dateA; // Newest first
+                });
+            case 'artifact-type':
+                return artifacts.sort((a, b) => {
+                    const typeA = a.metadata?.artifactType || '';
+                    const typeB = b.metadata?.artifactType || '';
+                    return typeA.localeCompare(typeB);
+                });
+            case 'alphabetical':
+            default:
+                return artifacts.sort((a, b) => a.label.localeCompare(b.label));
+        }
+    }
+
+    /**
+     * Sort branches based on user preference.
+     */
+    private sortBranches(branches: RegistryItem[]): RegistryItem[] {
+        const config = this.getConfig();
+        const sortBy = config.get<string>('display.sortBranches', 'system-first');
+
+        if (sortBy === 'alphabetical') {
+            return branches.sort((a, b) => a.label.localeCompare(b.label));
+        } else {
+            // system-first (default)
+            return branches.sort((a, b) => {
+                if (a.metadata?.systemDefined && !b.metadata?.systemDefined) {
+                    return -1;
+                }
+                if (!a.metadata?.systemDefined && b.metadata?.systemDefined) {
+                    return 1;
+                }
+                return a.label.localeCompare(b.label);
+            });
+        }
+    }
+
+    /**
+     * Filter groups based on user preferences.
+     */
+    private filterGroups(groups: RegistryItem[]): RegistryItem[] {
+        const config = this.getConfig();
+        const hideEmpty = config.get<boolean>('filter.hideEmptyGroups', false);
+
+        if (hideEmpty) {
+            return groups.filter(g => (g.metadata?.artifactCount || 0) > 0);
+        }
+        return groups;
+    }
+
+    /**
+     * Filter artifacts based on user preferences.
+     */
+    private filterArtifacts(artifacts: RegistryItem[]): RegistryItem[] {
+        const config = this.getConfig();
+        const hideDisabled = config.get<boolean>('filter.hideDisabled', false);
+        const allowedTypes = config.get<string[]>('filter.artifactTypes', []);
+
+        let filtered = artifacts;
+
+        if (hideDisabled) {
+            filtered = filtered.filter(a => a.metadata?.state !== 'DISABLED');
+        }
+
+        if (allowedTypes.length > 0) {
+            filtered = filtered.filter(a =>
+                allowedTypes.includes(a.metadata?.artifactType || '')
+            );
+        }
+
+        return filtered;
+    }
+
+    /**
+     * Filter versions based on user preferences.
+     */
+    private filterVersions(versions: RegistryItem[]): RegistryItem[] {
+        const config = this.getConfig();
+        const hideDisabled = config.get<boolean>('filter.hideDisabled', false);
+        const hideDeprecated = config.get<boolean>('filter.hideDeprecated', false);
+
+        let filtered = versions;
+
+        if (hideDisabled) {
+            filtered = filtered.filter(v => v.metadata?.state !== 'DISABLED');
+        }
+
+        if (hideDeprecated) {
+            filtered = filtered.filter(v => v.metadata?.state !== 'DEPRECATED');
+        }
+
+        return filtered;
+    }
+
     private async getGroups(): Promise<RegistryItem[]> {
         const groups = await this.registryService.searchGroups();
 
@@ -589,7 +721,11 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
             })
         );
 
-        return groupsWithRules;
+        // Apply filters and sorting
+        const filtered = this.filterGroups(groupsWithRules);
+        const sorted = this.sortGroups(filtered);
+
+        return sorted;
     }
 
     private async getArtifacts(groupId: string): Promise<RegistryItem[]> {
@@ -635,7 +771,11 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
             })
         );
 
-        return artifactsWithRules;
+        // Apply filters and sorting
+        const filtered = this.filterArtifacts(artifactsWithRules);
+        const sorted = this.sortArtifacts(filtered);
+
+        return sorted;
     }
 
     /**
@@ -656,18 +796,8 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 ];
             }
 
-            // Sort branches: system branches first, then custom branches alphabetically
-            const sortedBranches = branches.sort((a, b) => {
-                if (a.systemDefined && !b.systemDefined) {
-                    return -1;
-                }
-                if (!a.systemDefined && b.systemDefined) {
-                    return 1;
-                }
-                return a.branchId.localeCompare(b.branchId);
-            });
-
-            return sortedBranches.map(branch => new RegistryItem(
+            // Convert to RegistryItems
+            const branchItems = branches.map(branch => new RegistryItem(
                 branch.branchId,
                 RegistryItemType.Branch,
                 branch.branchId,
@@ -681,6 +811,11 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 artifactId,  // parent is artifact
                 groupId      // store groupId for later use
             ));
+
+            // Apply sorting (no filters for branches)
+            const sorted = this.sortBranches(branchItems);
+
+            return sorted;
         } catch (error) {
             console.error('Error fetching branches:', error);
             return [
@@ -720,7 +855,8 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 versions = versions.reverse();
             }
 
-            return versions.map(version => new RegistryItem(
+            // Create RegistryItem objects
+            const versionItems = versions.map(version => new RegistryItem(
                 version.version || 'unknown',
                 RegistryItemType.Version,
                 version.version,
@@ -734,6 +870,11 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 artifactId,
                 groupId
             ));
+
+            // Apply filters
+            const filtered = this.filterVersions(versionItems);
+
+            return filtered;
         } catch (error) {
             console.error('Error fetching branch versions:', error);
             return [
@@ -758,7 +899,8 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
             versions = versions.reverse();
         }
 
-        return versions.map(version => new RegistryItem(
+        // Create RegistryItem objects
+        const versionItems = versions.map(version => new RegistryItem(
             version.version || 'unknown',
             RegistryItemType.Version,
             version.version,
@@ -772,6 +914,11 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
             artifactId,
             groupId
         ));
+
+        // Apply filters
+        const filtered = this.filterVersions(versionItems);
+
+        return filtered;
     }
 
     /**

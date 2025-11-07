@@ -500,8 +500,8 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Listen for configuration changes and refresh tree view
     const configChangeListener = vscode.workspace.onDidChangeConfiguration(e => {
-        if (e.affectsConfiguration('apicurioRegistry.display')) {
-            // Refresh tree when display settings change
+        if (e.affectsConfiguration('apicurioRegistry.display') || e.affectsConfiguration('apicurioRegistry.filter')) {
+            // Refresh tree when display or filter settings change
             registryTreeProvider.refresh();
         }
     });

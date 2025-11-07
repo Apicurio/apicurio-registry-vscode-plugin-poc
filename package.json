@@ -533,6 +533,48 @@
           "maximum": 200,
           "description": "Maximum length for truncated descriptions"
         },
+        "apicurioRegistry.display.sortGroups": {
+          "type": "string",
+          "enum": ["alphabetical", "modified-date", "artifact-count"],
+          "default": "alphabetical",
+          "description": "How to sort groups in tree view"
+        },
+        "apicurioRegistry.display.sortArtifacts": {
+          "type": "string",
+          "enum": ["alphabetical", "modified-date", "artifact-type"],
+          "default": "alphabetical",
+          "description": "How to sort artifacts within groups"
+        },
+        "apicurioRegistry.display.sortBranches": {
+          "type": "string",
+          "enum": ["system-first", "alphabetical"],
+          "default": "system-first",
+          "description": "How to sort branches (system branches first or alphabetical)"
+        },
+        "apicurioRegistry.filter.hideDisabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide disabled artifacts and versions from tree view"
+        },
+        "apicurioRegistry.filter.hideDeprecated": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide deprecated versions from tree view"
+        },
+        "apicurioRegistry.filter.hideEmptyGroups": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide groups that contain no artifacts"
+        },
+        "apicurioRegistry.filter.artifactTypes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["OPENAPI", "ASYNCAPI", "AVRO", "PROTOBUF", "JSON", "GRAPHQL", "WSDL", "XSD", "XML"]
+          },
+          "default": [],
+          "description": "Show only these artifact types (empty = show all)"
+        },
         "apicurioRegistry.search.defaultLimit": {
           "type": "number",
           "default": 50,

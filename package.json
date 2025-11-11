@@ -242,6 +242,23 @@
         "command": "apicurioRegistry.verifyMCP",
         "title": "Verify MCP Configuration",
         "category": "Apicurio MCP"
+      },
+      {
+        "command": "apicurioRegistry.exportAll",
+        "title": "Export All Artifacts",
+        "icon": "$(cloud-download)",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.exportGroup",
+        "title": "Export Group",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.importArtifacts",
+        "title": "Import Artifacts from ZIP",
+        "icon": "$(cloud-upload)",
+        "category": "Apicurio Registry"
       }
     ],
     "menus": {
@@ -265,6 +282,16 @@
           "command": "apicurioRegistry.connect",
           "when": "view == apicurioRegistry",
           "group": "navigation"
+        },
+        {
+          "command": "apicurioRegistry.exportAll",
+          "when": "view == apicurioRegistry",
+          "group": "navigation@3"
+        },
+        {
+          "command": "apicurioRegistry.importArtifacts",
+          "when": "view == apicurioRegistry",
+          "group": "navigation@3"
         }
       ],
       "view/item/context": [
@@ -367,6 +394,11 @@
           "command": "apicurioRegistry.manageArtifactRules",
           "when": "view == apicurioRegistry && viewItem =~ /artifact.*/",
           "group": "6_rules@1"
+        },
+        {
+          "command": "apicurioRegistry.exportGroup",
+          "when": "view == apicurioRegistry && viewItem == group",
+          "group": "7_export@1"
         },
         {
           "command": "apicurioRegistry.createBranch",

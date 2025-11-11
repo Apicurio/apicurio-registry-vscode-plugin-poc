@@ -12,6 +12,8 @@ import { createCommand } from './commands/createCommand';
 import { setupMCPCommand } from './commands/setupMCPCommand';
 import { editMetadataCommand } from './commands/editMetadataCommand';
 import { manageRulesCommand } from './commands/rulesCommand';
+import { exportAllCommand, exportGroupCommand } from './commands/exportCommand';
+import { importArtifactsCommand } from './commands/importCommand';
 import {
     generateClaudeCommandCommand,
     verifyMCPCommand
@@ -427,6 +429,19 @@ export function activate(context: vscode.ExtensionContext) {
         await deleteBranchCommand(registryService, () => registryTreeProvider.refresh(), node);
     });
 
+    // Import/Export commands
+    const exportAll = vscode.commands.registerCommand('apicurioRegistry.exportAll', async () => {
+        await exportAllCommand(registryService);
+    });
+
+    const exportGroup = vscode.commands.registerCommand('apicurioRegistry.exportGroup', async (node) => {
+        await exportGroupCommand(registryService, node);
+    });
+
+    const importArtifacts = vscode.commands.registerCommand('apicurioRegistry.importArtifacts', async () => {
+        await importArtifactsCommand(registryService, () => registryTreeProvider.refresh());
+    });
+
     // MCP commands
     const mcpStart = vscode.commands.registerCommand('apicurioRegistry.mcp.start', async () => {
         await startMCPServerCommand(mcpServerManager);
@@ -491,6 +506,9 @@ export function activate(context: vscode.ExtensionContext) {
         editBranchMetadata,
         addVersionToBranch,
         deleteBranch,
+        exportAll,
+        exportGroup,
+        importArtifacts,
         mcpStart,
         mcpStop,
         mcpRestart,

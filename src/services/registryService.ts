@@ -1585,4 +1585,67 @@ export class RegistryService {
             throw new Error(`Failed to add version to branch: ${error.message || error}`);
         }
     }
+
+    // ==================== Import/Export Operations ====================
+
+    /**
+     * Export all registry artifacts as a ZIP file.
+     * Uses the /admin/export endpoint.
+     *
+     * @returns ZIP file content as Uint8Array
+     * @throws Error if export fails
+     */
+    async exportAll(): Promise<Uint8Array> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const response = await this.client.get('/admin/export', {
+                responseType: 'arraybuffer'
+            });
+
+            if (!response.data) {
+                throw new Error('No data received from export endpoint');
+            }
+
+            return new Uint8Array(response.data);
+        } catch (error: any) {
+            console.error('Error exporting registry:', error);
+            throw new Error(`Failed to export registry: ${error.message || error}`);
+        }
+    }
+
+    /**
+     * Import artifacts from a ZIP file.
+     * Uses the /admin/import endpoint.
+     *
+     * @param zipContent ZIP file content as Uint8Array
+     * @throws Error if import fails (400 = validation error, 409 = conflicts)
+     */
+    async importArtifacts(zipContent: Uint8Array): Promise<void> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            await this.client.post('/admin/import', zipContent, {
+                headers: {
+                    'Content-Type': 'application/zip'
+                }
+            });
+        } catch (error: any) {
+            console.error('Error importing artifacts:', error);
+
+            if (error.response?.status === 400) {
+                throw new Error('Invalid ZIP file or corrupted content');
+            }
+
+            if (error.response?.status === 409) {
+                throw new Error('Some artifacts already exist (conflict)');
+            }
+
+            throw new Error(`Failed to import artifacts: ${error.message || error}`);
+        }
+    }
 }

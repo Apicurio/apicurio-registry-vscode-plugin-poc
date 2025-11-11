@@ -1,6 +1,6 @@
 # Apicurio VSCode Plugin - TODO
 
-**Last Updated:** 2025-11-07
+**Last Updated:** 2025-11-11
 **Status:** Feature Parity Phase 2 COMPLETE! 🎉 (100% complete - All tasks done!)
 
 > 📘 For detailed strategy and roadmap → see [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md) and [MASTER_PLAN.md](MASTER_PLAN.md)
@@ -53,12 +53,20 @@
 
 **Status**: ✅ **IMPLEMENTATION COMPLETE** - All 4 tasks delivered! (56 tests passing)
 
-**⚠️ Blocked**: AI features unusable due to Claude Code v2.0.31 bug (stdio connection drops after ~20s)
+**⚠️ Blocked**: AI features unusable due to Claude Code v2.0.37 Zod validation bug
+
+**Root Cause Identified** (2025-11-11):
+- Claude Code applies wrong Zod schema to JSON-RPC responses
+- Expects request schema (with `"method"`) but receives response (with `"id"` and `"result"`)
+- MCP server works perfectly in standalone tests
+- Our QUARKUS_LOG_CONSOLE_STDERR fix is correct and necessary
 
 **Reference**:
-- [MCP_ARCHITECTURE_VALIDATION.md](ai-integration/MCP_ARCHITECTURE_VALIDATION.md)
-- [CLAUDE_CODE_BUG_REPORT.md](ai-integration/CLAUDE_CODE_BUG_REPORT.md)
-- [GITHUB_ISSUE_TEMPLATE.md](ai-integration/GITHUB_ISSUE_TEMPLATE.md)
+- [MANUAL_DEBUG_GUIDE.md](ai-integration/MANUAL_DEBUG_GUIDE.md) - Comprehensive debugging guide
+- [MCP_FIX_VERIFICATION.md](ai-integration/MCP_FIX_VERIFICATION.md) - Fix verification & status
+- [MCP_COMMUNICATION_FIX.md](ai-integration/MCP_COMMUNICATION_FIX.md) - QUARKUS_LOG_CONSOLE_STDERR fix
+- [GETTING_STARTED.md](ai-integration/GETTING_STARTED.md) - MCP setup guide
+- [MCP_ARCHITECTURE_VALIDATION.md](ai-integration/MCP_ARCHITECTURE_VALIDATION.md) - Architecture validation
 
 | # | Task | Status | Effort | Completed | Details |
 |---|------|--------|--------|-----------|------------|
@@ -78,11 +86,13 @@
 - ✅ MCP server receives requests and returns data
 - ✅ All 56 tests passing (23 + 16 + 7 + 10)
 
-**What Doesn't Work** ❌ (Claude Code Bug):
-- ❌ AI features hang with "Enchanting..." status
-- ❌ stdio connection drops after ~20 seconds
-- ❌ Claude Code never receives MCP server responses
+**What Doesn't Work** ❌ (Claude Code v2.0.37 Zod Validation Bug):
+- ❌ Zod schema validation error: "unrecognized_keys: ['id', 'result']"
+- ❌ Claude Code applies wrong schema (expects request, receives response)
+- ❌ stdio connection drops after 46-92 seconds
+- ❌ AI features hang indefinitely
 - ❌ Users cannot use AI features (blocked by upstream bug)
+- ✅ MCP server works correctly (verified via standalone tests)
 
 ---
 
@@ -291,6 +301,58 @@ Visual Editor (Phase 4)    [██████░░░░░░░░░░░�
 ---
 
 ## 📝 Recent Activity
+
+**2025-11-11 (MCP Debugging Complete! 🔍 Root Cause Identified)**
+- 🔍 **Identified Claude Code 2.0.37 Zod Validation Bug** - Root cause found!
+  - Claude Code applies wrong Zod schema to JSON-RPC responses
+  - Expects request schema (with `"method"`) but receives response (with `"id"` and `"result"`)
+  - Connection drops after 46-92 seconds with "unrecognized_keys" error
+  - **MCP server works perfectly** - verified via standalone tests ✅
+- 📚 **Documentation Reorganization** - Major cleanup and consolidation
+  - Archived 6 old AI integration docs to `archive/` folder
+  - Created [GETTING_STARTED.md](ai-integration/GETTING_STARTED.md) - Comprehensive setup guide
+  - Created [MANUAL_DEBUG_GUIDE.md](ai-integration/MANUAL_DEBUG_GUIDE.md) - Debugging scenarios & commands
+  - Created [MCP_FIX_VERIFICATION.md](ai-integration/MCP_FIX_VERIFICATION.md) - Fix status & verification
+  - Created [MCP_COMMUNICATION_FIX.md](ai-integration/MCP_COMMUNICATION_FIX.md) - QUARKUS_LOG_CONSOLE_STDERR fix
+  - Reorganized testing docs into structured folders
+- ✅ **QUARKUS_LOG_CONSOLE_STDERR Fix** - Implemented throughout codebase
+  - Updated `mcpServerManager.ts` - Docker & JAR server startup
+  - Updated `mcpConfigurationManager.ts` - Command generation
+  - Updated `test-mcp-server.sh` - All test scripts
+  - Ensures MCP server logs go to stderr, keeping stdout clean for JSON-RPC
+  - **Fix is correct and necessary** - even though Claude Code has separate bug
+- 🛠️ **Debugging Tools Created**:
+  - `debug-mcp-raw.sh` - Manual MCP communication tester with detailed output
+  - `test-mcp-fixed.sh` - Validates clean MCP server output (no logs on stdout)
+  - `test-mcp-sequence.sh` - Tests full MCP protocol sequence
+  - `check-claude-logs.sh` - Claude Code log analysis tool
+- 🔬 **Verification Testing**:
+  - Pulled latest MCP server image (2025-11-11)
+  - Reinstalled Claude Code 2.0.37 (published 2025-11-11)
+  - Tested with both inline `-e` env vars and separate `env` object
+  - Confirmed MCP server responds correctly in all standalone tests
+  - Extracted full 2082-character Zod error from Claude Code logs
+- 📊 **Impact Analysis**:
+  - Plugin code: ✅ Complete - generates correct MCP setup commands
+  - MCP server: ✅ Working - standalone tests pass perfectly
+  - Configuration: ✅ Correct - clean stdout, proper env vars
+  - Claude Code: ❌ **Bug** - Zod validation error prevents integration
+- 📝 **Files Changed**: 55 files (+4888 insertions, -660 deletions)
+  - 8 new documentation files
+  - 4 new test/debug scripts
+  - Code changes in 2 TypeScript files
+  - Reorganized 30+ test data and documentation files
+- 💡 **Lessons Learned**:
+  - Environment variable placement matters for Docker containers
+  - Inline `-e` flags work, separate `env` object doesn't pass to container
+  - Manual protocol testing crucial for diagnosing client/server issues
+  - Comprehensive logging and debugging tools save hours of investigation
+  - Zod version (3.23.8) isn't the issue - schema application logic is
+- 🚀 **Next Steps**:
+  - Wait for Claude Code team to fix Zod validation bug
+  - Or report issue with comprehensive evidence (all documented)
+  - Once fixed: Test Import/Export operations (Task 035)
+- 🎯 **Status**: MCP integration ready, blocked by external bug (not our code)
 
 **2025-11-07 (Task 034 Complete! 🎉 Phase 2 COMPLETE! Enhanced Tree View)**
 - ✅ **Task 034: Tree Sort & Filter Preferences** (2h actual, 2-3h estimated) - **Matched estimate!**

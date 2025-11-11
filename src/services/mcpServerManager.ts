@@ -173,6 +173,7 @@ export class MCPServerManager {
             '-e', `REGISTRY_URL=${this.config.registryUrl}`,
             '-e', `APICURIO_MCP_SAFE_MODE=${this.config.safeMode}`,
             '-e', `APICURIO_MCP_PAGING_LIMIT=${this.config.pagingLimit}`,
+            '-e', 'QUARKUS_LOG_CONSOLE_STDERR=true',
             '--name', 'apicurio-mcp-server',
             '--rm', // Remove container when stopped
             this.config.dockerImage
@@ -255,7 +256,8 @@ export class MCPServerManager {
             `-Dregistry.url=${this.config.registryUrl}`,
             `-Dapicurio.mcp.safe-mode=${this.config.safeMode}`,
             `-Dapicurio.mcp.paging.limit=${this.config.pagingLimit}`,
-            `-Dquarkus.http.port=${this.config.port}`
+            `-Dquarkus.http.port=${this.config.port}`,
+            `-Dquarkus.log.console.stderr=true`
         ];
 
         this.serverProcess = spawn('java', args);

@@ -26,6 +26,7 @@ This file contains project-specific instructions for AI assistants working on th
 - **Planning**: `docs/planning/`
 - **AI Integration**: `docs/ai-integration/`
 - **Testing guides**: `docs/testing/`
+- **Test data**: `test-data/`
 
 ## CRITICAL RULE: Documentation Management
 
@@ -266,6 +267,41 @@ npm run compile           # TypeScript compilation
 - ❌ Skip refactor phase
 - ❌ Ignore test failures
 
+## Definition of Done - MANDATORY
+
+A task is NOT complete until ALL of the following are done:
+
+### Code Requirements
+- [ ] Implementation complete (all phases/features working)
+- [ ] TypeScript compiles with 0 errors
+- [ ] No linting errors
+- [ ] All tests passing (unit tests)
+
+### Test Documentation Requirements
+- [ ] Test cases documented in task spec (tasks/*/XXX-name.md)
+- [ ] Manual test guide created (tasks/*/XXX-TESTING_GUIDE.md) - Optional but recommended for complex features
+- [ ] Test results recorded (pass/fail for each test case)
+- [ ] Edge cases identified and tested
+
+### Documentation Requirements
+- [ ] Task spec moved to tasks/completed/
+- [ ] TODO.md updated with completion
+- [ ] MASTER_PLAN.md updated (if milestone reached)
+- [ ] Lessons learned documented
+- [ ] Recent Activity log entry added
+
+### Git Requirements
+- [ ] All changes committed to feature branch
+- [ ] Tests verified passing before merge
+- [ ] Branch merged to main
+- [ ] Feature branch deleted
+
+### User Confirmation
+- [ ] User has reviewed and approved the implementation
+- [ ] User has tested manually (or delegated testing)
+
+**Remember:** "If documentation is not updated, the task is NOT complete."
+
 ## Commit Message Format
 
 ```
@@ -349,12 +385,19 @@ npm run test  # Should still PASS ✅
 git add .
 git commit -m "refactor(XXX): improve code quality"
 
-# 5. Update documentation
+# 5. Create test documentation
+# Add test cases to task spec (XXX-name.md)
+# Create testing guide (XXX-TESTING_GUIDE.md) if complex feature
+# Document test scenarios, expected results, edge cases
+git add docs/tasks/
+git commit -m "docs(XXX): add test documentation"
+
+# 6. Update documentation
 # Update TODO.md, task file, MASTER_PLAN.md
 git add docs/
 git commit -m "docs(XXX): update documentation"
 
-# 6. Merge to main (all tests passing)
+# 7. Merge to main (all tests passing)
 npm run test && npm run lint && npm run compile
 git checkout main
 git merge task/XXX-name
@@ -402,7 +445,7 @@ npm run vscode:prepublish  # Package extension
 
 **Testing MCP Server:**
 ```bash
-./docs/testing/test-mcp-server.sh  # Validate MCP server setup
+./test-data/scripts/test-mcp-server.sh  # Validate MCP server setup
 ```
 
 ## Important Files to Know

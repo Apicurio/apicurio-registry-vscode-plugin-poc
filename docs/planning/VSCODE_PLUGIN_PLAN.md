@@ -440,7 +440,7 @@ The phased approach ensures incremental delivery of value while managing technic
 - `src/services/iconService.ts` - Icon management
 - `src/providers/registryTreeProvider.ts` - Tree view implementation
 - `src/models/registryModels.ts` - Type definitions
-- `test-icons.sh` - Testing utilities
+- `test-data/scripts/test-icons.sh` - Testing utilities
 
 ### 🚧 Current Phase
 

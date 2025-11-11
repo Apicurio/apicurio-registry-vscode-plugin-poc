@@ -44,6 +44,7 @@ claude mcp add apicurio-registry -s local -- \
   -e REGISTRY_URL=http://host.containers.internal:8080/apis/registry/v3 \
   -e APICURIO_MCP_SAFE_MODE=false \
   -e APICURIO_MCP_PAGING_LIMIT=200 \
+  -e QUARKUS_LOG_CONSOLE_STDERR=true \
   quay.io/apicurio/apicurio-registry-mcp-server:latest-snapshot
 ```
 
@@ -61,6 +62,7 @@ claude mcp add apicurio-registry -s local -- \
   -e REGISTRY_URL=http://host.containers.internal:8080 \
   -e APICURIO_MCP_SAFE_MODE=true \
   -e APICURIO_MCP_PAGING_LIMIT=200 \
+  -e QUARKUS_LOG_CONSOLE_STDERR=true \
   quay.io/apicurio/apicurio-registry-mcp-server:latest-snapshot
 ```
 
@@ -191,6 +193,7 @@ claude mcp add apicurio-registry -s local -- \
   -e REGISTRY_URL=http://host.containers.internal:8080/apis/registry/v3 \
   -e APICURIO_MCP_SAFE_MODE=false \
   -e APICURIO_MCP_PAGING_LIMIT=200 \
+  -e QUARKUS_LOG_CONSOLE_STDERR=true \
   quay.io/apicurio/apicurio-registry-mcp-server:latest-snapshot
 ```
 
@@ -390,6 +393,7 @@ claude mcp add apicurio-registry -s local -- \
   -e REGISTRY_URL=http://host.containers.internal:8080/apis/registry/v3 \
   -e APICURIO_MCP_SAFE_MODE=false \
   -e APICURIO_MCP_PAGING_LIMIT=200 \
+  -e QUARKUS_LOG_CONSOLE_STDERR=true \
   quay.io/apicurio/apicurio-registry-mcp-server:latest-snapshot
 
 # Test Registry connection

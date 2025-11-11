@@ -8,7 +8,7 @@
 
 ```bash
 cd <PROJECT_ROOT>
-./apicurio-vscode-plugin/docs/testing/test-mcp-server.sh
+./apicurio-vscode-plugin/test-data/scripts/test-mcp-server.sh
 ```
 
 **Expected**: All tests pass ✓

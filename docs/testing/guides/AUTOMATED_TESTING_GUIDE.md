@@ -30,7 +30,7 @@ npx jest --testPathPattern="search" --watch
 ### Run Automated Test Script
 
 ```bash
-./test-search.sh
+./test-data/scripts/test-search.sh
 ```
 
 This script will:

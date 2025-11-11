@@ -132,7 +132,7 @@ const response = await this.client!.get(
 - All OpenAPI artifacts
 
 **Test Data Population:**
-- Script: `test-artifacts/populate-registry.js`
+- Script: `test-data/scripts/populate-registry.js`
 - Successfully populated via Node.js script
 - All artifacts created with proper versions
 

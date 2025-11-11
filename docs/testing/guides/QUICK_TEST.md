@@ -6,7 +6,7 @@
 
 ```bash
 cd apicurio-vscode-plugin
-./test-setup.sh
+./test-data/scripts/test-setup.sh
 ```
 
 The script will:

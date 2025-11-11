@@ -19,9 +19,9 @@ Critical missing feature for artifact management. Users need ability to create a
 
 ### Files Created
 - `src/commands/createArtifactCommand.ts` (465 lines)
-- `test-artifacts/sample-openapi.yaml` (264 lines)
-- `test-artifacts/sample-avro.avsc` (79 lines)
-- `test-artifacts/sample-json-schema.json` (92 lines)
+- `test-data/artifacts/sample-openapi.yaml` (264 lines)
+- `test-data/artifacts/sample-avro.avsc` (79 lines)
+- `test-data/artifacts/sample-json-schema.json` (92 lines)
 
 ### Files Modified
 - `src/models/registryModels.ts` (+70 lines) - Added V3 API request/response types
@@ -205,7 +205,7 @@ interface GroupMetaData
 ### Issue: File search pattern not finding files
 **Problem:** User testing found `**/*.yaml` returned "No files found"
 **Root cause:** No YAML files in workspace (only in node_modules, which is excluded)
-**Solution:** Created `test-artifacts/` directory with sample files
+**Solution:** Created `test-data/artifacts/` directory with sample files
 **Outcome:** Manual testing now works correctly
 
 ---

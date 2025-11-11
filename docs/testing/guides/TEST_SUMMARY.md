@@ -28,7 +28,7 @@
 
 ### Support Files Created
 
-4. **`test-search.sh`**
+4. **`test-data/scripts/test-search.sh`**
    - Automated test runner script
    - Generates coverage reports
    - Creates TEST_REPORT.md
@@ -279,7 +279,7 @@ The search feature is **fully implemented and compiled successfully**. The servi
 
 ### Support Files
 - `src/__mocks__/vscode.ts` (updated)
-- `test-search.sh` (automation script)
+- `test-data/scripts/test-search.sh` (automation script)
 
 ### Documentation
 - `docs/AUTOMATED_TESTING_GUIDE.md`

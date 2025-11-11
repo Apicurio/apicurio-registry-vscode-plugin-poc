@@ -91,6 +91,7 @@ CONTAINER_ID=$(podman run -d \
   -e REGISTRY_URL=http://host.containers.internal:8080 \
   -e APICURIO_MCP_SAFE_MODE=true \
   -e APICURIO_MCP_PAGING_LIMIT=200 \
+  -e QUARKUS_LOG_CONSOLE_STDERR=true \
   quay.io/apicurio/apicurio-registry-mcp-server:latest-snapshot 2>&1)
 
 if [ $? -eq 0 ]; then
@@ -138,6 +139,7 @@ MCP_INIT_MSG='{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolV
 info "Sending MCP initialize message..."
 MCP_RESPONSE=$(echo "$MCP_INIT_MSG" | podman run -i --rm \
   -e REGISTRY_URL=http://host.containers.internal:8080 \
+  -e QUARKUS_LOG_CONSOLE_STDERR=true \
   quay.io/apicurio/apicurio-registry-mcp-server:latest-snapshot 2>&1 | head -1)
 
 # Check if response is valid JSON-RPC
@@ -186,9 +188,11 @@ MCP_LIST_GROUPS='{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":
 CONTAINER_TEST=$(podman run --rm \
   -e REGISTRY_URL=http://host.containers.internal:8080 \
   -e APICURIO_MCP_SAFE_MODE=true \
+  -e QUARKUS_LOG_CONSOLE_STDERR=true \
   quay.io/apicurio/apicurio-registry-mcp-server:latest-snapshot \
   --help 2>&1 || echo "$MCP_INIT_MSG" | podman run -i --rm \
   -e REGISTRY_URL=http://host.containers.internal:8080 \
+  -e QUARKUS_LOG_CONSOLE_STDERR=true \
   quay.io/apicurio/apicurio-registry-mcp-server:latest-snapshot 2>&1 | head -1)
 
 if echo "$CONTAINER_TEST" | grep -q "jsonrpc\|Usage"; then
@@ -233,6 +237,8 @@ if [ $TESTS_FAILED -eq 0 ]; then
     echo "  - APICURIO_MCP_SAFE_MODE=true"
     echo "  - -e"
     echo "  - APICURIO_MCP_PAGING_LIMIT=200"
+    echo "  - -e"
+    echo "  - QUARKUS_LOG_CONSOLE_STDERR=true"
     echo "  - quay.io/apicurio/apicurio-registry-mcp-server:latest-snapshot"
     echo ""
     exit 0

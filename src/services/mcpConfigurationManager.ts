@@ -332,6 +332,7 @@ The command has been copied to your clipboard!`;
   -e REGISTRY_URL=${registryUrl} \\
   -e APICURIO_MCP_SAFE_MODE=${this.config.safeMode} \\
   -e APICURIO_MCP_PAGING_LIMIT=${this.config.pagingLimit} \\
+  -e QUARKUS_LOG_CONSOLE_STDERR=true \\
   ${this.config.dockerImage}`;
 
             case 'jar':
@@ -342,7 +343,8 @@ The command has been copied to your clipboard!`;
   java -jar ${this.config.jarPath} \\
   -Dregistry.url=${registryUrl} \\
   -Dapicurio.mcp.safe-mode=${this.config.safeMode} \\
-  -Dapicurio.mcp.paging.limit=${this.config.pagingLimit}`;
+  -Dapicurio.mcp.paging.limit=${this.config.pagingLimit} \\
+  -Dquarkus.log.console.stderr=true`;
 
             case 'external':
                 // For external servers, assume HTTP transport
@@ -370,6 +372,7 @@ claude mcp add apicurio-registry -s local --transport http --url http://localhos
                         '-e', `REGISTRY_URL=${this.config.registryUrl}`,
                         '-e', `APICURIO_MCP_SAFE_MODE=${this.config.safeMode}`,
                         '-e', `APICURIO_MCP_PAGING_LIMIT=${this.config.pagingLimit}`,
+                        '-e', 'QUARKUS_LOG_CONSOLE_STDERR=true',
                         this.config.dockerImage
                     ],
                     env: {}
@@ -384,7 +387,8 @@ claude mcp add apicurio-registry -s local --transport http --url http://localhos
                         `-Dregistry.url=${this.config.registryUrl}`,
                         `-Dapicurio.mcp.safe-mode=${this.config.safeMode}`,
                         `-Dapicurio.mcp.paging.limit=${this.config.pagingLimit}`,
-                        `-Dquarkus.http.port=${this.config.port}`
+                        `-Dquarkus.http.port=${this.config.port}`,
+                        `-Dquarkus.log.console.stderr=true`
                     ],
                     env: {}
                 };

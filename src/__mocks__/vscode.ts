@@ -132,7 +132,11 @@ export namespace window {
         return Promise.resolve({});
     }
 
-    export function showSaveDialog(options?: { defaultUri?: Uri; filters?: Record<string, string[]> }): Thenable<Uri | undefined> {
+    export function showSaveDialog(options?: { defaultUri?: Uri; filters?: Record<string, string[]>; saveLabel?: string }): Thenable<Uri | undefined> {
+        return Promise.resolve(undefined);
+    }
+
+    export function showOpenDialog(options?: { canSelectFiles?: boolean; canSelectFolders?: boolean; canSelectMany?: boolean; filters?: Record<string, string[]>; openLabel?: string }): Thenable<Uri[] | undefined> {
         return Promise.resolve(undefined);
     }
 }
@@ -151,11 +155,20 @@ export namespace workspace {
             languageId: typeof options === 'string' ? 'plaintext' : (options.language || 'plaintext')
         });
     }
+
+    export const fs = {
+        writeFile: (uri: Uri, content: Uint8Array): Thenable<void> => Promise.resolve(),
+        readFile: (uri: Uri): Thenable<Uint8Array> => Promise.resolve(new Uint8Array())
+    };
 }
 
 export namespace commands {
     export function registerCommand(command: string, callback: (...args: any[]) => any): any {
         return { dispose: () => {} };
+    }
+
+    export function executeCommand(command: string, ...args: any[]): Thenable<any> {
+        return Promise.resolve();
     }
 }
 

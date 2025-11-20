@@ -1,30 +1,30 @@
 # Testing Documentation
 
-This directory contains all testing documentation and guides for the Apicurio VSCode Extension.
+This directory contains legacy testing documentation for the Apicurio VSCode Extension.
 
-## Directory Structure
+**NOTE:** Testing documentation has been consolidated. Please see:
+- **[Comprehensive Testing Guide](../contributors/testing.md)** - Complete testing guide for contributors
+
+This directory is kept for historical reference only.
+
+## Legacy Directory Structure
 
 ```
 /docs/testing/
-├── guides/                    # General testing guides
-└── task-tests/               # Task-specific manual test guides
+└── guides/                    # Original testing guides (consolidated)
 ```
 
 ## Testing Guides (`/guides/`)
 
-### General Testing Documentation
+### Original Testing Documentation (Historical)
 
-- **TESTING_GUIDE.md** - Comprehensive guide for VSCode extension testing
-- **AUTOMATED_TESTING_GUIDE.md** - Guide for automated testing setup
-- **QUICK_TEST.md** - Quick smoke test checklist
-- **TEST_SUMMARY.md** - Summary of test coverage and results
-- **TESTING_QUICK_START.md** - Quick start guide for new contributors
+These guides have been consolidated into `docs/contributors/testing.md`:
 
-### Task-Specific Testing Guides (`/task-tests/`)
-
-Each completed task may have a dedicated testing guide:
-
-- **035-TESTING_GUIDE.md** - Import/Export Operations testing
+- **TESTING_GUIDE.md** - Original comprehensive testing guide
+- **AUTOMATED_TESTING_GUIDE.md** - Original automated testing setup
+- **QUICK_TEST.md** - Original quick smoke test
+- **TEST_SUMMARY.md** - Original test summary
+- **TESTING_QUICK_START.md** - Original quick start guide
 
 ## Test Data and Scripts
 

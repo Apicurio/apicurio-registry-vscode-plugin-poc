@@ -1,7 +1,7 @@
 # Apicurio VSCode Plugin - TODO
 
-**Last Updated:** 2025-11-11
-**Status:** Feature Parity Phase 2 COMPLETE! 🎉 (100% complete - All tasks done!)
+**Last Updated:** 2025-11-20
+**Status:** Feature Parity Phase 3 IN PROGRESS (1 of 4 tasks complete - 25%)
 
 > 📘 For detailed strategy and roadmap → see [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md) and [MASTER_PLAN.md](MASTER_PLAN.md)
 
@@ -15,29 +15,28 @@
 
 ## 🎯 What to Work on TODAY
 
-**🎉 PHASE 2 COMPLETE! All Advanced Features Delivered!**
+**🎉 PHASE 3 STARTED! Import/Export Complete!**
 
 **Latest Achievement:**
-- ✅ Task 034: Tree Sort & Filter Preferences (2h actual, 2-3h estimated) - **Enhanced Tree View complete!**
-  - 7 new configuration properties (3 sort + 4 filter)
-  - Sort groups/artifacts/branches by multiple criteria
-  - Filter by state (disabled/deprecated) and type
-  - Hide empty groups for cleaner navigation
-  - 6 helper methods + integration in 5 tree provider methods
-  - Auto-refresh when preferences change
-  - 3 files modified, ~190 lines of code
+- ✅ Task 035: Import/Export Operations (~6h actual, 4-6h estimated) - **Bulk operations delivered!**
+  - Export entire registry to ZIP file
+  - Import artifacts from ZIP file
+  - Progress indicators and file size formatting
+  - Comprehensive error handling
+  - 33 tests passing (14 export + 19 import)
+  - 2 new commands, 2 test suites, ~630 lines total
 
-**Phase 1 & 2 Progress:**
+**Phase Progress:**
 - ✅ Phase 1: 100% complete (Search + Metadata Editor) 🎉
 - ✅ Phase 2: 100% complete (All advanced features) 🎉
+- 🚧 Phase 3: 25% complete (1 of 4 tasks) - **Admin & Utility Features**
 
-**🚀 Next: FEATURE PARITY PHASE 3 - Admin & Utility Features**
+**🚀 Next Phase 3 Tasks:**
 
-**Phase 3 Tasks** (12-20h):
-- Import/Export operations (4-6h)
-- Role Management (4-6h)
-- Settings/Configuration (6-8h)
-- Additional utility features (6-10h)
+**Remaining Tasks** (8-14h):
+- Role Management (4-6h) - User/role administration
+- Settings/Configuration (6-8h) - Global registry settings
+- Additional utility features TBD
 
 **See:**
 - [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md) - Complete 4-phase plan
@@ -301,6 +300,35 @@ Visual Editor (Phase 4)    [██████░░░░░░░░░░░�
 ---
 
 ## 📝 Recent Activity
+
+**2025-11-20 (Task 035 Complete! 📦 Import/Export Operations)**
+- ✅ **Completed Import/Export Operations** - Bulk backup and migration features delivered!
+  - Export entire registry to ZIP file (`exportAllCommand`)
+  - Import artifacts from ZIP file (`importArtifactsCommand`)
+  - Group export shows "not implemented" with fallback to export all
+  - Progress indicators with file size formatting (KB/MB)
+  - Comprehensive error handling (conflicts, validation, network, file system)
+  - User confirmations for destructive operations
+- 🧪 **Test Coverage** - 33 tests passing!
+  - 14 export command tests (exportCommand.test.ts)
+  - 19 import command tests (importCommand.test.ts)
+  - All edge cases covered (cancellation, errors, large files)
+- 🛠️ **VSCode Mock Updates** - Enhanced test infrastructure
+  - Added `workspace.fs.writeFile` and `workspace.fs.readFile` to vscode mock
+  - Added `window.showOpenDialog` for file selection
+  - Added `commands.executeCommand` for command execution
+- 📝 **Files Changed**: 5 files created/modified (~630 lines)
+  - `src/commands/exportCommand.ts` (93 lines)
+  - `src/commands/importCommand.ts` (106 lines)
+  - `src/commands/__tests__/exportCommand.test.ts` (179 lines, 14 tests)
+  - `src/commands/__tests__/importCommand.test.ts` (255 lines, 19 tests)
+  - `src/__mocks__/vscode.ts` (updated)
+- 💡 **Lessons Learned**:
+  - Test memory allocation patterns, not absolute sizes (reduced 50MB tests to 500KB)
+  - VSCode mock completeness crucial for testing new features
+  - TDD approach catches bugs early (error message format mismatches)
+  - File size formatting improves UX (1.2 MB vs. 1234567 bytes)
+- 🚀 **Next**: Phase 3 continues with Role Management or Settings/Configuration
 
 **2025-11-11 (MCP Debugging Complete! 🔍 Root Cause Identified)**
 - 🔍 **Identified Claude Code 2.0.37 Zod Validation Bug** - Root cause found!

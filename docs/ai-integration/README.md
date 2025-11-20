@@ -1,10 +1,24 @@
 # AI Integration with Claude Code
 
-**Status:** ✅ Working
-**Last Updated:** 2025-11-11
+**Status:** ⚠️ **BLOCKED - MCP SDK Bug**
+**Last Updated:** 2025-11-14
 **Integration:** Claude Code + MCP Server
+**Issue:** Critical bug in `@modelcontextprotocol/sdk` blocks all stdio tool invocation
 
 This directory contains documentation for the AI-assisted development workflow using Claude Code and the Apicurio Registry MCP Server.
+
+## ⚠️ CRITICAL BUG NOTICE
+
+**A critical bug has been discovered in the Model Context Protocol TypeScript SDK that blocks all MCP tool invocation over stdio transport.**
+
+**Read:** [`MCP_SDK_BUG_INVESTIGATION.md`](MCP_SDK_BUG_INVESTIGATION.md) for complete investigation details.
+
+**Status:**
+- ✅ Apicurio Registry MCP Server is **correct** and protocol-compliant
+- ❌ Bug is in `@modelcontextprotocol/sdk` (affects Claude Code, MCP Inspector, and all SDK-based clients)
+- ⏳ Waiting for MCP SDK team to fix the issue
+
+**Impact:** MCP integration is currently **unusable** for stdio transport until SDK is fixed.
 
 ---
 

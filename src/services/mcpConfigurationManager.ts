@@ -299,6 +299,127 @@ The command has been copied to your clipboard!`;
     }
 
     /**
+     * Get the Java command to use for running the MCP server JAR.
+     * Attempts to detect Java 17+ installation.
+     */
+    private getJavaCommand(): string {
+        // Check if user has configured a custom Java path
+        const config = vscode.workspace.getConfiguration('apicurioRegistry.mcp');
+        const customJavaPath = config.get<string>('javaPath');
+
+        if (customJavaPath) {
+            return customJavaPath;
+        }
+
+        // Default to 'java' command (assumes it's in PATH)
+        // On macOS with Homebrew, this is typically a symlink to the latest Java version
+        return 'java';
+    }
+
+    /**
+     * Validate Java installation and version.
+     * Returns true if Java 17+ is available.
+     */
+    async validateJavaInstallation(): Promise<{ valid: boolean; version?: string; error?: string }> {
+        try {
+            const { spawn } = require('child_process');
+            const javaCommand = this.getJavaCommand();
+            const javaVersion = spawn(javaCommand, ['-version']);
+
+            let output = '';
+            javaVersion.stderr?.on('data', (data: Buffer) => {
+                output += data.toString();
+            });
+
+            return new Promise((resolve) => {
+                javaVersion.on('close', (code: number) => {
+                    if (code !== 0) {
+                        resolve({
+                            valid: false,
+                            error: 'Java command not found or failed to execute'
+                        });
+                        return;
+                    }
+
+                    // Parse version from output (e.g., "openjdk version \"17.0.2\"")
+                    const versionMatch = output.match(/version "(\d+)/);
+                    if (!versionMatch) {
+                        resolve({
+                            valid: false,
+                            error: 'Could not parse Java version'
+                        });
+                        return;
+                    }
+
+                    const majorVersion = parseInt(versionMatch[1], 10);
+                    if (majorVersion < 17) {
+                        resolve({
+                            valid: false,
+                            version: versionMatch[1],
+                            error: `Java ${majorVersion} detected. Java 17 or higher is required.`
+                        });
+                        return;
+                    }
+
+                    resolve({
+                        valid: true,
+                        version: versionMatch[1]
+                    });
+                });
+
+                javaVersion.on('error', () => {
+                    resolve({
+                        valid: false,
+                        error: 'Java is not installed or not in PATH'
+                    });
+                });
+            });
+        } catch (error: any) {
+            return {
+                valid: false,
+                error: error.message
+            };
+        }
+    }
+
+    /**
+     * Validate that the JAR file exists at the configured path.
+     */
+    async validateJarPath(jarPath: string): Promise<{ valid: boolean; error?: string }> {
+        try {
+            const fs = require('fs').promises;
+            const stats = await fs.stat(jarPath);
+
+            if (!stats.isFile()) {
+                return {
+                    valid: false,
+                    error: 'Path exists but is not a file'
+                };
+            }
+
+            if (!jarPath.endsWith('.jar')) {
+                return {
+                    valid: false,
+                    error: 'File does not have .jar extension'
+                };
+            }
+
+            return { valid: true };
+        } catch (error: any) {
+            if (error.code === 'ENOENT') {
+                return {
+                    valid: false,
+                    error: 'JAR file not found at specified path'
+                };
+            }
+            return {
+                valid: false,
+                error: error.message
+            };
+        }
+    }
+
+    /**
      * Normalize Registry URL by removing the /apis/registry/v3 path.
      * The MCP server automatically adds this path, so we need to pass just the base URL.
      */
@@ -339,12 +460,15 @@ The command has been copied to your clipboard!`;
                 if (!this.config.jarPath) {
                     throw new Error('JAR path not configured');
                 }
+                // Get Java command (auto-detect if needed)
+                const javaCommand = this.getJavaCommand();
                 return `claude mcp add apicurio-registry -s local -- \\
-  java -jar ${this.config.jarPath} \\
+  ${javaCommand} \\
   -Dregistry.url=${registryUrl} \\
   -Dapicurio.mcp.safe-mode=${this.config.safeMode} \\
   -Dapicurio.mcp.paging.limit=${this.config.pagingLimit} \\
-  -Dquarkus.log.console.stderr=true`;
+  -Dquarkus.log.console.stderr=true \\
+  -jar ${this.config.jarPath}`;
 
             case 'external':
                 // For external servers, assume HTTP transport
@@ -465,13 +589,13 @@ claude mcp add apicurio-registry -s local --transport http --url http://localhos
             {
                 label: '$(package) Docker (Recommended)',
                 description: 'Run MCP server in Docker container',
-                detail: 'Easiest setup, requires Docker Desktop',
+                detail: 'Easiest setup, requires Docker Desktop or Podman',
                 serverType: 'docker' as const
             },
             {
                 label: '$(file-binary) JAR File',
                 description: 'Run MCP server as Java process',
-                detail: 'Requires Java 17+ and MCP server JAR',
+                detail: 'Requires Java 17+ and MCP server JAR file',
                 serverType: 'jar' as const
             },
             {
@@ -495,6 +619,112 @@ claude mcp add apicurio-registry -s local --transport http --url http://localhos
         const mcpConfig = vscode.workspace.getConfiguration('apicurioRegistry.mcp');
         await mcpConfig.update('serverType', serverTypeChoice.serverType, vscode.ConfigurationTarget.Global);
         this.config.serverType = serverTypeChoice.serverType;
+
+        // Step 3.5: If JAR mode, configure JAR path
+        if (serverTypeChoice.serverType === 'jar') {
+            // First, validate Java installation
+            const javaValidation = await this.validateJavaInstallation();
+            if (!javaValidation.valid) {
+                const installJava = await vscode.window.showErrorMessage(
+                    `Java 17+ is required for JAR mode.\n\n${javaValidation.error}\n\nPlease install Java 17 or higher and try again.`,
+                    { modal: true },
+                    'Install Java (opens browser)',
+                    'Configure Java Path',
+                    'Cancel'
+                );
+
+                if (installJava === 'Install Java (opens browser)') {
+                    vscode.env.openExternal(vscode.Uri.parse('https://adoptium.net/'));
+                    return false;
+                } else if (installJava === 'Configure Java Path') {
+                    const javaPath = await vscode.window.showInputBox({
+                        prompt: 'Enter the full path to the Java executable (e.g., /opt/homebrew/opt/openjdk@17/bin/java)',
+                        placeHolder: '/path/to/java',
+                        ignoreFocusOut: true
+                    });
+
+                    if (javaPath) {
+                        await mcpConfig.update('javaPath', javaPath, vscode.ConfigurationTarget.Global);
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            } else {
+                vscode.window.showInformationMessage(`✓ Java ${javaValidation.version} detected`);
+            }
+
+            // Prompt for JAR path
+            const jarPathOptions = await vscode.window.showQuickPick([
+                {
+                    label: '$(file) Browse for JAR file',
+                    description: 'Select the MCP server JAR file',
+                    action: 'browse' as const
+                },
+                {
+                    label: '$(edit) Enter JAR path manually',
+                    description: 'Type the full path to the JAR file',
+                    action: 'manual' as const
+                }
+            ], {
+                placeHolder: 'How would you like to specify the JAR file location?',
+                ignoreFocusOut: true
+            });
+
+            if (!jarPathOptions) {
+                return false;
+            }
+
+            let jarPath: string | undefined;
+
+            if (jarPathOptions.action === 'browse') {
+                const fileUri = await vscode.window.showOpenDialog({
+                    canSelectFiles: true,
+                    canSelectFolders: false,
+                    canSelectMany: false,
+                    filters: {
+                        'JAR Files': ['jar']
+                    },
+                    title: 'Select Apicurio Registry MCP Server JAR'
+                });
+
+                if (fileUri && fileUri[0]) {
+                    jarPath = fileUri[0].fsPath;
+                }
+            } else {
+                jarPath = await vscode.window.showInputBox({
+                    prompt: 'Enter the full path to the MCP server JAR file',
+                    placeHolder: '~/projects/apicurio-registry/mcp/target/apicurio-registry-mcp-server-<VERSION>-runner.jar',
+                    ignoreFocusOut: true,
+                    validateInput: async (value) => {
+                        if (!value) {
+                            return 'JAR path is required';
+                        }
+                        const validation = await this.validateJarPath(value);
+                        return validation.valid ? null : validation.error;
+                    }
+                });
+            }
+
+            if (!jarPath) {
+                vscode.window.showWarningMessage('JAR path is required for JAR mode. Setup cancelled.');
+                return false;
+            }
+
+            // Validate JAR path
+            const jarValidation = await this.validateJarPath(jarPath);
+            if (!jarValidation.valid) {
+                vscode.window.showErrorMessage(`Invalid JAR path: ${jarValidation.error}`);
+                return false;
+            }
+
+            // Save JAR path
+            await mcpConfig.update('jarPath', jarPath, vscode.ConfigurationTarget.Global);
+            this.config.jarPath = jarPath;
+
+            vscode.window.showInformationMessage(`✓ JAR path configured: ${jarPath}`);
+        }
 
         // Step 4: Configure Claude Code
         const configureNow = await vscode.window.showInformationMessage(

@@ -514,6 +514,11 @@
           "default": "",
           "description": "Path to MCP server JAR file (for JAR mode)"
         },
+        "apicurioRegistry.mcp.javaPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to Java 17+ executable (leave empty to auto-detect)"
+        },
         "apicurioRegistry.mcp.port": {
           "type": "number",
           "default": 3000,

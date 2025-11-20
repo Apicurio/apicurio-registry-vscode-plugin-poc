@@ -37,14 +37,26 @@ Complete setup guide for getting Claude Code working with the Apicurio Registry 
 ### Setup & Configuration
 
 #### 1. **CLAUDE_CODE_MCP_WORKING_CONFIG.md** ⭐ PRIMARY REFERENCE
-**The authoritative configuration guide**
+**The authoritative configuration guide (Docker/Podman mode)**
 
 - ✅ Complete working configuration
 - ✅ Step-by-step setup instructions
 - ✅ Troubleshooting common issues
 - ✅ Verified to work
 
-**Use this for:** Setting up Claude Code integration
+**Use this for:** Setting up Claude Code integration with Docker/Podman
+
+---
+
+#### 1.1 **JAR_CONFIGURATION_GUIDE.md** 🔧 JAR MODE GUIDE
+**JAR-based MCP server configuration**
+
+- ✅ JAR mode setup (without Docker)
+- ✅ Java 17+ detection and validation
+- ✅ Advanced configuration options
+- ✅ Debugging and performance tuning
+
+**Use this for:** Running MCP server as native Java process
 
 ---
 
@@ -192,10 +204,13 @@ Historical documentation moved to [`/archive/`](archive/):
 **Set up Claude Code integration**
 → Read [GETTING_STARTED.md](GETTING_STARTED.md)
 
+**Use JAR mode instead of Docker**
+→ Read [JAR_CONFIGURATION_GUIDE.md](JAR_CONFIGURATION_GUIDE.md)
+
 **Fix a problem**
 → Read [MCP_DEBUGGING_GUIDE.md](MCP_DEBUGGING_GUIDE.md)
 
-**Learn the configuration**
+**Learn the configuration (Docker mode)**
 → Read [CLAUDE_CODE_MCP_WORKING_CONFIG.md](CLAUDE_CODE_MCP_WORKING_CONFIG.md)
 
 **See example workflows**

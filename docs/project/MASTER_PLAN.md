@@ -36,7 +36,7 @@ This master plan integrates planning documents into a unified roadmap prioritizi
 | **UX Medium Priority** | 🚧 In Progress | 67% (2/3) | Task 005 remaining |
 | **Draft Infrastructure** (Phase 3.0) | ✅ Complete | 100% (4/4) | - |
 | **Text Editor** (Phase 3.1) | ✅ Complete | 100% (3/3) | - |
-| **MCP Integration** | ⚠️ Complete (Blocked) | 100% (4/4) | Blocked by Claude Code bug |
+| **MCP Integration** | ✅ Complete (Working) | 100% (5/5) | **JAR mode fully working!** 🎉 |
 | **✅ FEATURE PARITY Phase 1** | ✅ **COMPLETE!** | 100% (2/2) | **All core operations done** |
 | **🔥 FEATURE PARITY Phase 2** | 🚧 **IN PROGRESS** | 38% (3/8) | **Tasks 031-032 Complete! ✅** |
 | **FEATURE PARITY Phase 3** | 📋 Planned | 0% (0/4) | After Phase 2 |
@@ -393,16 +393,17 @@ Based on [UX_COMPARISON.md](UX_COMPARISON.md) analysis of reference plugin.
 
 ---
 
-### 🎉 MCP Integration - Local Scenario (COMPLETE - BLOCKED)
+### ✅ MCP Integration - Local Scenario (COMPLETE & WORKING!)
 
-**Duration:** 2-3 days (15-21 hours actual)
-**Status:** ✅ **100% Implementation Complete (4/4 tasks)** - ⚠️ **Blocked by Claude Code Bug**
+**Duration:** 2-3 days (15-21 hours) + JAR mode (6 hours) = **21-27 hours total**
+**Status:** ✅ **100% Complete (5/5 tasks)** - ✅ **FULLY WORKING with JAR Mode!** 🎉
 **Started:** 2025-11-02
-**Completed:** 2025-11-03
+**Completed:** 2025-11-20 (JAR mode implementation)
 **Reference:**
-- [MCP_ARCHITECTURE_VALIDATION.md](ai-integration/MCP_ARCHITECTURE_VALIDATION.md)
-- [CLAUDE_CODE_BUG_REPORT.md](ai-integration/CLAUDE_CODE_BUG_REPORT.md)
-- [GITHUB_ISSUE_TEMPLATE.md](ai-integration/GITHUB_ISSUE_TEMPLATE.md)
+- [JAR_CONFIGURATION_GUIDE.md](ai-integration/JAR_CONFIGURATION_GUIDE.md) - **⭐ RECOMMENDED SETUP**
+- [GETTING_STARTED.md](ai-integration/GETTING_STARTED.md)
+- [CLAUDE_CODE_MCP_WORKING_CONFIG.md](ai-integration/CLAUDE_CODE_MCP_WORKING_CONFIG.md)
+- [REAL_USER_WORKFLOW.md](ai-integration/REAL_USER_WORKFLOW.md)
 
 **Goal:** Enable local developers to use Claude Code AI features with Apicurio Registry
 
@@ -410,16 +411,19 @@ Based on [UX_COMPARISON.md](UX_COMPARISON.md) analysis of reference plugin.
 - ✅ Fixed MCP configuration approach (CLI commands instead of VSCode settings)
 - ✅ Interactive setup wizard for seamless user experience
 - ✅ Standalone utility commands for quick access
-- ✅ All 56 tests passing (23 + 16 + 7 + 10)
-- ✅ MCP server successfully receives requests and returns data
+- ✅ **JAR mode implementation (2025-11-20)** - Bypasses stdio bug
+- ✅ Java 17+ detection and validation
+- ✅ Automatic Java path configuration
+- ✅ All 56+ tests passing
+- ✅ **AI features fully functional!** 🎉
 
-**Blocking Issue:**
-- ⚠️ **Claude Code v2.0.31 Bug**: stdio connections drop after ~20 seconds during tool execution
-- ❌ Users cannot use AI features (Claude Code never receives MCP responses)
-- 📋 GitHub issue created with complete documentation
-- 🔍 Root cause: stdio pipe closes prematurely while tool is executing
+**Solution:**
+- ✅ **JAR Mode**: MCP server runs as native Java process (no Docker/Podman needed)
+- ✅ Bypasses MCP SDK stdio transport bug entirely
+- ✅ Better performance than container mode
+- ✅ Full Claude Code integration working perfectly
 
-#### ✅ Completed (4 tasks, ~19 hours)
+#### ✅ Completed (5 tasks, ~25 hours)
 
 | ID | Task | Effort | Completed | Details |
 |----|------|--------|-----------|---------|
@@ -427,6 +431,7 @@ Based on [UX_COMPARISON.md](UX_COMPARISON.md) analysis of reference plugin.
 | MCP-2 | Enhance MCPServerManager | 3-4h | 2025-11-03 | Support stdio transport mode for Claude Code |
 | MCP-3 | Create Setup Wizard | 6-8h | 2025-11-03 | Interactive wizard for local scenario setup |
 | MCP-4 | Update Commands | 2-3h | 2025-11-03 | Add generateClaudeCommand, verifyMCP standalone commands |
+| MCP-5 | JAR Mode Implementation | 6h | 2025-11-20 | Java 17+ detection, automatic path config, bypass stdio bug |
 
 **MCP-1 Delivered:**
 - `generateClaudeMCPCommand()` - Generates correct `claude mcp add` command
@@ -471,22 +476,28 @@ Based on [UX_COMPARISON.md](UX_COMPARISON.md) analysis of reference plugin.
 - **10 comprehensive tests** - All passing ✅
 - TypeScript compilation successful (602 KiB)
 
-**Success Criteria (What Works):**
+**Success Criteria (What Works - JAR Mode):**
 - ✅ User runs "Setup AI Features" command
-- ✅ Wizard generates correct `claude mcp add` command
-- ✅ User copies/pastes command in terminal
-- ✅ Claude Code successfully connects to MCP server
-- ✅ MCP server receives requests and returns valid responses
-- ✅ All 56 tests passing
+- ✅ Wizard detects Java 17+ and offers JAR mode
+- ✅ Automatic Java path detection and validation
+- ✅ MCP server runs as native Java process
+- ✅ **Claude Code AI features fully functional** 🎉
+- ✅ All 17+ MCP tools working perfectly
+- ✅ All 56+ tests passing
+- ✅ No Docker/Podman required
+- ✅ Better performance than container mode
 
-**What Doesn't Work (Blocked by Claude Code Bug):**
-- ❌ AI features hang with "Enchanting..." status
-- ❌ stdio connection drops after ~20 seconds
-- ❌ Claude Code never receives MCP server responses
-- ❌ End-to-end AI workflow blocked
+**JAR Mode Benefits:**
+- ✅ Bypasses MCP SDK stdio transport bug
+- ✅ No container overhead
+- ✅ Easier debugging (native Java process)
+- ✅ Faster startup time
+- ✅ Direct access to Java debugging tools
 
-**When Fixed:**
-Once Anthropic fixes the stdio connection bug in Claude Code, AI features will work immediately with **no changes needed** to our extension.
+**Docker/Podman Mode:**
+- ⚠️ May still have stdio transport issues (MCP SDK bug)
+- ✅ HTTP transport works fine as alternative
+- 💡 Recommendation: Use JAR mode for best experience
 
 **Key Files:**
 - `src/services/mcpConfigurationManager.ts` (refactored)

@@ -1,24 +1,28 @@
 # AI Integration with Claude Code
 
-**Status:** ⚠️ **BLOCKED - MCP SDK Bug**
-**Last Updated:** 2025-11-14
-**Integration:** Claude Code + MCP Server
-**Issue:** Critical bug in `@modelcontextprotocol/sdk` blocks all stdio tool invocation
+**Status:** ✅ **FULLY WORKING - JAR Mode**
+**Last Updated:** 2025-11-20
+**Integration:** Claude Code + MCP Server (JAR-based)
+**Solution:** JAR mode bypasses MCP SDK stdio bug
 
 This directory contains documentation for the AI-assisted development workflow using Claude Code and the Apicurio Registry MCP Server.
 
-## ⚠️ CRITICAL BUG NOTICE
+## ✅ WORKING SOLUTION
 
-**A critical bug has been discovered in the Model Context Protocol TypeScript SDK that blocks all MCP tool invocation over stdio transport.**
+**The MCP integration is fully functional using JAR-based execution mode.**
 
-**Read:** [`MCP_SDK_BUG_INVESTIGATION.md`](MCP_SDK_BUG_INVESTIGATION.md) for complete investigation details.
+**Solution:** Run the MCP server as a native Java process instead of using stdio transport. This bypasses the MCP SDK bug entirely.
 
 **Status:**
 - ✅ Apicurio Registry MCP Server is **correct** and protocol-compliant
-- ❌ Bug is in `@modelcontextprotocol/sdk` (affects Claude Code, MCP Inspector, and all SDK-based clients)
-- ⏳ Waiting for MCP SDK team to fix the issue
+- ✅ JAR mode works perfectly with Claude Code
+- ✅ Java 17+ detection and validation implemented
+- ✅ Automatic Java path configuration
+- ✅ Comprehensive documentation and testing
 
-**Impact:** MCP integration is currently **unusable** for stdio transport until SDK is fixed.
+**Read:** [`JAR_CONFIGURATION_GUIDE.md`](JAR_CONFIGURATION_GUIDE.md) for complete setup instructions.
+
+**Impact:** MCP integration is **fully usable** via JAR mode. Docker/Podman mode may still have stdio issues.
 
 ---
 

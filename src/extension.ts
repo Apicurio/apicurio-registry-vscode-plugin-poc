@@ -15,6 +15,12 @@ import { manageRulesCommand } from './commands/rulesCommand';
 import { exportAllCommand, exportGroupCommand } from './commands/exportCommand';
 import { importArtifactsCommand } from './commands/importCommand';
 import {
+    createRoleMappingCommand,
+    updateRoleMappingCommand,
+    deleteRoleMappingCommand,
+    viewCurrentUserRoleCommand
+} from './commands/roleCommands';
+import {
     generateClaudeCommandCommand,
     verifyMCPCommand
 } from './commands/mcpUtilityCommands';
@@ -442,6 +448,23 @@ export function activate(context: vscode.ExtensionContext) {
         await importArtifactsCommand(registryService, () => registryTreeProvider.refresh());
     });
 
+    // Role Management commands
+    const createRoleMapping = vscode.commands.registerCommand('apicurioRegistry.createRoleMapping', async () => {
+        await createRoleMappingCommand(registryService, registryTreeProvider);
+    });
+
+    const updateRoleMapping = vscode.commands.registerCommand('apicurioRegistry.updateRoleMapping', async (node) => {
+        await updateRoleMappingCommand(node, registryService, registryTreeProvider);
+    });
+
+    const deleteRoleMapping = vscode.commands.registerCommand('apicurioRegistry.deleteRoleMapping', async (node) => {
+        await deleteRoleMappingCommand(node, registryService, registryTreeProvider);
+    });
+
+    const viewCurrentUserRole = vscode.commands.registerCommand('apicurioRegistry.viewCurrentUserRole', async () => {
+        await viewCurrentUserRoleCommand(registryService);
+    });
+
     // MCP commands
     const mcpStart = vscode.commands.registerCommand('apicurioRegistry.mcp.start', async () => {
         await startMCPServerCommand(mcpServerManager);
@@ -509,6 +532,10 @@ export function activate(context: vscode.ExtensionContext) {
         exportAll,
         exportGroup,
         importArtifacts,
+        createRoleMapping,
+        updateRoleMapping,
+        deleteRoleMapping,
+        viewCurrentUserRole,
         mcpStart,
         mcpStop,
         mcpRestart,

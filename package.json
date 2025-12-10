@@ -259,6 +259,30 @@
         "title": "Import Artifacts from ZIP",
         "icon": "$(cloud-upload)",
         "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.createRoleMapping",
+        "title": "Create Role Mapping",
+        "icon": "$(add)",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.updateRoleMapping",
+        "title": "Update Role",
+        "icon": "$(edit)",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.deleteRoleMapping",
+        "title": "Delete Role Mapping",
+        "icon": "$(trash)",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.viewCurrentUserRole",
+        "title": "View My Role",
+        "icon": "$(account)",
+        "category": "Apicurio Registry"
       }
     ],
     "menus": {
@@ -434,6 +458,26 @@
           "command": "apicurioRegistry.deleteVersion",
           "when": "view == apicurioRegistry && viewItem =~ /^version/",
           "group": "9_dangerous@1"
+        },
+        {
+          "command": "apicurioRegistry.createRoleMapping",
+          "when": "view == apicurioRegistry && viewItem == rolesContainer",
+          "group": "role@1"
+        },
+        {
+          "command": "apicurioRegistry.viewCurrentUserRole",
+          "when": "view == apicurioRegistry && viewItem == rolesContainer",
+          "group": "role@2"
+        },
+        {
+          "command": "apicurioRegistry.updateRoleMapping",
+          "when": "view == apicurioRegistry && viewItem == roleMapping",
+          "group": "role@1"
+        },
+        {
+          "command": "apicurioRegistry.deleteRoleMapping",
+          "when": "view == apicurioRegistry && viewItem == roleMapping",
+          "group": "role@2"
         }
       ]
     },

@@ -3,7 +3,10 @@ export enum RegistryItemType {
     Group = 'group',
     Artifact = 'artifact',
     Branch = 'branch',
-    Version = 'version'
+    Version = 'version',
+    RolesContainer = 'rolesContainer',
+    RoleMapping = 'roleMapping',
+    CurrentUserRole = 'currentUserRole'
 }
 
 export class RegistryItem {
@@ -26,6 +29,12 @@ export class RegistryItem {
                 return `Branch: ${this.label}\\nSystem: ${this.metadata?.systemDefined ? 'Yes' : 'No'}`;
             case RegistryItemType.Version:
                 return `Version: ${this.label}\\nState: ${this.metadata?.state || 'Unknown'}`;
+            case RegistryItemType.RolesContainer:
+                return `Role Mappings: ${this.metadata?.count || 0} total`;
+            case RegistryItemType.CurrentUserRole:
+                return `Your Role: ${this.metadata?.role || 'Unknown'}\\nPrincipal: ${this.metadata?.principalId || 'Unknown'}`;
+            case RegistryItemType.RoleMapping:
+                return `Principal: ${this.metadata?.principalId || 'Unknown'}\\nRole: ${this.metadata?.role || 'Unknown'}${this.metadata?.principalName ? '\\nName: ' + this.metadata.principalName : ''}`;
             default:
                 return this.label;
         }

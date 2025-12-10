@@ -450,6 +450,25 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 treeItem.contextValue = 'connection';
                 break;
 
+            case RegistryItemType.RolesContainer:
+                treeItem.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+                treeItem.iconPath = new vscode.ThemeIcon('shield');
+                treeItem.contextValue = 'rolesContainer';
+                treeItem.description = `(${element.metadata?.count || 0})`;
+                break;
+
+            case RegistryItemType.CurrentUserRole:
+                treeItem.collapsibleState = vscode.TreeItemCollapsibleState.None;
+                treeItem.iconPath = new vscode.ThemeIcon('account');
+                treeItem.contextValue = 'currentUserRole';
+                break;
+
+            case RegistryItemType.RoleMapping:
+                treeItem.collapsibleState = vscode.TreeItemCollapsibleState.None;
+                treeItem.iconPath = new vscode.ThemeIcon('person');
+                treeItem.contextValue = 'roleMapping';
+                break;
+
             default:
                 treeItem.collapsibleState = vscode.TreeItemCollapsibleState.None;
         }
@@ -476,9 +495,14 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                     // Show filtered results at root level
                     return await this.getFilteredArtifacts();
                 } else {
-                    // Normal view: return groups
-                    return await this.getGroups();
+                    // Normal view: return roles container + groups
+                    const rolesContainer = await this.getRolesContainer();
+                    const groups = await this.getGroups();
+                    return [rolesContainer, ...groups];
                 }
+            } else if (element.type === RegistryItemType.RolesContainer) {
+                // Roles container: return role mappings
+                return await this.getRoles();
             } else if (element.type === RegistryItemType.Group) {
                 // Group level: return artifacts
                 return await this.getArtifacts(element.id!);
@@ -543,6 +567,19 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                     );
                 }
                 return undefined;
+
+            case RegistryItemType.RolesContainer:
+                // Roles container is at root level, no parent
+                return undefined;
+
+            case RegistryItemType.CurrentUserRole:
+            case RegistryItemType.RoleMapping:
+                // Role mappings' parent is the roles container
+                return new RegistryItem(
+                    'Roles',
+                    RegistryItemType.RolesContainer,
+                    'roles'
+                );
 
             default:
                 return undefined;
@@ -726,6 +763,92 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
         const sorted = this.sortGroups(filtered);
 
         return sorted;
+    }
+
+    /**
+     * Create the roles container item shown at root level.
+     */
+    private async getRolesContainer(): Promise<RegistryItem> {
+        try {
+            const roleMappings = await this.registryService.getRoleMappings();
+            return new RegistryItem(
+                'Roles',
+                RegistryItemType.RolesContainer,
+                'roles',
+                {
+                    count: roleMappings.length
+                }
+            );
+        } catch (error) {
+            console.error('Error fetching role mappings count:', error);
+            return new RegistryItem(
+                'Roles',
+                RegistryItemType.RolesContainer,
+                'roles',
+                {
+                    count: 0
+                }
+            );
+        }
+    }
+
+    /**
+     * Get role mappings to display under the roles container.
+     * Shows current user's role first, then all other mappings.
+     */
+    private async getRoles(): Promise<RegistryItem[]> {
+        try {
+            const [currentUser, allMappings] = await Promise.all([
+                this.registryService.getCurrentUserRole(),
+                this.registryService.getRoleMappings()
+            ]);
+
+            const items: RegistryItem[] = [];
+
+            // Add current user's role first (if exists)
+            if (currentUser) {
+                items.push(new RegistryItem(
+                    `Current User: ${currentUser.role}`,
+                    RegistryItemType.CurrentUserRole,
+                    'current-user',
+                    {
+                        principalId: currentUser.principalId,
+                        role: currentUser.role,
+                        principalName: currentUser.principalName
+                    }
+                ));
+            }
+
+            // Add all other role mappings
+            allMappings.forEach(mapping => {
+                const label = mapping.principalName
+                    ? `${mapping.principalName} (${mapping.principalId})`
+                    : mapping.principalId;
+
+                items.push(new RegistryItem(
+                    `${label} - ${mapping.role}`,
+                    RegistryItemType.RoleMapping,
+                    mapping.principalId,
+                    {
+                        principalId: mapping.principalId,
+                        role: mapping.role,
+                        principalName: mapping.principalName
+                    }
+                ));
+            });
+
+            return items;
+        } catch (error) {
+            console.error('Error fetching roles:', error);
+            return [
+                new RegistryItem(
+                    'Error loading roles',
+                    RegistryItemType.Connection,
+                    undefined,
+                    { description: 'Failed to fetch role mappings' }
+                )
+            ];
+        }
     }
 
     private async getArtifacts(groupId: string): Promise<RegistryItem[]> {

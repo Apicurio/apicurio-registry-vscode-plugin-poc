@@ -6,6 +6,8 @@ import {
     CreateVersion,
     GroupMetaData,
     RegistryInfo,
+    Role,
+    RoleMapping,
     Rule,
     RuleType,
     UIConfig
@@ -1647,5 +1649,96 @@ export class RegistryService {
 
             throw new Error(`Failed to import artifacts: ${error.message || error}`);
         }
+    }
+
+    /**
+     * Get all role mappings
+     * @returns Array of role mappings
+     */
+    async getRoleMappings(): Promise<RoleMapping[]> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        const response = await this.client.get<RoleMapping[]>('/admin/roleMappings');
+        return response.data;
+    }
+
+    /**
+     * Get current user's role mapping
+     * @returns Current user's role mapping or null if not found
+     */
+    async getCurrentUserRole(): Promise<RoleMapping | null> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        try {
+            const response = await this.client.get<RoleMapping>('/admin/roleMappings/me');
+            return response.data;
+        } catch (error: any) {
+            // Return null if user has no role (404)
+            if (error.response?.status === 404) {
+                return null;
+            }
+            // Re-throw other errors
+            throw error;
+        }
+    }
+
+    /**
+     * Create a new role mapping
+     * @param principalId Principal ID (user or service account)
+     * @param role Role to assign
+     * @param principalName Optional principal display name
+     * @returns Created role mapping
+     */
+    async createRoleMapping(
+        principalId: string,
+        role: Role,
+        principalName?: string
+    ): Promise<RoleMapping> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        const response = await this.client.post<RoleMapping>('/admin/roleMappings', {
+            principalId,
+            role,
+            principalName
+        });
+        return response.data;
+    }
+
+    /**
+     * Update an existing role mapping
+     * @param principalId Principal ID to update
+     * @param role New role to assign
+     * @returns Updated role mapping
+     */
+    async updateRoleMapping(principalId: string, role: Role): Promise<RoleMapping> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        const encodedPrincipalId = encodeURIComponent(principalId);
+        const response = await this.client.put<RoleMapping>(
+            `/admin/roleMappings/${encodedPrincipalId}`,
+            { role }
+        );
+        return response.data;
+    }
+
+    /**
+     * Delete a role mapping
+     * @param principalId Principal ID to delete
+     */
+    async deleteRoleMapping(principalId: string): Promise<void> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        const encodedPrincipalId = encodeURIComponent(principalId);
+        await this.client.delete(`/admin/roleMappings/${encodedPrincipalId}`);
     }
 }

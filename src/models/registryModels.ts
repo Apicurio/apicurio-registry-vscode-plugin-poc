@@ -339,3 +339,37 @@ export interface UpdateBranchMetadataRequest {
 export interface AddVersionToBranchRequest {
     version: string;
 }
+
+/**
+ * Role enumeration for RBAC
+ */
+export enum Role {
+    ADMIN = 'ADMIN',
+    DEVELOPER = 'DEVELOPER',
+    READ_ONLY = 'READ_ONLY'
+}
+
+/**
+ * Role mapping for a principal (user or service account)
+ */
+export interface RoleMapping {
+    principalId: string;
+    role: Role;
+    principalName?: string;
+}
+
+/**
+ * Create role mapping request
+ */
+export interface CreateRoleMappingRequest {
+    principalId: string;
+    role: Role;
+    principalName?: string;
+}
+
+/**
+ * Update role mapping request
+ */
+export interface UpdateRoleMappingRequest {
+    role: Role;
+}

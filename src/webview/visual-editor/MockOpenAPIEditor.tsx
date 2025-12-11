@@ -9,6 +9,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import * as YAML from 'yaml';
 
 export interface DocumentChangeEvent {
     isDirty: boolean;
@@ -36,12 +37,28 @@ export const OpenAPIEditor: React.FC<OpenAPIEditorProps> = ({
     const [version, setVersion] = useState(0);
     const [isDirty, setIsDirty] = useState(false);
 
-    // Parse initial content
+    // Parse initial content (handles both JSON and YAML)
     useEffect(() => {
         if (initialContent) {
-            const parsed = typeof initialContent === 'string'
-                ? JSON.parse(initialContent)
-                : initialContent;
+            let parsed: object;
+
+            if (typeof initialContent === 'string') {
+                // Try to parse as JSON first
+                try {
+                    parsed = JSON.parse(initialContent);
+                } catch (e) {
+                    // If JSON parsing fails, try YAML
+                    try {
+                        parsed = YAML.parse(initialContent);
+                    } catch (yamlError) {
+                        console.error('Failed to parse content as JSON or YAML:', yamlError);
+                        parsed = { error: 'Failed to parse document' };
+                    }
+                }
+            } else {
+                parsed = initialContent;
+            }
+
             setContent(parsed);
         }
     }, [initialContent]);

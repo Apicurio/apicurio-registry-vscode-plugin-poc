@@ -24,6 +24,7 @@ declare global {
 export const VisualEditorApp: React.FC = () => {
     const [initialContent, setInitialContent] = useState<object | string | null>(null);
     const [isReady, setIsReady] = useState(false);
+    const [originalFormat, setOriginalFormat] = useState<'json' | 'yaml'>('json');
 
     /**
      * Handle document changes from the editor
@@ -32,11 +33,32 @@ export const VisualEditorApp: React.FC = () => {
         // Store the getContent callback for when save is requested
         window.getCurrentContent = event.getContent;
 
+        // Convert content back to string in original format
+        const contentObj = event.getContent();
+        let contentStr: string;
+
+        if (contentObj) {
+            try {
+                if (originalFormat === 'yaml') {
+                    // For POC, we'll use JSON for now
+                    // Real editor will handle YAML properly
+                    contentStr = JSON.stringify(contentObj, null, 2);
+                } else {
+                    contentStr = JSON.stringify(contentObj, null, 2);
+                }
+            } catch (e) {
+                console.error('Failed to serialize content:', e);
+                contentStr = '';
+            }
+        } else {
+            contentStr = '';
+        }
+
         // Notify extension of dirty state
         postMessageToExtension({
             type: 'change',
             payload: {
-                content: event.getContent(),
+                content: contentStr,
                 isDirty: event.isDirty,
                 version: event.version,
             },
@@ -50,17 +72,28 @@ export const VisualEditorApp: React.FC = () => {
         onMessageFromExtension((message) => {
             switch (message.type) {
                 case 'init':
+                    // Detect format from content
+                    const content = message.payload.content;
+                    if (typeof content === 'string') {
+                        // Try to detect if it's YAML or JSON
+                        const trimmed = content.trim();
+                        if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+                            setOriginalFormat('json');
+                        } else {
+                            setOriginalFormat('yaml');
+                        }
+                    }
                     // Load the document content into the editor
-                    setInitialContent(message.payload.content);
+                    setInitialContent(content);
                     setIsReady(true);
                     break;
 
                 case 'saveDocument':
                     // Extension requests save - get current content and send back
-                    const content = window.getCurrentContent?.();
+                    const savedContent = window.getCurrentContent?.();
                     postMessageToExtension({
                         type: 'saveComplete',
-                        payload: { content },
+                        payload: { content: savedContent },
                     });
                     break;
 

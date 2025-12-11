@@ -70,10 +70,11 @@ This is now the **primary roadmap** for the extension. Based on comprehensive an
 - Role Management (4-6h)
 - Settings/Configuration (6-8h)
 
-**Phase 4: Visual Editor (DEFERRED - 35-45h)**
-- OpenAPI Visual Editor (15-20h)
-- AsyncAPI Visual Editor (15-20h)
-- Editor Integration & Polish (5-10h)
+**Phase 4: Visual Editor Integration (DEFERRED - TBD, pending external repository)**
+- **NEW APPROACH:** Visual editor is being developed in separate repository by teammate
+- Repository: https://github.com/Apicurio/apicurio-openapi-editor
+- Integration work: Package integration + VSCode webview hosting (effort TBD once repo is available)
+- **Note:** Original plan to build React editor from scratch (200-280h) is SUPERSEDED
 
 ---
 
@@ -556,104 +557,41 @@ POST /groups/{groupId}/artifacts/{artifactId}/versions
 - Content synchronization service
 - Version management UI
 
-##### 3.2: React Visual Editor (Weeks 3-9) - **REVISED APPROACH**
+##### 3.2: Visual Editor Integration - **NEW APPROACH (2025-11-XX)**
 
-**⚠️ Critical Decision (2025-11-03):** React rewrite chosen over Angular iframe embedding.
+**🔄 Strategic Change:** Visual editor is being developed in separate repository by teammate.
 
-**Why React Instead of Angular?**
+**Original Plan (SUPERSEDED):**
+- ❌ Build React-based visual editor from scratch (200-260h)
+- ❌ Extract to @apicurio/react-editors monorepo later
+- See archived spec: [018-021-react-visual-editor.md](tasks/planned/018-021-react-visual-editor.md)
 
-❌ **Angular Approach Blocked:**
-- VSCode extensions require strict Content Security Policy
-- Angular requires `unsafe-eval` CSP directive for JIT compilation
-- **VSCode cannot relax CSP for webviews** - this is a hard blocker
-- Original plan (40-60h) is technically infeasible
+**New Approach:**
+- ✅ **External Repository:** https://github.com/Apicurio/apicurio-openapi-editor
+- ✅ **Developed by:** Teammate (separate from this VSCode extension work)
+- ✅ **VSCode Integration Work:** Package integration + webview hosting (effort TBD)
 
-✅ **React Approach (200-260h):**
-- Complies with strict CSP (no unsafe-eval)
-- Full control over codebase and features
-- Reuses ~30% of existing code (@apicurio/data-models, CSS, utilities)
-- Smaller bundle size (~800 KB vs ~2-3 MB)
-- Better VSCode integration patterns
+**Integration Tasks (To Be Defined):**
+Once the external repository is available, we'll need to:
+1. Analyze the package structure and API
+2. Determine integration approach (npm package, iframe, webview, etc.)
+3. Create VSCode webview host for the editor
+4. Implement message passing between extension and editor
+5. Integrate with existing save/conflict detection infrastructure (Tasks 015-017)
+6. Test and polish the integration
 
-**Tasks (Revised):**
-- **Task 018:** React Foundation & Setup (35-45h)
-  - React + Vite + TypeScript setup
-  - Webview provider implementation
-  - @apicurio/data-models integration
-  - State management (Zustand)
-  - Command pattern for undo/redo
-- **Task 019:** Core UI & Navigation (55-70h)
-  - Navigation tree component
-  - Title bar with validation
-  - Problem drawer
-  - Main forms (info, servers)
-  - Common components library
-- **Task 020:** Forms & Detail Editors (**30-40h** - REVISED! ⚡ 40% time savings)
-  - **Strategy:** Copy 60-70% from @apicurio/apicurio-editors, build 30-40% ourselves
-  - Contact/License/Tags (copy & adapt)
-  - Path Explorer (copy 12 KB PathsExplorer.tsx)
-  - Operation forms (build ourselves - not in apicurio-editors)
-  - Schema/Component editors (copy Properties.tsx - 2.9 KB)
-  - Response editor (copy & adapt)
-  - Security schemes (copy & adapt)
-  - AsyncAPI forms (Channel/Message - build ourselves)
-  - See: [020-REVISED spec](tasks/in-progress/020-forms-detail-editors-REVISED.md)
-- **Task 021:** Integration & Polish (50-65h)
-  - Modal dialogs (20+ dialogs)
-  - VSCode message passing
-  - Save integration (Task 015)
-  - Conflict detection (Task 017)
-  - Unit & integration testing
-  - Bug fixes and polish
+**Estimated Effort:** TBD (pending repository availability and architecture analysis)
 
-**Architecture:**
-```
-VSCode Extension
-    ↓ (creates webview)
-React Webview (Vite bundle)
-    ↓ (uses)
-@apicurio/data-models (business logic)
-    ↓ (message passing)
-VSCode Extension API
-    ↓ (uses)
-ApicurioFileSystemProvider (Task 015)
-    ↓ (saves to)
-Apicurio Registry API
-```
+**Dependencies:**
+- External: apicurio-openapi-editor repository must be created and have initial release
+- Internal: Tasks 015-017 (Text editor infrastructure) - ✅ COMPLETE
 
-**Technology Stack:**
-- React 18 + TypeScript
-- Vite (build tool, fast HMR)
-- @vscode/webview-ui-toolkit (VSCode native components)
-- Zustand (state management)
-- Immer (immutable updates)
-- @apicurio/data-models v1.1.33 (business logic)
-- react-hook-form + zod (form validation)
+**Status:** ⏸️ **BLOCKED** - Waiting for external repository to be created
+- Repository URL returns 404 (not yet created or incorrect URL)
+- Will update integration plan once repository is accessible
 
-**Code Reuse (~30%):**
-- 100% reuse: @apicurio/data-models library
-- 70% reuse: CSS styles (adapt to VSCode theming)
-- 50% reuse: Business logic (validation, helpers)
-- 0% reuse: Angular components (141 components → rewrite in React)
-
-**Challenges:**
-- Large scope (17,000 LOC to write)
-- Form complexity (50+ forms, 20+ dialogs)
-- Schema editor (nested, recursive schemas)
-- Performance with large documents
-- Feature parity with Angular editor
-
-**Deliverables:**
-- React-based visual editor for OpenAPI 2.0/3.0 and AsyncAPI 2.x
-- Full CRUD for all document sections
-- Undo/redo support
-- Validation with problem drawer
-- Save integration with conflict detection
-- 80%+ test coverage
-
-**Timeline:** 7 weeks (200-260 hours)
-
-**Reference Documentation:** [Tasks 018-021 Spec](tasks/todo/018-021-react-visual-editor.md)
+**Reference Documentation:**
+- Original (superseded) plan: [018-021-react-visual-editor.md](tasks/planned/018-021-react-visual-editor.md)
 
 ##### 3.3: Content Synchronization (Week 3-4)
 

@@ -15,34 +15,49 @@
 
 ## 🎯 What to Work on TODAY
 
-**🎉 PHASE 3 STARTED! Import/Export Complete!**
+**🚀 NEW PRIORITY: Visual Editor Integration (Phase 4)**
 
-**Latest Achievement:**
-- ✅ Task 035: Import/Export Operations (~6h actual, 4-6h estimated) - **Bulk operations delivered!**
-  - Export entire registry to ZIP file
-  - Import artifacts from ZIP file
-  - Progress indicators and file size formatting
-  - Comprehensive error handling
-  - 33 tests passing (14 export + 19 import)
-  - 2 new commands, 2 test suites, ~630 lines total
+**Strategic Decision (2025-12-11):**
+- Visual editor developed by teammate in separate repository
+- Repository: https://github.com/Apicurio/apicurio-openapi-editor
+- Package: `@apicurio/openapi-editor` v0.1.0 (React component)
+- **90% effort reduction:** 18-26h integration vs 200-280h build from scratch
 
-**Phase Progress:**
-- ✅ Phase 1: 100% complete (Search + Metadata Editor) 🎉
-- ✅ Phase 2: 100% complete (All advanced features) 🎉
-- 🚧 Phase 3: 25% complete (1 of 4 tasks) - **Admin & Utility Features**
+**✅ All Infrastructure Ready:**
+- ✅ ApicurioFileSystemProvider (Task 015) - Complete
+- ✅ Conflict Detection (Task 017) - Complete
+- ✅ URI scheme (apicurio://) - Complete
+- ✅ Draft support - Complete
 
-**🚀 Next Phase 3 Tasks:**
+**🎯 Current Task: Visual Editor Integration - Phase 1 (4-6h)**
 
-**Remaining Tasks** (8-14h):
-- Role Management (4-6h) - User/role administration
-- Settings/Configuration (6-8h) - Global registry settings
-- Additional utility features TBD
+**Phase 1: Package Integration & POC**
+- [ ] Install @apicurio/openapi-editor + peer dependencies
+- [ ] Create webview React wrapper (src/webview/visual-editor/)
+- [ ] Set up Vite build configuration for webview
+- [ ] Create proof of concept - load & display sample document
+- [ ] Verify React component renders correctly in webview
+
+**Next Phases:**
+- Phase 2: Webview Provider (6-8h) - VSCode integration layer
+- Phase 3: Save Integration (4-6h) - Connect to existing infrastructure
+- Phase 4: Testing & Polish (4-6h) - Tests, docs, edge cases
+
+**Total Integration Effort:** 18-26 hours over 2-3 weeks
 
 **See:**
-- [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md) - Complete 4-phase plan
-- [FEATURE_GAP_ANALYSIS.md](FEATURE_GAP_ANALYSIS.md) - Web UI comparison
-- [MASTER_PLAN.md](MASTER_PLAN.md) - Updated strategic plan
-- [tasks/completed/low-priority/034-tree-sort-filter-preferences.md](tasks/completed/low-priority/034-tree-sort-filter-preferences.md) - Latest completion
+- [VISUAL_EDITOR_ANALYSIS.md](VISUAL_EDITOR_ANALYSIS.md) - Complete technical analysis
+- [tasks/planned/visual-editor-integration.md](tasks/planned/visual-editor-integration.md) - Task spec
+- [VISUAL_EDITOR_PLAN_UPDATE.md](VISUAL_EDITOR_PLAN_UPDATE.md) - Summary of changes
+
+---
+
+**📋 Phase 3 Tasks (Deferred):**
+- Role Management (4-6h) - User/role administration
+- Settings/Configuration (6-8h) - Global registry settings
+
+**Latest Phase 3 Achievement:**
+- ✅ Task 035: Import/Export Operations (6h) - Bulk operations complete!
 
 ---
 
@@ -154,18 +169,33 @@
 | 016 | Save & Auto-Save | ✅ Done | 10-12h | [spec](tasks/completed/016-save-auto-save.md) - Optional auto-save ✅ |
 | 017 | Conflict Detection | ✅ Done | 8h | [spec](tasks/completed/017-conflict-detection.md) - 46 tests ✅ |
 
-### ⏸️ DEFERRED TO PHASE 4 (Visual Editor)
+### 🚀 ACTIVE: PHASE 4 (Visual Editor Integration)
 
-**React Visual Editor (Tasks 018-021) - DEFERRED per user directive**
+**Visual Editor Integration - Repository Available! (2025-12-11)**
 
-**Strategic Decision (2025-11-05):** Visual Editor work moved to final phase. Focus on core features first.
+**NEW APPROACH:** Visual editor developed in separate repository by teammate.
+- **Repository:** https://github.com/Apicurio/apicurio-openapi-editor (private, accessible via GitHub CLI)
+- **Package:** `@apicurio/openapi-editor` v0.1.0
+- **Status:** ✅ **READY TO START** - Repository analyzed, integration approach defined
+- **Integration Work:** NPM package + Vite-bundled webview (18-26h)
 
-| # | Task | Status | Effort | Details |
-|---|------|--------|--------|---------|
-| 018 | React Foundation & Setup | ✅ Done | 35-45h | [completed](tasks/completed/018-react-foundation.md) ✅ |
-| 019 | Core UI & Navigation | ✅ Done | 55-70h | [completed](tasks/completed/019-core-ui-navigation.md) ✅ |
-| 020 | Forms & Detail Editors | ⏸️ **DEFERRED** | 30-40h | **Moved to Phase 4** - See [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md) |
-| 021 | Integration & Polish | ⏸️ **DEFERRED** | 50-65h | **Moved to Phase 4** |
+**Original Plan (SUPERSEDED):**
+- ❌ Build React-based visual editor from scratch (Tasks 018-021, 200-280h)
+- See archived spec: [018-021-react-visual-editor.md](tasks/planned/018-021-react-visual-editor.md)
+
+| Task | Status | Effort | Notes |
+|------|--------|--------|-------|
+| 018-021 (Build React Editor) | ❌ **SUPERSEDED** | 200-280h | Original plan archived |
+| **Visual Editor Integration** | 🚧 **IN PROGRESS** | 18-26h | **CURRENT PRIORITY** - Phase 1 starting |
+| - Phase 1: Package Integration & POC | 📋 TODO | 4-6h | Install package, create webview wrapper, POC |
+| - Phase 2: Webview Provider | 📋 TODO | 6-8h | VSCode integration layer |
+| - Phase 3: Save Integration | 📋 TODO | 4-6h | Connect to existing infrastructure |
+| - Phase 4: Testing & Polish | 📋 TODO | 4-6h | Tests, docs, edge cases |
+
+**Analysis Documents:**
+- [VISUAL_EDITOR_ANALYSIS.md](VISUAL_EDITOR_ANALYSIS.md) - Complete technical analysis
+- [tasks/planned/visual-editor-integration.md](tasks/planned/visual-editor-integration.md) - Task specification
+- [VISUAL_EDITOR_PLAN_UPDATE.md](VISUAL_EDITOR_PLAN_UPDATE.md) - Planning changes summary
 
 ---
 
@@ -220,8 +250,8 @@ Text Editor Integration    [█████████████████�
 MCP Integration            [████████████████████] 100% ✅ **WORKING!** 🎉
 FEATURE PARITY Phase 1     [████████████████████] 100% ✅ COMPLETE!
 FEATURE PARITY Phase 2     [████████████████████] 100% ✅ COMPLETE!
-FEATURE PARITY Phase 3     [█████░░░░░░░░░░░░░░░]  25% 🚧 IN PROGRESS
-Visual Editor (Phase 4)    [██████░░░░░░░░░░░░░░]  50% ⏸️ DEFERRED
+FEATURE PARITY Phase 3     [█████░░░░░░░░░░░░░░░]  25% ⏸️ DEFERRED
+Visual Editor (Phase 4)    [░░░░░░░░░░░░░░░░░░░░]   0% 🚀 **ACTIVE!**
 ```
 
 **Completed Work:**
@@ -232,20 +262,32 @@ Visual Editor (Phase 4)    [██████░░░░░░░░░░░�
 - ✅ **MCP Integration (5/5 tasks - 100%, FULLY WORKING!)** 🎉
 - ✅ UX Medium Priority (2/3 tasks - 67%)
 - ✅ **FEATURE PARITY Phase 1 (2/2 tasks - 100%)** 🎉
-- ✅ **FEATURE PARITY Phase 2 (5/5 tasks - 100%)** 🎉 **COMPLETE!**
+- ✅ **FEATURE PARITY Phase 2 (5/5 tasks - 100%)** 🎉
+
+**Current Focus:**
+- 🚀 **Phase 4: Visual Editor Integration (0/4 phases - 0%) - ACTIVE!**
+  - Starting with Phase 1: Package Integration & POC (4-6h)
+  - Total effort: 18-26h (90% reduction from original 200-280h plan)
+
+**Deferred Work:**
+- ⏸️ Phase 3: Admin & Utility (1/4 tasks - 25%) - Deferred
+  - ✅ Import/Export Operations (complete)
+  - 📋 Role Management (4-6h) - deferred
+  - 📋 Settings/Configuration (6-8h) - deferred
 
 **Feature Parity Roadmap:**
 - ✅ Phase 1: Core Operations (2/2 tasks - 100%) - **COMPLETE!**
 - ✅ Phase 2: Advanced Features (5/5 tasks - 100%) - **COMPLETE!** 🎉
-- 📋 Phase 3: Admin & Utility (0/4 tasks - 0%) - **NEXT**
-- ⏸️ Phase 4: Visual Editor (2/4 tasks - 50%) - **DEFERRED**
+- ⏸️ Phase 3: Admin & Utility (1/4 tasks - 25%) - **DEFERRED**
+- 🚀 Phase 4: Visual Editor (0/4 phases - 0%) - **ACTIVE!**
 
 **Estimated Remaining Effort:**
-- Phase 1: ✅ COMPLETE (saved 6-9h through consolidation!)
-- Phase 2: ✅ COMPLETE (18h total: 6h rules + 2h groups + 8h branching + 2h tree sort/filter)
-- Phase 3: 12-20h
-- Phase 4 (deferred): 80-130h
-- **Total:** 92-150h remaining
+- Phase 1: ✅ COMPLETE
+- Phase 2: ✅ COMPLETE
+- Phase 3 (deferred): 12-20h
+- **Phase 4 (active): 18-26h** 🚀
+- **Total Active Work:** 18-26h
+- **Total Deferred Work:** 12-20h
 
 ---
 

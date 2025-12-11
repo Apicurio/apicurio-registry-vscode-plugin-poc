@@ -1,6 +1,28 @@
 # Tasks 018-021: React-Based Visual Editor for OpenAPI/AsyncAPI
 
-**Status:** 📋 Todo
+---
+
+# ⚠️ **THIS PLAN IS SUPERSEDED** ⚠️
+
+**Date Superseded:** 2025-11-XX
+
+**Reason:** Visual editor is now being developed in a separate repository by a teammate:
+- **Repository:** https://github.com/Apicurio/apicurio-openapi-editor
+- **New Approach:** Integrate external package instead of building from scratch
+- **Impact:** Original plan (200-280h to build React editor) is no longer needed
+- **Next Steps:** Wait for external repository, then create integration task spec
+
+**This document is kept for historical reference only.**
+
+See updated planning in:
+- [MASTER_PLAN.md](../../MASTER_PLAN.md) - Phase 4: Visual Editor Integration
+- [TODO.md](../../TODO.md) - Phase 4 section
+
+---
+
+# ORIGINAL PLAN (Historical Reference)
+
+**Status:** ❌ SUPERSEDED (Was: 📋 Todo)
 **Priority:** High
 **Effort:** 200-280 hours (7 weeks)
 **Dependencies:** Tasks 015-017 (Custom Text Document Provider, Save/Auto-Save, Conflict Detection)

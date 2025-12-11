@@ -38,6 +38,9 @@
         "selector": [
           {
             "filenamePattern": "*.{json,yaml,yml}"
+          },
+          {
+            "scheme": "apicurio"
           }
         ],
         "priority": "option"
@@ -105,6 +108,18 @@
       {
         "command": "apicurioRegistry.openVersion",
         "title": "Open Version",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.openArtifactInVisualEditor",
+        "title": "Open in Visual Editor",
+        "icon": "$(edit)",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.openVersionInVisualEditor",
+        "title": "Open in Visual Editor",
+        "icon": "$(edit)",
         "category": "Apicurio Registry"
       },
       {
@@ -325,9 +340,19 @@
           "group": "navigation@1"
         },
         {
+          "command": "apicurioRegistry.openArtifactInVisualEditor",
+          "when": "view == apicurioRegistry && viewItem =~ /artifact.*/",
+          "group": "navigation@2"
+        },
+        {
           "command": "apicurioRegistry.openVersion",
           "when": "view == apicurioRegistry && viewItem == version",
           "group": "navigation@1"
+        },
+        {
+          "command": "apicurioRegistry.openVersionInVisualEditor",
+          "when": "view == apicurioRegistry && viewItem == version",
+          "group": "navigation@2"
         },
         {
           "command": "apicurioRegistry.copyGroupId",

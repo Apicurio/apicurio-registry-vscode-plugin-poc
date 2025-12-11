@@ -164,3 +164,83 @@ export async function openVersionCommand(
         );
     }
 }
+
+/**
+ * Open artifact (latest version) in visual editor
+ */
+export async function openArtifactInVisualEditorCommand(
+    registryService: RegistryService,
+    node: RegistryItem
+): Promise<void> {
+    // Validate node data
+    const groupId = node.parentId;
+    const artifactId = node.id;
+
+    if (!groupId || !artifactId) {
+        vscode.window.showErrorMessage('Missing artifact information');
+        return;
+    }
+
+    try {
+        // Find latest version
+        const versions = await registryService.getVersions(groupId, artifactId);
+        if (!versions || versions.length === 0) {
+            vscode.window.showErrorMessage('No versions found for this artifact');
+            return;
+        }
+
+        const latestVersion = versions.reduce((prev, current) => {
+            return (current.globalId || 0) > (prev.globalId || 0) ? current : prev;
+        });
+
+        if (!latestVersion.version) {
+            vscode.window.showErrorMessage('Could not determine latest version');
+            return;
+        }
+
+        const state = latestVersion.state || 'ENABLED';
+
+        // Build custom URI for the latest version
+        const uri = ApicurioUriBuilder.buildVersionUri(groupId, artifactId, latestVersion.version, state);
+
+        // Open document in visual editor
+        await vscode.commands.executeCommand('vscode.openWith', uri, 'apicurio.visualEditor');
+
+    } catch (error) {
+        vscode.window.showErrorMessage(
+            `Failed to open in visual editor: ${error instanceof Error ? error.message : String(error)}`
+        );
+    }
+}
+
+/**
+ * Open specific version in visual editor
+ */
+export async function openVersionInVisualEditorCommand(
+    registryService: RegistryService,
+    node: RegistryItem
+): Promise<void> {
+    // Validate node data
+    const groupId = node.groupId;
+    const artifactId = node.parentId;
+    const version = node.id;
+    const state = node.metadata?.state || 'ENABLED';
+
+    if (!groupId || !artifactId || !version) {
+        vscode.window.showErrorMessage('Missing version information');
+        return;
+    }
+
+    try {
+        // Build custom URI with state information
+        const uri = ApicurioUriBuilder.buildVersionUri(groupId, artifactId, version, state);
+
+        // Open document in visual editor
+        await vscode.commands.executeCommand('vscode.openWith', uri, 'apicurio.visualEditor');
+
+    } catch (error) {
+        vscode.window.showErrorMessage(
+            `Failed to open in visual editor: ${error instanceof Error ? error.message : String(error)}`
+        );
+    }
+}

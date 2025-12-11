@@ -34,8 +34,9 @@ export const VisualEditorApp: React.FC = () => {
 
         // Notify extension of dirty state
         postMessageToExtension({
-            type: 'documentChanged',
+            type: 'change',
             payload: {
+                content: event.getContent(),
                 isDirty: event.isDirty,
                 version: event.version,
             },

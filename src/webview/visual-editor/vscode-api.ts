@@ -33,7 +33,7 @@ export function getVSCodeAPI(): VSCodeApi {
  * Message types sent FROM webview TO extension
  */
 export interface WebviewMessage {
-    type: 'ready' | 'documentChanged' | 'saveComplete' | 'error';
+    type: 'ready' | 'change' | 'request-save';
     payload?: any;
 }
 

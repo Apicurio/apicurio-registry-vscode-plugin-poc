@@ -32,7 +32,9 @@ import {
 } from './commands/copyCommands';
 import {
     openArtifactCommand,
-    openVersionCommand
+    openVersionCommand,
+    openArtifactInVisualEditorCommand,
+    openVersionInVisualEditorCommand
 } from './commands/openCommands';
 import {
     changeArtifactStateCommand,
@@ -356,6 +358,15 @@ export function activate(context: vscode.ExtensionContext) {
         await openVersionCommand(registryService, node);
     });
 
+    // Visual Editor commands
+    const openArtifactInVisualEditor = vscode.commands.registerCommand('apicurioRegistry.openArtifactInVisualEditor', async (node) => {
+        await openArtifactInVisualEditorCommand(registryService, node);
+    });
+
+    const openVersionInVisualEditor = vscode.commands.registerCommand('apicurioRegistry.openVersionInVisualEditor', async (node) => {
+        await openVersionInVisualEditorCommand(registryService, node);
+    });
+
     // State commands
     const changeArtifactState = vscode.commands.registerCommand('apicurioRegistry.changeArtifactState', async (node) => {
         await changeArtifactStateCommand(registryService, () => registryTreeProvider.refresh(), node);
@@ -511,6 +522,8 @@ export function activate(context: vscode.ExtensionContext) {
         copyFullReference,
         openArtifact,
         openVersion,
+        openArtifactInVisualEditor,
+        openVersionInVisualEditor,
         changeArtifactState,
         changeVersionState,
         downloadContent,

@@ -183,11 +183,12 @@ export class ApicurioVisualEditorProvider implements vscode.CustomTextEditorProv
      * the built index.html and transform all asset paths to webview URIs.
      */
     private getHtmlForWebview(webview: vscode.Webview): string {
-        // Path to Vite-built index.html
+        // Path to Vite-built visual-editor index.html
         const htmlPath = path.join(
             this.context.extensionPath,
             'out',
             'webview',
+            'visual-editor',
             'index.html'
         );
 

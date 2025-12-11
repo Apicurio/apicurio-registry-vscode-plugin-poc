@@ -38,6 +38,9 @@
         "selector": [
           {
             "filenamePattern": "*.{json,yaml,yml}"
+          },
+          {
+            "scheme": "apicurio"
           }
         ],
         "priority": "option"
@@ -105,6 +108,18 @@
       {
         "command": "apicurioRegistry.openVersion",
         "title": "Open Version",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.openArtifactInVisualEditor",
+        "title": "Open in Visual Editor",
+        "icon": "$(edit)",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.openVersionInVisualEditor",
+        "title": "Open in Visual Editor",
+        "icon": "$(edit)",
         "category": "Apicurio Registry"
       },
       {
@@ -325,9 +340,19 @@
           "group": "navigation@1"
         },
         {
+          "command": "apicurioRegistry.openArtifactInVisualEditor",
+          "when": "view == apicurioRegistry && viewItem =~ /artifact.*/",
+          "group": "navigation@2"
+        },
+        {
           "command": "apicurioRegistry.openVersion",
-          "when": "view == apicurioRegistry && viewItem == version",
+          "when": "view == apicurioRegistry && viewItem =~ /version.*/",
           "group": "navigation@1"
+        },
+        {
+          "command": "apicurioRegistry.openVersionInVisualEditor",
+          "when": "view == apicurioRegistry && viewItem =~ /version.*/",
+          "group": "navigation@2"
         },
         {
           "command": "apicurioRegistry.copyGroupId",
@@ -616,19 +641,30 @@
         },
         "apicurioRegistry.display.sortGroups": {
           "type": "string",
-          "enum": ["alphabetical", "modified-date", "artifact-count"],
+          "enum": [
+            "alphabetical",
+            "modified-date",
+            "artifact-count"
+          ],
           "default": "alphabetical",
           "description": "How to sort groups in tree view"
         },
         "apicurioRegistry.display.sortArtifacts": {
           "type": "string",
-          "enum": ["alphabetical", "modified-date", "artifact-type"],
+          "enum": [
+            "alphabetical",
+            "modified-date",
+            "artifact-type"
+          ],
           "default": "alphabetical",
           "description": "How to sort artifacts within groups"
         },
         "apicurioRegistry.display.sortBranches": {
           "type": "string",
-          "enum": ["system-first", "alphabetical"],
+          "enum": [
+            "system-first",
+            "alphabetical"
+          ],
           "default": "system-first",
           "description": "How to sort branches (system branches first or alphabetical)"
         },
@@ -651,7 +687,17 @@
           "type": "array",
           "items": {
             "type": "string",
-            "enum": ["OPENAPI", "ASYNCAPI", "AVRO", "PROTOBUF", "JSON", "GRAPHQL", "WSDL", "XSD", "XML"]
+            "enum": [
+              "OPENAPI",
+              "ASYNCAPI",
+              "AVRO",
+              "PROTOBUF",
+              "JSON",
+              "GRAPHQL",
+              "WSDL",
+              "XSD",
+              "XML"
+            ]
           },
           "default": [],
           "description": "Show only these artifact types (empty = show all)"
@@ -706,10 +752,12 @@
     "webpack-cli": "^5.0.0"
   },
   "dependencies": {
-    "@apicurio/data-models": "^2.2.4",
+    "@apicurio/data-models": "^2.2.6",
+    "@apicurio/openapi-editor": "github:Apicurio/apicurio-openapi-editor",
     "@patternfly/react-code-editor": "^6.4.0",
     "@patternfly/react-core": "^6.4.0",
     "@patternfly/react-icons": "^6.4.0",
+    "@patternfly/react-table": "^6.4.0",
     "@vscode/webview-ui-toolkit": "^1.4.0",
     "axios": "^1.6.0",
     "immer": "^10.2.0",

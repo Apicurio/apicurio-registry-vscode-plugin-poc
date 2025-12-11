@@ -346,12 +346,12 @@
         },
         {
           "command": "apicurioRegistry.openVersion",
-          "when": "view == apicurioRegistry && viewItem == version",
+          "when": "view == apicurioRegistry && viewItem =~ /version.*/",
           "group": "navigation@1"
         },
         {
           "command": "apicurioRegistry.openVersionInVisualEditor",
-          "when": "view == apicurioRegistry && viewItem == version",
+          "when": "view == apicurioRegistry && viewItem =~ /version.*/",
           "group": "navigation@2"
         },
         {

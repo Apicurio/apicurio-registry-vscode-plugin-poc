@@ -11,7 +11,8 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'src/webview/index.html')
+        main: resolve(__dirname, 'src/webview/index.html'),
+        visualEditor: resolve(__dirname, 'src/webview/visual-editor/index.html')
       },
       output: {
         entryFileNames: 'assets/[name].js',

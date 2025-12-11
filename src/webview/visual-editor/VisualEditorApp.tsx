@@ -6,7 +6,9 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { OpenAPIEditor, DocumentChangeEvent } from '@apicurio/openapi-editor';
+// TODO: Replace with real package once published with built artifacts
+// import { OpenAPIEditor, DocumentChangeEvent } from '@apicurio/openapi-editor';
+import { OpenAPIEditor, DocumentChangeEvent } from './MockOpenAPIEditor';
 import { postMessageToExtension, onMessageFromExtension } from './vscode-api';
 
 /**

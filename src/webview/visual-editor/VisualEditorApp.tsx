@@ -48,7 +48,7 @@ export const VisualEditorApp: React.FC = () => {
     useEffect(() => {
         onMessageFromExtension((message) => {
             switch (message.type) {
-                case 'loadDocument':
+                case 'init':
                     // Load the document content into the editor
                     setInitialContent(message.payload.content);
                     setIsReady(true);

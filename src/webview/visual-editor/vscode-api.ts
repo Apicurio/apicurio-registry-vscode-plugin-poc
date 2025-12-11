@@ -41,7 +41,7 @@ export interface WebviewMessage {
  * Message types sent FROM extension TO webview
  */
 export interface ExtensionMessage {
-    type: 'loadDocument' | 'saveDocument' | 'themeChanged';
+    type: 'init' | 'saveDocument' | 'themeChanged';
     payload?: any;
 }
 

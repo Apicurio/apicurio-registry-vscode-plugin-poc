@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Apicurio Visual Editor</title>
+
+        <!-- VSCode will inject CSP meta tag here -->
+        <!--CSP-->
+
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+                height: 100%;
+                width: 100%;
+                overflow: hidden;
+            }
+
+            #root {
+                height: 100%;
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="root"></div>
+        <!-- Vite will inject the script tag here -->
+        <script type="module" src="./index.tsx"></script>
+    </body>
+</html>

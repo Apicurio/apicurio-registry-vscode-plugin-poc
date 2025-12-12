@@ -1,7 +1,7 @@
 # Apicurio VSCode Plugin - TODO
 
-**Last Updated:** 2025-11-20
-**Status:** Feature Parity Phase 3 IN PROGRESS (1 of 4 tasks complete - 25%)
+**Last Updated:** 2025-12-12
+**Status:** Feature Parity Phase 3 IN PROGRESS (2 of 4 tasks complete - 50%)
 
 > 📘 For detailed strategy and roadmap → see [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md) and [MASTER_PLAN.md](MASTER_PLAN.md)
 
@@ -52,12 +52,15 @@
 
 ---
 
-**📋 Phase 3 Tasks (Deferred):**
-- Role Management (4-6h) - User/role administration
-- Settings/Configuration (6-8h) - Global registry settings
+**📋 Phase 3 Tasks:**
+- ✅ Task 035: Import/Export Operations (6h) - Complete!
+- ✅ Task 036: Role Management (6h) - Complete! (38 tests passing)
+- 📋 Settings/Configuration (6-8h) - TODO
+- 📋 Global Configuration UI (4-6h) - TODO
 
-**Latest Phase 3 Achievement:**
-- ✅ Task 035: Import/Export Operations (6h) - Bulk operations complete!
+**Latest Phase 3 Achievements:**
+- ✅ Task 036: Role Management (2025-12-10) - RBAC administration complete!
+- ✅ Task 035: Import/Export Operations (2025-11-07) - Bulk operations complete!
 
 ---
 
@@ -121,7 +124,14 @@
 
 **Phase 1 Complete!** All core operations implemented with unified metadata editor.
 
-### ✅ Recently Completed - FEATURE PARITY PHASE 2
+### ✅ Recently Completed - PHASE 3 (Admin & Utility)
+
+| # | Task | Status | Effort | Completed | Details |
+|---|------|--------|--------|-----------|---------|
+| 036 | Role Management | ✅ Done | 6h | 2025-12-10 | [spec](tasks/completed/036-role-management.md) - 38 tests passing, RBAC admin UI |
+| 035 | Import/Export Operations | ✅ Done | 6h | 2025-11-07 | [spec](tasks/completed/035-import-export-operations.md) - Bulk operations |
+
+### ✅ Recently Completed - PHASE 2 (Feature Parity)
 
 | # | Task | Status | Effort | Completed | Details |
 |---|------|--------|--------|-----------|---------|

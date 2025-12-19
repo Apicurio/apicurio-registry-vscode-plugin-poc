@@ -6,7 +6,10 @@ export enum RegistryItemType {
     Version = 'version',
     RolesContainer = 'rolesContainer',
     RoleMapping = 'roleMapping',
-    CurrentUserRole = 'currentUserRole'
+    CurrentUserRole = 'currentUserRole',
+    SettingsContainer = 'settingsContainer',
+    PropertyGroup = 'propertyGroup',
+    ConfigProperty = 'configProperty'
 }
 
 export class RegistryItem {
@@ -381,4 +384,41 @@ export interface CreateRoleMappingRequest {
  */
 export interface UpdateRoleMappingRequest {
     role: Role;
+}
+
+/**
+ * Property type enumeration (Java types from Registry API)
+ */
+export enum PropertyType {
+    BOOLEAN = 'java.lang.Boolean',
+    INTEGER = 'java.lang.Integer',
+    LONG = 'java.lang.Long',
+    STRING = 'java.lang.String'
+}
+
+/**
+ * Configuration property returned by Registry API
+ */
+export interface ConfigurationProperty {
+    /** Property name (e.g., "apicurio.authn.basic-client-credentials.enabled") */
+    name: string;
+
+    /** Property value (always string, even for booleans/numbers) */
+    value: string;
+
+    /** Java type (e.g., "java.lang.Boolean", "java.lang.Integer") */
+    type: string;
+
+    /** Human-readable label */
+    label: string;
+
+    /** Property description/help text */
+    description: string;
+}
+
+/**
+ * Update property request body
+ */
+export interface UpdatePropertyRequest {
+    value: string;
 }

@@ -125,10 +125,11 @@
 
 **Phase 1 Complete!** All core operations implemented with unified metadata editor.
 
-### ✅ Recently Completed - PHASE 3 (Admin & Utility)
+### ✅ Recently Completed
 
 | # | Task | Status | Effort | Completed | Details |
 |---|------|--------|--------|-----------|---------|
+| 005 | Enhanced Codicons (Custom SVG Icons) | ✅ Done | 30min | 2025-12-19 | [spec](tasks/completed/005-enhanced-codicons.md) - Better codicons + theme colors, 0 KB bundle impact |
 | 037 | Settings/Configuration | ✅ Done | 7h | 2025-12-19 | [spec](tasks/completed/037-settings-configuration.md) - 45 tests passing, server config management |
 | 036 | Role Management | ✅ Done | 6h | 2025-12-10 | [spec](tasks/completed/036-role-management.md) - 38 tests passing, RBAC admin UI |
 | 035 | Import/Export Operations | ✅ Done | 6h | 2025-11-07 | [spec](tasks/completed/035-import-export-operations.md) - Bulk operations |
@@ -152,7 +153,6 @@
 
 | # | Task | Status | Effort | Details |
 |---|------|--------|--------|---------|
-| 005 | Custom SVG Icons | 📋 Todo | 2-3h | [spec](tasks/todo/medium-priority/005-custom-svg-icons.md) |
 
 ### 🟢 Low Priority (Deferred)
 
@@ -358,6 +358,22 @@ Visual Editor (Phase 4)    [░░░░░░░░░░░░░░░░░�
 ---
 
 ## 📝 Recent Activity
+
+**2025-12-19 (Task 005 Complete! ✨ Enhanced Codicons)**
+- ✅ **Completed Task 005: Enhanced Codicons** - Icon improvements with zero bundle impact!
+  - ⏱️ **Actual Effort**: 30 minutes (vs. 2-3h original estimate for custom SVGs)
+  - 🎨 **Approach**: Option 1 - Enhanced Codicons (reference SVG files not available)
+  - 🔧 **Changes**: Better codicon selections + semantic theme colors
+    - AsyncAPI: `radio-tower` → `broadcast` (better for messaging)
+    - Protobuf: `symbol-class` → `file-binary` (binary serialization)
+    - WSDL: `globe` → `symbol-interface` (service interfaces)
+    - GraphQL: `symbol-interface` → `symbol-misc` (distinguishes from WSDL)
+  - 🎨 **Theme Colors**: Added semantic colors for all 9 artifact types
+    - `symbolIcon.methodForeground`, `symbolIcon.eventForeground`, etc.
+  - ✅ **Benefits**: Auto light/dark theme adaptation, 0 KB bundle size, no custom icon management
+  - 📊 **UX**: Professional look consistent with VSCode design language
+- 🚀 **Next**: Option A.3 - Fix linting warnings (1-2h)
+- 💡 **Progress**: Quick Wins (Option A) - 2 of 3 complete (67%)
 
 **2025-12-19 (Phase 3 Complete! 🎉 Admin & Utility Features - 100%)**
 - 🎉 **PHASE 3 COMPLETE** - All admin and utility features delivered!

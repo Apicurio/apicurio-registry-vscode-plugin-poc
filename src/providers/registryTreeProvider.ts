@@ -469,6 +469,44 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 treeItem.contextValue = 'roleMapping';
                 break;
 
+            case RegistryItemType.SettingsContainer:
+                treeItem.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+                treeItem.iconPath = new vscode.ThemeIcon('gear');
+                treeItem.contextValue = 'settingsContainer';
+                treeItem.description = `(${element.metadata?.count || 0})`;
+                break;
+
+            case RegistryItemType.PropertyGroup:
+                treeItem.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+                treeItem.iconPath = new vscode.ThemeIcon('folder');
+                treeItem.contextValue = 'propertyGroup';
+                treeItem.description = element.metadata?.description || '';
+                break;
+
+            case RegistryItemType.ConfigProperty:
+                treeItem.collapsibleState = vscode.TreeItemCollapsibleState.None;
+                treeItem.contextValue = 'configProperty';
+                // Type-specific icon
+                const propType = element.metadata?.type;
+                if (propType === 'java.lang.Boolean') {
+                    treeItem.iconPath = element.metadata?.value === 'true'
+                        ? new vscode.ThemeIcon('check', new vscode.ThemeColor('testing.iconPassed'))
+                        : new vscode.ThemeIcon('x', new vscode.ThemeColor('testing.iconFailed'));
+                } else if (propType === 'java.lang.Integer' || propType === 'java.lang.Long') {
+                    treeItem.iconPath = new vscode.ThemeIcon('symbol-number');
+                } else {
+                    treeItem.iconPath = new vscode.ThemeIcon('symbol-string');
+                }
+                // Tooltip with property details
+                treeItem.tooltip = new vscode.MarkdownString();
+                treeItem.tooltip.appendMarkdown(`**${element.metadata?.label}**\n\n`);
+                treeItem.tooltip.appendMarkdown(`${element.metadata?.description}\n\n`);
+                treeItem.tooltip.appendMarkdown(`---\n\n`);
+                treeItem.tooltip.appendMarkdown(`• **Name:** ${element.metadata?.name}\n`);
+                treeItem.tooltip.appendMarkdown(`• **Type:** ${element.metadata?.type}\n`);
+                treeItem.tooltip.appendMarkdown(`• **Value:** \`${element.metadata?.value}\`\n`);
+                break;
+
             default:
                 treeItem.collapsibleState = vscode.TreeItemCollapsibleState.None;
         }
@@ -495,11 +533,18 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                     // Show filtered results at root level
                     return await this.getFilteredArtifacts();
                 } else {
-                    // Normal view: return roles container + groups
+                    // Normal view: return settings + roles container + groups
+                    const settingsContainer = await this.getSettingsContainer();
                     const rolesContainer = await this.getRolesContainer();
                     const groups = await this.getGroups();
-                    return [rolesContainer, ...groups];
+                    return [settingsContainer, rolesContainer, ...groups];
                 }
+            } else if (element.type === RegistryItemType.SettingsContainer) {
+                // Settings container: return property groups
+                return await this.getSettings();
+            } else if (element.type === RegistryItemType.PropertyGroup) {
+                // Property group: return individual properties
+                return this.getPropertiesInGroup(element);
             } else if (element.type === RegistryItemType.RolesContainer) {
                 // Roles container: return role mappings
                 return await this.getRoles();
@@ -849,6 +894,132 @@ export class RegistryTreeDataProvider implements vscode.TreeDataProvider<Registr
                 )
             ];
         }
+    }
+
+    /**
+     * Get settings container with property count
+     */
+    private async getSettingsContainer(): Promise<RegistryItem> {
+        try {
+            const properties = await this.registryService.getConfigProperties();
+            return new RegistryItem(
+                'Settings',
+                RegistryItemType.SettingsContainer,
+                'settings',
+                {
+                    count: properties.length
+                }
+            );
+        } catch (error) {
+            console.error('Error fetching configuration properties count:', error);
+            return new RegistryItem(
+                'Settings',
+                RegistryItemType.SettingsContainer,
+                'settings',
+                {
+                    count: 0
+                }
+            );
+        }
+    }
+
+    /**
+     * Get property groups to display under settings container
+     */
+    private async getSettings(): Promise<RegistryItem[]> {
+        try {
+            const properties = await this.registryService.getConfigProperties();
+
+            // Group properties by category
+            const groups = this.groupProperties(properties);
+
+            return groups.map(group => new RegistryItem(
+                group.name,
+                RegistryItemType.PropertyGroup,
+                `group-${group.name}`,
+                {
+                    description: `${group.properties.length} properties`,
+                    properties: group.properties,
+                    count: group.properties.length
+                }
+            ));
+        } catch (error) {
+            console.error('Error fetching settings:', error);
+            return [
+                new RegistryItem(
+                    'Error loading settings',
+                    RegistryItemType.Connection,
+                    undefined,
+                    { description: 'Failed to fetch configuration properties. Check if you have admin role.' }
+                )
+            ];
+        }
+    }
+
+    /**
+     * Get individual properties in a group
+     */
+    private getPropertiesInGroup(groupElement: RegistryItem): RegistryItem[] {
+        const properties = groupElement.metadata?.properties || [];
+
+        return properties.map((prop: any) => new RegistryItem(
+            `${prop.label}: ${this.formatPropertyValue(prop)}`,
+            RegistryItemType.ConfigProperty,
+            `prop-${prop.name}`,
+            {
+                property: prop,
+                name: prop.name,
+                value: prop.value,
+                type: prop.type,
+                label: prop.label,
+                description: prop.description
+            }
+        ));
+    }
+
+    /**
+     * Group properties by category
+     */
+    private groupProperties(properties: any[]): Array<{name: string, properties: any[]}> {
+        const groups: Map<string, any[]> = new Map([
+            ['Authentication', []],
+            ['Authorization', []],
+            ['Compatibility', []],
+            ['Web Console', []],
+            ['Semantic Versioning', []],
+            ['Additional', []]
+        ]);
+
+        for (const prop of properties) {
+            const category = this.categorizeProperty(prop.name);
+            groups.get(category)!.push(prop);
+        }
+
+        return Array.from(groups.entries())
+            .map(([name, props]) => ({ name, properties: props }))
+            .filter(group => group.properties.length > 0);
+    }
+
+    /**
+     * Categorize property by name pattern
+     */
+    private categorizeProperty(name: string): string {
+        if (name.includes('authn')) { return 'Authentication'; }
+        if (name.includes('authz') || name.includes('owner-only')) { return 'Authorization'; }
+        if (name.includes('compat')) { return 'Compatibility'; }
+        if (name.includes('ui.') || name.includes('console')) { return 'Web Console'; }
+        if (name.includes('semver')) { return 'Semantic Versioning'; }
+        return 'Additional';
+    }
+
+    /**
+     * Format property value for display
+     */
+    private formatPropertyValue(property: any): string {
+        if (property.type === 'java.lang.Boolean') {
+            return property.value === 'true' ? 'Enabled ✓' : 'Disabled ✗';
+        }
+        return property.value;
     }
 
     private async getArtifacts(groupId: string): Promise<RegistryItem[]> {

@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import {
     BranchMetadata,
+    ConfigurationProperty,
     CreateArtifactRequest,
     CreateArtifactResponse,
     CreateVersion,
@@ -1740,5 +1741,66 @@ export class RegistryService {
 
         const encodedPrincipalId = encodeURIComponent(principalId);
         await this.client.delete(`/admin/roleMappings/${encodedPrincipalId}`);
+    }
+
+    // ======================
+    // Configuration Settings
+    // ======================
+
+    /**
+     * Get all configuration properties
+     * @returns Array of configuration properties
+     */
+    async getConfigProperties(): Promise<ConfigurationProperty[]> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        const response = await this.client.get<ConfigurationProperty[]>('/admin/config/properties');
+        return response.data;
+    }
+
+    /**
+     * Get single configuration property
+     * @param propertyName Property name
+     * @returns Configuration property
+     */
+    async getConfigProperty(propertyName: string): Promise<ConfigurationProperty> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        const encodedName = encodeURIComponent(propertyName);
+        const response = await this.client.get<ConfigurationProperty>(
+            `/admin/config/properties/${encodedName}`
+        );
+        return response.data;
+    }
+
+    /**
+     * Update configuration property value
+     * @param propertyName Property name
+     * @param value New property value (always string)
+     */
+    async updateConfigProperty(propertyName: string, value: string): Promise<void> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        const encodedName = encodeURIComponent(propertyName);
+        await this.client.put(`/admin/config/properties/${encodedName}`, { value });
+    }
+
+    /**
+     * Delete configuration property (reset to default)
+     * @param propertyName Property name to delete
+     */
+    async deleteConfigProperty(propertyName: string): Promise<void> {
+        if (!this.client) {
+            throw new Error('Not connected to registry');
+        }
+
+        const encodedName = encodeURIComponent(propertyName);
+        await this.client.delete(`/admin/config/properties/${encodedName}`);
     }
 }

@@ -158,9 +158,10 @@
 
 | # | Task | Status | Effort | Details |
 |---|------|--------|--------|---------|
-| 010 | Edit Metadata UI | ⏸️ Deferred | 4-5h | [spec](tasks/todo/low-priority/010-edit-metadata.md) |
-| 008 | Details Panel | ⏸️ Deferred | 6-8h | [spec](tasks/todo/low-priority/008-details-panel.md) |
-| 009 | Reverse Version Order | ⏸️ Deferred | 1-2h | [spec](tasks/todo/low-priority/009-reverse-version-order.md) |
+| 010 | Edit Metadata UI | ⏸️ Deferred | 4-5h | Redundant - already implemented in Task 026-030 (Unified Metadata Editor) |
+| 008 | Details Panel | ⏸️ Deferred | 6-8h | Optional polish - tooltips and context menus provide sufficient detail |
+
+**Note:** Task 009 (Reverse Version Order) was completed as part of Task 006 (User Preferences) - implemented as `display.reverseVersionOrder` configuration setting.
 
 ### ✅ Completed Infrastructure
 

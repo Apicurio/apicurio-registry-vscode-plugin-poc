@@ -43,7 +43,7 @@ export class FindPathItemsVisitor extends CombinedVisitorAdapter {
         if (this.filterCriteria === null) {
             return true;
         }
-        return name.toLowerCase().indexOf(this.filterCriteria) != -1;
+        return name.toLowerCase().indexOf(this.filterCriteria) !== -1;
     }
 
 }

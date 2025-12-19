@@ -53,8 +53,8 @@ export class FindSchemaDefinitionsVisitor extends CombinedVisitorAdapter {
             return true;
         }
         const name: string = node.mapPropertyName();
-        if (typeof this.filterCriteria == "string") {
-            return name.toLowerCase().indexOf(this.filterCriteria) != -1;
+        if (typeof this.filterCriteria === "string") {
+            return name.toLowerCase().indexOf(this.filterCriteria) !== -1;
         } else {
             return this.filterCriteria(node);
         }

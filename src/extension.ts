@@ -21,6 +21,12 @@ import {
     viewCurrentUserRoleCommand
 } from './commands/roleCommands';
 import {
+    viewSettingsCommand,
+    editPropertyCommand,
+    resetPropertyCommand,
+    searchPropertiesCommand
+} from './commands/settingsCommands';
+import {
     generateClaudeCommandCommand,
     verifyMCPCommand
 } from './commands/mcpUtilityCommands';
@@ -476,6 +482,23 @@ export function activate(context: vscode.ExtensionContext) {
         await viewCurrentUserRoleCommand(registryService);
     });
 
+    // Settings Management commands
+    const viewSettings = vscode.commands.registerCommand('apicurioRegistry.viewSettings', async () => {
+        await viewSettingsCommand(registryService, registryTreeProvider);
+    });
+
+    const editProperty = vscode.commands.registerCommand('apicurioRegistry.editProperty', async (node) => {
+        await editPropertyCommand(registryService, registryTreeProvider, node.metadata?.property);
+    });
+
+    const resetProperty = vscode.commands.registerCommand('apicurioRegistry.resetProperty', async (node) => {
+        await resetPropertyCommand(registryService, registryTreeProvider, node.metadata?.property);
+    });
+
+    const searchProperties = vscode.commands.registerCommand('apicurioRegistry.searchProperties', async () => {
+        await searchPropertiesCommand(registryService, registryTreeProvider);
+    });
+
     // MCP commands
     const mcpStart = vscode.commands.registerCommand('apicurioRegistry.mcp.start', async () => {
         await startMCPServerCommand(mcpServerManager);
@@ -549,6 +572,10 @@ export function activate(context: vscode.ExtensionContext) {
         updateRoleMapping,
         deleteRoleMapping,
         viewCurrentUserRole,
+        viewSettings,
+        editProperty,
+        resetProperty,
+        searchProperties,
         mcpStart,
         mcpStop,
         mcpRestart,

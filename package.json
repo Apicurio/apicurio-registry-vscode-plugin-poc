@@ -298,6 +298,30 @@
         "title": "View My Role",
         "icon": "$(account)",
         "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.viewSettings",
+        "title": "View All Settings",
+        "icon": "$(gear)",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.editProperty",
+        "title": "Edit Property",
+        "icon": "$(edit)",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.resetProperty",
+        "title": "Reset to Default",
+        "icon": "$(discard)",
+        "category": "Apicurio Registry"
+      },
+      {
+        "command": "apicurioRegistry.searchProperties",
+        "title": "Search Settings",
+        "icon": "$(search)",
+        "category": "Apicurio Registry"
       }
     ],
     "menus": {
@@ -503,6 +527,26 @@
           "command": "apicurioRegistry.deleteRoleMapping",
           "when": "view == apicurioRegistry && viewItem == roleMapping",
           "group": "role@2"
+        },
+        {
+          "command": "apicurioRegistry.viewSettings",
+          "when": "view == apicurioRegistry && viewItem == settingsContainer",
+          "group": "inline"
+        },
+        {
+          "command": "apicurioRegistry.searchProperties",
+          "when": "view == apicurioRegistry && viewItem == settingsContainer",
+          "group": "settings@1"
+        },
+        {
+          "command": "apicurioRegistry.editProperty",
+          "when": "view == apicurioRegistry && viewItem == configProperty",
+          "group": "1_modify@1"
+        },
+        {
+          "command": "apicurioRegistry.resetProperty",
+          "when": "view == apicurioRegistry && viewItem == configProperty",
+          "group": "1_modify@2"
         }
       ]
     },

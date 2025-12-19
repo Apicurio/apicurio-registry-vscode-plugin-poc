@@ -28,7 +28,7 @@ export async function createArtifactCommand(
     try {
         // Step 2: Select group mode
         const groupMode = await selectGroupMode();
-        if (!groupMode) return;
+        if (!groupMode) {return;}
 
         // Step 3: Get group ID
         let groupId: string | undefined;
@@ -37,43 +37,43 @@ export async function createArtifactCommand(
         } else {
             groupId = await selectExistingGroup(registryService);
         }
-        if (!groupId) return;
+        if (!groupId) {return;}
 
         // Step 4: Select artifact type
         const artifactType = await selectArtifactType();
-        if (!artifactType) return;
+        if (!artifactType) {return;}
 
         // Step 5: Enter artifact ID (optional)
         const artifactId = await enterArtifactId();
-        if (artifactId === null) return; // User cancelled
+        if (artifactId === null) {return;} // User cancelled
 
         // Step 6: Enter version (optional)
         const version = await enterVersion();
-        if (version === null) return;
+        if (version === null) {return;}
 
         // Step 7: Enter name (optional)
         const name = await enterName();
-        if (name === null) return;
+        if (name === null) {return;}
 
         // Step 8: Enter description (optional)
         const description = await enterDescription();
-        if (description === null) return;
+        if (description === null) {return;}
 
         // Step 9: Search for file
         const filePath = await selectFile(artifactType);
-        if (!filePath) return;
+        if (!filePath) {return;}
 
         // Step 10: Read file content
         const fileContent = await readFileContent(filePath);
-        if (!fileContent) return;
+        if (!fileContent) {return;}
 
         // Step 11: Add labels (optional)
         const labels = await addLabels();
-        if (labels === null) return;
+        if (labels === null) {return;}
 
         // Step 12: Select draft mode (if supported)
         const isDraft = await selectDraftMode(registryService);
-        if (isDraft === null) return;
+        if (isDraft === null) {return;}
 
         // Step 13: Final confirmation
         const confirmed = await confirmCreation(
@@ -86,7 +86,7 @@ export async function createArtifactCommand(
             labels,
             isDraft
         );
-        if (!confirmed) return;
+        if (!confirmed) {return;}
 
         // Execute creation with progress
         await vscode.window.withProgress(
@@ -374,7 +374,7 @@ async function selectFile(artifactType: string): Promise<string | undefined> {
         placeHolder: 'e.g., **/*.yaml'
     });
 
-    if (!searchPattern) return undefined;
+    if (!searchPattern) {return undefined;}
 
     // Find files matching pattern
     const files = await vscode.workspace.findFiles(searchPattern);

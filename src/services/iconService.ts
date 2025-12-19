@@ -19,44 +19,54 @@ export class IconService {
 
         switch (normalizedType) {
             case ArtifactType.OPENAPI:
-                // REST API - using symbol-method to represent HTTP methods
-                return new vscode.ThemeIcon('symbol-method');
+                // REST API - using symbol-method with method color for HTTP APIs
+                return new vscode.ThemeIcon('symbol-method',
+                    new vscode.ThemeColor('symbolIcon.methodForeground'));
 
             case ArtifactType.ASYNCAPI:
-                // Asynchronous messaging - using radio-tower to represent broadcasting
-                return new vscode.ThemeIcon('radio-tower');
+                // Asynchronous messaging - using broadcast with event color for messaging
+                return new vscode.ThemeIcon('broadcast',
+                    new vscode.ThemeColor('symbolIcon.eventForeground'));
 
             case ArtifactType.AVRO:
-                // Data schema - using database to represent data structures
-                return new vscode.ThemeIcon('database');
+                // Data schema - using database with struct color for data structures
+                return new vscode.ThemeIcon('database',
+                    new vscode.ThemeColor('symbolIcon.structForeground'));
 
             case ArtifactType.PROTOBUF:
-                // Protocol Buffers - using symbol-class to represent structured data
-                return new vscode.ThemeIcon('symbol-class');
+                // Protocol Buffers - using file-binary with number color for binary serialization
+                return new vscode.ThemeIcon('file-binary',
+                    new vscode.ThemeColor('symbolIcon.numberForeground'));
 
             case ArtifactType.JSON:
-                // JSON Schema - using json icon
-                return new vscode.ThemeIcon('json');
+                // JSON Schema - using json icon with object color
+                return new vscode.ThemeIcon('json',
+                    new vscode.ThemeColor('symbolIcon.objectForeground'));
 
             case ArtifactType.GRAPHQL:
-                // GraphQL schema - using symbol-interface to represent graph relationships
-                return new vscode.ThemeIcon('symbol-interface');
+                // GraphQL schema - using symbol-misc with interface color for graph APIs
+                return new vscode.ThemeIcon('symbol-misc',
+                    new vscode.ThemeColor('symbolIcon.interfaceForeground'));
 
             case ArtifactType.KCONNECT:
-                // Kafka Connect - using plug to represent connector
-                return new vscode.ThemeIcon('plug');
+                // Kafka Connect - using plug with property color for connectors
+                return new vscode.ThemeIcon('plug',
+                    new vscode.ThemeColor('symbolIcon.propertyForeground'));
 
             case ArtifactType.WSDL:
-                // Web Services - using globe to represent SOAP/web services
-                return new vscode.ThemeIcon('globe');
+                // Web Services - using symbol-interface with interface color for SOAP services
+                return new vscode.ThemeIcon('symbol-interface',
+                    new vscode.ThemeColor('symbolIcon.interfaceForeground'));
 
             case ArtifactType.XSD:
-                // XML Schema - using symbol-namespace to represent XML structures
-                return new vscode.ThemeIcon('symbol-namespace');
+                // XML Schema - using symbol-namespace with namespace color for XML structures
+                return new vscode.ThemeIcon('symbol-namespace',
+                    new vscode.ThemeColor('symbolIcon.namespaceForeground'));
 
             default:
-                // Fallback for unknown types
-                return new vscode.ThemeIcon('file-code');
+                // Fallback for unknown types - using file-code with default color
+                return new vscode.ThemeIcon('file-code',
+                    new vscode.ThemeColor('symbolIcon.fileForeground'));
         }
     }
 

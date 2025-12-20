@@ -140,6 +140,8 @@ export const InfoForm: React.FC = () => {
                     <DescriptionListTerm>Description</DescriptionListTerm>
                     <DescriptionListDescription>
                         <TextArea
+                            id="info-description"
+                            aria-label="Description"
                             value={info?.description || ''}
                             onChange={(_event, value) => updateInfoField('description', value)}
                             rows={5}

@@ -75,6 +75,11 @@
         "category": "Apicurio Registry"
       },
       {
+        "command": "apicurioRegistry.addVersion",
+        "title": "Add Version",
+        "category": "Apicurio Registry"
+      },
+      {
         "command": "apicurioRegistry.setupMCP",
         "title": "Setup AI Features (Claude Code)",
         "icon": "$(sparkle)",
@@ -417,6 +422,11 @@
           "command": "apicurioRegistry.downloadContent",
           "when": "view == apicurioRegistry && viewItem =~ /artifact.*/",
           "group": "3_download@1"
+        },
+        {
+          "command": "apicurioRegistry.addVersion",
+          "when": "view == apicurioRegistry && viewItem =~ /artifact.*/",
+          "group": "4_version@1"
         },
         {
           "command": "apicurioRegistry.createDraftVersion",

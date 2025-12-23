@@ -9,6 +9,7 @@ import { AutoSaveManager } from './services/autoSaveManager';
 import { ConflictDetector } from './services/conflictDetector';
 import { searchCommand } from './commands/searchCommand';
 import { createCommand } from './commands/createCommand';
+import { addVersionCommand } from './commands/addVersionCommand';
 import { setupMCPCommand } from './commands/setupMCPCommand';
 import { editMetadataCommand } from './commands/editMetadataCommand';
 import { manageRulesCommand } from './commands/rulesCommand';
@@ -326,6 +327,10 @@ export function activate(context: vscode.ExtensionContext) {
         await createCommand(registryService, registryTreeProvider);
     });
 
+    const addVersion = vscode.commands.registerCommand('apicurioRegistry.addVersion', async (node) => {
+        await addVersionCommand(registryService, () => registryTreeProvider.refresh(), node);
+    });
+
     const setupMCP = vscode.commands.registerCommand('apicurioRegistry.setupMCP', async () => {
         await setupMCPCommand(context, mcpConfigurationManager);
     });
@@ -536,6 +541,7 @@ export function activate(context: vscode.ExtensionContext) {
         disconnectCommand,
         searchCmd,
         create,
+        addVersion,
         setupMCP,
         generateClaudeCommand,
         verifyMCP,

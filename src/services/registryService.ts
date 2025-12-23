@@ -11,7 +11,8 @@ import {
     RoleMapping,
     Rule,
     RuleType,
-    UIConfig
+    UIConfig,
+    VersionMetaData
 } from '../models/registryModels';
 
 export interface RegistryConnection {
@@ -1802,5 +1803,55 @@ export class RegistryService {
 
         const encodedName = encodeURIComponent(propertyName);
         await this.client.delete(`/admin/config/properties/${encodedName}`);
+    }
+
+    async createVersion(
+        groupId: string,
+        artifactId: string,
+        data: CreateVersion
+    ): Promise<VersionMetaData> {
+        this.ensureConnected();
+
+        try {
+            const encodedGroupId = encodeURIComponent(groupId);
+            const encodedArtifactId = encodeURIComponent(artifactId);
+
+            const response = await this.client!.post(
+                `/groups/${encodedGroupId}/artifacts/${encodedArtifactId}/versions`,
+                data,
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            return response.data;
+        } catch (error: any) {
+            console.error('Error creating version:', error);
+
+            // Provide more specific error messages
+            if (error.response) {
+                const status = error.response.status;
+                const message = error.response.data?.message || error.response.data?.detail || error.message;
+
+                switch (status) {
+                    case 409:
+                        throw new Error(`Version already exists: ${message}`);
+                    case 400:
+                        throw new Error(`Invalid request: ${message}`);
+                    case 401:
+                        throw new Error('Authentication required');
+                    case 403:
+                        throw new Error('Permission denied');
+                    case 404:
+                        throw new Error(`Artifact not found: ${groupId}/${artifactId}`);
+                    default:
+                        throw new Error(`Failed to create version: ${message}`);
+                }
+            }
+
+            throw new Error(`Failed to create version: ${error.message || error}`);
+        }
     }
 }

@@ -330,21 +330,21 @@ This roadmap outlines the path to feature parity between the Apicurio Registry V
 
 **Progress:** 100% (15-20h complete) - ✅ COMPLETE (2025-12-23)
 
-### Phase 2: Advanced Features (18-26h)
-- [ ] Rules Configuration (6-8h)
-- [ ] Group Management (2-3h)
-- [ ] Branching Support (8-10h)
-- [ ] Enhanced Tree View (2-5h)
+### Phase 2: Advanced Features (18-26h) - ✅ COMPLETE
+- [x] Rules Configuration (6-8h) - Task 031 ✅
+- [x] Group Management (2-3h) - Task 032 ✅
+- [x] Branching Support (8-10h) - Task 033 ✅
+- [x] Enhanced Tree View (2-5h) - Task 034 ✅
 
-**Progress:** 0% (0/18-26h complete)
+**Progress:** 100% (18-26h complete) - ✅ COMPLETE (2025-11-07)
 
-### Phase 3: Admin & Utility (12-20h)
-- [ ] Import/Export (4-6h)
-- [ ] Role Management (4-6h)
-- [ ] Settings/Configuration (6-8h)
-- [ ] Additional Features (6-10h)
+### Phase 3: Admin & Utility (12-20h) - ✅ COMPLETE
+- [x] Import/Export (4-6h) - Task 035 ✅
+- [x] Role Management (4-6h) - Task 036 ✅
+- [x] Settings/Configuration (6-8h) - Task 037 ✅
+- [x] Additional Features - Client Generation, Comments, References ✅
 
-**Progress:** 0% (0/12-20h complete)
+**Progress:** 100% (12-20h complete) - ✅ COMPLETE (2025-12-19)
 
 ### Phase 4: Visual Editor (35-45h) - IN PROGRESS
 - [x] OpenAPI Visual Editor - Initial Integration (6-8h) ✅ COMPLETE

@@ -58,17 +58,11 @@ export class ApicurioFileSystemProvider implements vscode.FileSystemProvider {
         // Fetch from registry
         const metadata = ApicurioUriBuilder.parseVersionUri(uri);
         if (!metadata) {
-            console.error('Failed to parse URI:', uri.toString());
+            console.error('[FileSystemProvider] Failed to parse URI:', uri.toString());
             throw vscode.FileSystemError.FileNotFound(uri);
         }
 
         try {
-            console.log('Fetching content from registry:', {
-                groupId: metadata.groupId,
-                artifactId: metadata.artifactId,
-                version: metadata.version
-            });
-
             const content = await this.registryService.getArtifactContent(
                 metadata.groupId,
                 metadata.artifactId,
@@ -97,7 +91,12 @@ export class ApicurioFileSystemProvider implements vscode.FileSystemProvider {
 
             return data;
         } catch (error: any) {
-            console.error('Failed to fetch content from registry:', error.message || error);
+            console.error('Failed to fetch content from registry:', error);
+            console.error('Error details:', {
+                message: error.message,
+                stack: error.stack,
+                response: error.response
+            });
             throw vscode.FileSystemError.FileNotFound(uri);
         }
     }

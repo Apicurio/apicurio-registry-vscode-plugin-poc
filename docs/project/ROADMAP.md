@@ -346,12 +346,13 @@ This roadmap outlines the path to feature parity between the Apicurio Registry V
 
 **Progress:** 0% (0/12-20h complete)
 
-### Phase 4: Visual Editor (35-45h) - DEFERRED
-- [ ] OpenAPI Visual Editor (15-20h)
+### Phase 4: Visual Editor (35-45h) - IN PROGRESS
+- [x] OpenAPI Visual Editor - Initial Integration (6-8h) ✅ COMPLETE
+- [ ] OpenAPI Visual Editor - Advanced Features (remaining)
 - [ ] AsyncAPI Visual Editor (15-20h)
 - [ ] Editor Integration & Polish (5-10h)
 
-**Progress:** 0% (0/35-45h complete) - NOT STARTED (deferred to end)
+**Progress:** ~20% (~6-8/35-45h complete) - STARTED (OpenAPI basic integration working)
 
 ---
 

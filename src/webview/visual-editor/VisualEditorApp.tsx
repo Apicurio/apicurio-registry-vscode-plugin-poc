@@ -6,10 +6,9 @@
  */
 
 import React, { useState, useEffect } from 'react';
-// TODO: Replace with real package once published with built artifacts
-// import { OpenAPIEditor, DocumentChangeEvent } from '@apicurio/openapi-editor';
-import { OpenAPIEditor, DocumentChangeEvent } from './MockOpenAPIEditor';
+import { OpenAPIEditor, DocumentChangeEvent } from '@apicurio/openapi-editor';
 import { postMessageToExtension, onMessageFromExtension } from './vscode-api';
+import * as YAML from 'yaml';
 
 /**
  * Store the getContent callback from the editor
@@ -39,13 +38,9 @@ export const VisualEditorApp: React.FC = () => {
 
         if (contentObj) {
             try {
-                if (originalFormat === 'yaml') {
-                    // For POC, we'll use JSON for now
-                    // Real editor will handle YAML properly
-                    contentStr = JSON.stringify(contentObj, null, 2);
-                } else {
-                    contentStr = JSON.stringify(contentObj, null, 2);
-                }
+                // Convert back to JSON string for storage
+                // TODO: Support YAML output format when saving
+                contentStr = JSON.stringify(contentObj, null, 2);
             } catch (e) {
                 console.error('Failed to serialize content:', e);
                 contentStr = '';
@@ -72,20 +67,34 @@ export const VisualEditorApp: React.FC = () => {
         onMessageFromExtension((message) => {
             switch (message.type) {
                 case 'init':
-                    // Detect format from content
-                    const content = message.payload.content;
-                    if (typeof content === 'string') {
-                        // Try to detect if it's YAML or JSON
-                        const trimmed = content.trim();
-                        if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
-                            setOriginalFormat('json');
-                        } else {
-                            setOriginalFormat('yaml');
+                    // Parse content from string to object
+                    const contentStr = message.payload.content;
+                    if (typeof contentStr === 'string' && contentStr.trim().length > 0) {
+                        try {
+                            // Detect format from content
+                            const trimmed = contentStr.trim();
+                            let parsedContent;
+
+                            if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+                                // JSON format
+                                setOriginalFormat('json');
+                                parsedContent = JSON.parse(contentStr);
+                            } else {
+                                // YAML format
+                                setOriginalFormat('yaml');
+                                parsedContent = YAML.parse(contentStr);
+                            }
+
+                            // Load the parsed document into the editor
+                            setInitialContent(parsedContent);
+                            setIsReady(true);
+                        } catch (error) {
+                            console.error('[VisualEditorApp] Failed to parse content:', error);
+                            // Fall back to raw content
+                            setInitialContent(contentStr);
+                            setIsReady(true);
                         }
                     }
-                    // Load the document content into the editor
-                    setInitialContent(content);
-                    setIsReady(true);
                     break;
 
                 case 'saveDocument':
@@ -127,7 +136,16 @@ export const VisualEditorApp: React.FC = () => {
     }
 
     return (
-        <div style={{ height: '100vh', width: '100%' }}>
+        <div
+            style={{
+                height: '100vh',
+                width: '100%',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                position: 'relative'
+            }}
+        >
             <OpenAPIEditor initialContent={initialContent} onChange={handleChange} />
         </div>
     );

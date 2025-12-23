@@ -46,6 +46,13 @@ export class ApicurioVisualEditorProvider implements vscode.CustomTextEditorProv
         // Set up message passing
         this.setupMessageHandling(document, webviewPanel);
 
+        // IMPORTANT: Wait a bit to ensure FileSystemProvider has loaded content
+        // VSCode should have loaded the document, but there might be a race condition
+        if (document.getText().length === 0) {
+            // Give VSCode time to load the content from FileSystemProvider
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+
         // Send initial document content to webview
         this.sendDocumentToWebview(document, webviewPanel.webview);
 
@@ -101,6 +108,12 @@ export class ApicurioVisualEditorProvider implements vscode.CustomTextEditorProv
     private sendDocumentToWebview(document: vscode.TextDocument, webview: vscode.Webview): void {
         const content = document.getText();
         const uri = document.uri.toString();
+
+        // IMPORTANT: Don't send empty content - it will overwrite good content
+        if (content.length === 0) {
+            console.warn('[VisualEditorProvider] Skipping init message - document content is empty');
+            return;
+        }
 
         webview.postMessage({
             type: 'init',
@@ -201,9 +214,9 @@ export class ApicurioVisualEditorProvider implements vscode.CustomTextEditorProv
         );
 
         // Replace relative paths with webview URIs
-        // Vite generates paths like: ./assets/index-abc123.js
+        // Vite generates paths like: ../assets/index-abc123.js or ./assets/index-abc123.js
         html = html.replace(
-            /(<link[^>]+href="|<script[^>]+src="|<img[^>]+src=")\.?\//g,
+            /(<link[^>]+href="|<script[^>]+src="|<img[^>]+src=")(\.\.\/|\.\/)/g,
             `$1${webviewUri}/`
         );
 

@@ -12,6 +12,9 @@ import { VisualEditorApp } from './VisualEditorApp';
 // Import PatternFly CSS (required by @apicurio/openapi-editor)
 import '@patternfly/react-core/dist/styles/base.css';
 
+// Import OpenAPI Editor CSS - use direct path since it's not exported
+import '../../../node_modules/@apicurio/openapi-editor/dist/openapi-editor.css';
+
 // Mount the app
 const container = document.getElementById('root');
 if (container) {

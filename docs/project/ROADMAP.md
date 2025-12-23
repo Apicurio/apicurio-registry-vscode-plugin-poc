@@ -320,15 +320,15 @@ This roadmap outlines the path to feature parity between the Apicurio Registry V
 
 ## Progress Tracking
 
-### Phase 1: Core Operations (15-20h)
-- [ ] Advanced Search (2-3h)
-- [ ] Label Management (4-6h)
-- [ ] Version Creation UI (3-4h)
-- [ ] Metadata Editing - Artifact (2-3h)
-- [ ] Metadata Editing - Version (2-3h)
-- [ ] Metadata Editing - Group (2-3h)
+### Phase 1: Core Operations (15-20h) - ✅ COMPLETE
+- [x] Advanced Search (2-3h) - Task 025 ✅
+- [x] Label Management (4-6h) - Task 026-030 (Unified Metadata Editor) ✅
+- [x] Version Creation UI (3-4h) - Task 004 ✅
+- [x] Metadata Editing - Artifact (2-3h) - Task 026-030 (Unified Metadata Editor) ✅
+- [x] Metadata Editing - Version (2-3h) - Task 026-030 (Unified Metadata Editor) ✅
+- [x] Metadata Editing - Group (2-3h) - Task 026-030 (Unified Metadata Editor) ✅
 
-**Progress:** 0% (0/15-20h complete)
+**Progress:** 100% (15-20h complete) - ✅ COMPLETE (2025-12-23)
 
 ### Phase 2: Advanced Features (18-26h)
 - [ ] Rules Configuration (6-8h)

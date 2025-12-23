@@ -38,9 +38,12 @@ export const VisualEditorApp: React.FC = () => {
 
         if (contentObj) {
             try {
-                // Convert back to JSON string for storage
-                // TODO: Support YAML output format when saving
-                contentStr = JSON.stringify(contentObj, null, 2);
+                // Preserve original format (JSON or YAML) when saving
+                if (originalFormat === 'yaml') {
+                    contentStr = YAML.stringify(contentObj, null, { indent: 2 });
+                } else {
+                    contentStr = JSON.stringify(contentObj, null, 2);
+                }
             } catch (e) {
                 console.error('Failed to serialize content:', e);
                 contentStr = '';
@@ -99,10 +102,25 @@ export const VisualEditorApp: React.FC = () => {
 
                 case 'saveDocument':
                     // Extension requests save - get current content and send back
-                    const savedContent = window.getCurrentContent?.();
+                    const contentObj = window.getCurrentContent?.();
+                    let savedContentStr = '';
+
+                    if (contentObj) {
+                        try {
+                            // Preserve original format when saving
+                            if (originalFormat === 'yaml') {
+                                savedContentStr = YAML.stringify(contentObj, null, { indent: 2 });
+                            } else {
+                                savedContentStr = JSON.stringify(contentObj, null, 2);
+                            }
+                        } catch (e) {
+                            console.error('[VisualEditorApp] Failed to serialize on save:', e);
+                        }
+                    }
+
                     postMessageToExtension({
                         type: 'saveComplete',
-                        payload: { content: savedContent },
+                        payload: { content: savedContentStr },
                     });
                     break;
 

@@ -76,6 +76,7 @@ import { MCPServerManager } from './services/mcpServerManager';
 import { MCPConfigurationManager } from './services/mcpConfigurationManager';
 import { MCPStatusBar } from './ui/mcpStatusBar';
 import { DEFAULT_MCP_CONFIG } from './models/mcpServerConfig';
+import { ApicurioFormattingProvider, formatDocumentCommand } from './commands/formatCommand';
 
 let registryTreeProvider: RegistryTreeDataProvider;
 let registryService: RegistryService;
@@ -123,6 +124,15 @@ export function activate(context: vscode.ExtensionContext) {
                 },
                 supportsMultipleEditorsPerDocument: false
             }
+        )
+    );
+
+    // Register document formatting provider for Apicurio documents
+    const formattingProvider = new ApicurioFormattingProvider();
+    context.subscriptions.push(
+        vscode.languages.registerDocumentFormattingEditProvider(
+            { scheme: ApicurioUriBuilder.SCHEME },
+            formattingProvider
         )
     );
 
@@ -533,6 +543,11 @@ export function activate(context: vscode.ExtensionContext) {
         await mcpConfigurationManager.showSetupWizard();
     });
 
+    // Format command
+    const formatDocument = vscode.commands.registerCommand('apicurioRegistry.formatDocument', async () => {
+        await formatDocumentCommand();
+    });
+
     // Add to context subscriptions
     context.subscriptions.push(
         treeView,
@@ -588,7 +603,8 @@ export function activate(context: vscode.ExtensionContext) {
         mcpQuickActions,
         mcpStatus,
         mcpConfigure,
-        mcpSetup
+        mcpSetup,
+        formatDocument
     );
 
     // Listen for configuration changes and refresh tree view

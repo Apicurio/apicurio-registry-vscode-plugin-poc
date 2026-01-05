@@ -83,10 +83,22 @@ export enum ViewColumn {
 
 export class Uri {
     static file(path: string): Uri {
-        return new Uri('file', path);
+        return new Uri('file', '', path);
     }
 
-    constructor(public scheme: string, public path: string) {}
+    static parse(value: string): Uri {
+        const match = value.match(/^([^:]+):\/\/(.*)$/);
+        if (match) {
+            return new Uri(match[1], '', match[2]);
+        }
+        return new Uri('file', '', value);
+    }
+
+    static from(components: { scheme: string; path: string }): Uri {
+        return new Uri(components.scheme, '', components.path);
+    }
+
+    constructor(public scheme: string, public authority: string, public path: string) {}
 
     get fsPath(): string {
         return this.path;
@@ -177,4 +189,93 @@ export namespace env {
         writeText: (value: string): Thenable<void> => Promise.resolve(),
         readText: (): Thenable<string> => Promise.resolve('')
     };
+}
+
+export enum DiagnosticSeverity {
+    Error = 0,
+    Warning = 1,
+    Information = 2,
+    Hint = 3
+}
+
+export class Range {
+    constructor(
+        public start: Position,
+        public end: Position
+    ) {}
+
+    static create(startLine: number, startCharacter: number, endLine: number, endCharacter: number): Range {
+        return new Range(new Position(startLine, startCharacter), new Position(endLine, endCharacter));
+    }
+}
+
+export class Position {
+    constructor(
+        public line: number,
+        public character: number
+    ) {}
+}
+
+export class Diagnostic {
+    constructor(
+        public range: Range,
+        public message: string,
+        public severity?: DiagnosticSeverity
+    ) {}
+
+    source?: string;
+    code?: string | number;
+}
+
+export namespace languages {
+    const diagnosticCollections = new Map<string, DiagnosticCollection>();
+
+    export function createDiagnosticCollection(name?: string): DiagnosticCollection {
+        const collection = new DiagnosticCollectionImpl(name || 'default');
+        diagnosticCollections.set(name || 'default', collection);
+        return collection;
+    }
+
+    export function getDiagnostics(uri: Uri): Diagnostic[] {
+        return [];
+    }
+}
+
+export interface DiagnosticCollection {
+    name: string;
+    set(uri: Uri, diagnostics: Diagnostic[] | undefined): void;
+    delete(uri: Uri): void;
+    clear(): void;
+    dispose(): void;
+    get(uri: Uri): Diagnostic[] | undefined;
+}
+
+class DiagnosticCollectionImpl implements DiagnosticCollection {
+    private diagnostics = new Map<string, Diagnostic[]>();
+
+    constructor(public name: string) {}
+
+    set(uri: Uri, diagnostics: Diagnostic[] | undefined): void {
+        if (diagnostics) {
+            this.diagnostics.set(uri.toString(), diagnostics);
+        } else {
+            this.diagnostics.delete(uri.toString());
+        }
+    }
+
+    delete(uri: Uri): void {
+        this.diagnostics.delete(uri.toString());
+    }
+
+    clear(): void {
+        this.diagnostics.clear();
+    }
+
+    dispose(): void {
+        this.diagnostics.clear();
+    }
+
+    get(uri: Uri): Diagnostic[] | undefined {
+        return this.diagnostics.get(uri.toString());
+    }
 }

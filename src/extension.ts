@@ -76,6 +76,7 @@ import { MCPServerManager } from './services/mcpServerManager';
 import { MCPConfigurationManager } from './services/mcpConfigurationManager';
 import { MCPStatusBar } from './ui/mcpStatusBar';
 import { DEFAULT_MCP_CONFIG } from './models/mcpServerConfig';
+import { ValidationDiagnosticsService } from './services/validationDiagnosticsService';
 
 let registryTreeProvider: RegistryTreeDataProvider;
 let registryService: RegistryService;
@@ -126,11 +127,16 @@ export function activate(context: vscode.ExtensionContext) {
         )
     );
 
-    // Clean up conflict tracking when documents are closed
+    // Create validation diagnostics service for real-time validation
+    const validationService = new ValidationDiagnosticsService();
+    context.subscriptions.push(validationService);
+
+    // Clean up conflict tracking and diagnostics when documents are closed
     context.subscriptions.push(
         vscode.workspace.onDidCloseTextDocument(doc => {
             if (doc.uri.scheme === ApicurioUriBuilder.SCHEME) {
                 conflictDetector.stopTracking(doc.uri);
+                validationService.clearDiagnostics(doc.uri);
             }
         })
     );
@@ -151,11 +157,22 @@ export function activate(context: vscode.ExtensionContext) {
     const statusBarManager = new StatusBarManager(autoSaveManager);
     context.subscriptions.push(statusBarManager);
 
-    // Listen for text changes (debounced auto-save)
+    // Listen for text changes (debounced auto-save and real-time validation)
     context.subscriptions.push(
         vscode.workspace.onDidChangeTextDocument(event => {
             if (event.document.uri.scheme === ApicurioUriBuilder.SCHEME) {
                 autoSaveManager.scheduleSave(event.document);
+                // Trigger real-time validation
+                validationService.validateDocument(event.document.uri, event.document.getText());
+            }
+        })
+    );
+
+    // Validate documents when they are opened
+    context.subscriptions.push(
+        vscode.workspace.onDidOpenTextDocument(doc => {
+            if (doc.uri.scheme === ApicurioUriBuilder.SCHEME) {
+                validationService.validateDocument(doc.uri, doc.getText());
             }
         })
     );

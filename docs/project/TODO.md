@@ -1,7 +1,7 @@
 # Apicurio VSCode Plugin - TODO
 
-**Last Updated:** 2026-01-05
-**Status:** Editor Integration & Polish - Format/Beautify Complete
+**Last Updated:** 2026-01-07
+**Status:** Editor Integration & Polish - Better Error Handling Complete
 
 > 📘 For detailed strategy and roadmap → see [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md) and [MASTER_PLAN.md](MASTER_PLAN.md)
 
@@ -11,14 +11,19 @@
 
 **None** - Ready for next task
 
-**Recent Completion** (2026-01-05):
+**Recent Completion** (2026-01-07):
+- ✅ Better Error Handling (Task 038) - 33 tests passing
+  - 6 custom error classes: ApicurioError, NetworkError, ValidationError, NotFoundError, AuthenticationError, OperationError
+  - ErrorHandlerService with "Apicurio Registry" output channel
+  - "Show Details" action for debugging
+  - Timestamps and error codes in logs
+
+**Previous Completion** (2026-01-05):
 - ✅ Format/Beautify Command (Task 037) - 19 tests passing
   - FormatService with JSON/YAML formatting (2-space indent)
   - DocumentFormattingEditProvider for Shift+Alt+F shortcut
-  - Custom indent size support
-  - Integrated with VSCode formatting system
 
-**Previous Completion** (2025-12-22):
+**Earlier Completion** (2025-12-22):
 - ✅ Test Coverage Improvements - Added 28 new passing tests
   - mcpCommands.ts: 18/18 tests passing (100% coverage)
   - createArtifactCommand.ts: 10/22 tests passing (45% coverage, 12 tests need complete wizard flow mocking)

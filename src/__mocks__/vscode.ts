@@ -151,6 +151,30 @@ export namespace window {
     export function showOpenDialog(options?: { canSelectFiles?: boolean; canSelectFolders?: boolean; canSelectMany?: boolean; filters?: Record<string, string[]>; openLabel?: string }): Thenable<Uri[] | undefined> {
         return Promise.resolve(undefined);
     }
+
+    export function createOutputChannel(name: string): OutputChannel {
+        return {
+            name,
+            append: () => {},
+            appendLine: () => {},
+            clear: () => {},
+            show: () => {},
+            hide: () => {},
+            dispose: () => {},
+            replace: () => {}
+        };
+    }
+}
+
+export interface OutputChannel {
+    name: string;
+    append(value: string): void;
+    appendLine(value: string): void;
+    clear(): void;
+    show(preserveFocus?: boolean): void;
+    hide(): void;
+    dispose(): void;
+    replace(value: string): void;
 }
 
 export namespace workspace {

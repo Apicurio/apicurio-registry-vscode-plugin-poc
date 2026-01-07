@@ -78,6 +78,7 @@ import { MCPStatusBar } from './ui/mcpStatusBar';
 import { DEFAULT_MCP_CONFIG } from './models/mcpServerConfig';
 import { ApicurioFormattingProvider, formatDocumentCommand } from './commands/formatCommand';
 import { ValidationDiagnosticsService } from './services/validationDiagnosticsService';
+import { ErrorHandlerService, setErrorHandler } from './services/errorHandlerService';
 
 let registryTreeProvider: RegistryTreeDataProvider;
 let registryService: RegistryService;
@@ -87,6 +88,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Initialize services
     registryService = new RegistryService();
+
+    // Initialize error handler service for centralized error logging
+    const errorHandler = new ErrorHandlerService();
+    setErrorHandler(errorHandler);
+    context.subscriptions.push(errorHandler);
 
     // Initialize tree data provider
     registryTreeProvider = new RegistryTreeDataProvider(registryService);
